@@ -1,7 +1,7 @@
 How to build ffmpeg on Android source codec tree.
 cp ffmpeg packages dir to android source code,
 goto ffmpeg top dir,and then run
-mm 
+mm
 to build it;
 
 

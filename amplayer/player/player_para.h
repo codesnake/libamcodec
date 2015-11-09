@@ -82,7 +82,7 @@ typedef  struct {
     unsigned int audio_end_flag;
     unsigned int audio_low_buffer;
     unsigned int end_flag;
-    unsigned int request_end_flag;//stop request by user.	
+    unsigned int request_end_flag;//stop request by user.
     unsigned int pts_valid;
     unsigned int sync_flag;
     unsigned int reset_flag;
@@ -97,7 +97,7 @@ typedef  struct {
     unsigned int fast_backward;
     unsigned int init_ff_fr;
     unsigned int seek_base_audio;
-    unsigned int audio_mute;   
+    unsigned int audio_mute;
 	unsigned int avsync_enable;
 	#ifdef DEBUG_VARIABLE_DUR
 	unsigned int info_variable;
@@ -106,14 +106,14 @@ typedef  struct {
     unsigned int audio_switch_smatch;
     unsigned int switch_audio_id;
     unsigned int switch_sub_id;
-    unsigned int is_playlist;	
+    unsigned int is_playlist;
     unsigned int lowbuffermode_flag;
     unsigned int ignore_ffmpeg_errors;
-    unsigned int temp_interrupt_ffmpeg;	
+    unsigned int temp_interrupt_ffmpeg;
     float time_point;
     int f_step;
     int read_max_retry_cnt;
-	int audio_ready;		
+	int audio_ready;
     int check_lowlevel_eagain_cnt;
     int check_audio_ready_ms;
     int last_seek_time_point;

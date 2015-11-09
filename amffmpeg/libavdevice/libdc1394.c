@@ -153,7 +153,7 @@ static int dc1394_read_header(AVFormatContext *c, AVFormatParameters * ap)
             goto out;
         }
     }
-    
+
     /* Choose the best mode. */
     rate = (ap->time_base.num ? av_rescale(1000, ap->time_base.den, ap->time_base.num) : -1);
     max_score = -1;

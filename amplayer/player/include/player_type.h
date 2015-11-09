@@ -17,18 +17,18 @@
 //#define DEBUG_VARIABLE_DUR
 
 typedef enum
-{      
+{
 	/******************************
-	* 0x1000x: 
+	* 0x1000x:
 	* player do parse file
 	* decoder not running
 	******************************/
 	PLAYER_INITING  	= 0x10001,
 	PLAYER_TYPE_REDY  = 0x10002,
-	PLAYER_INITOK   	= 0x10003,	
-        
+	PLAYER_INITOK   	= 0x10003,
+
 	/******************************
-	* 0x2000x: 
+	* 0x2000x:
 	* playback status
 	* decoder is running
 	******************************/
@@ -36,24 +36,24 @@ typedef enum
 	PLAYER_BUFFERING 	= 0x20002,
 	PLAYER_PAUSE    	= 0x20003,
 	PLAYER_SEARCHING	= 0x20004,
-	
+
 	PLAYER_SEARCHOK 	= 0x20005,
-	PLAYER_START    	= 0x20006,	
+	PLAYER_START    	= 0x20006,
 	PLAYER_FF_END   	= 0x20007,
 	PLAYER_FB_END   	= 0x20008,
 
-	PLAYER_PLAY_NEXT	= 0x20009,	
-	PLAYER_BUFFER_OK	= 0x2000a,	
-	PLAYER_FOUND_SUB	= 0x2000b,	
+	PLAYER_PLAY_NEXT	= 0x20009,
+	PLAYER_BUFFER_OK	= 0x2000a,
+	PLAYER_FOUND_SUB	= 0x2000b,
 
 	/******************************
-	* 0x3000x: 
-	* player will exit	
+	* 0x3000x:
+	* player will exit
 	******************************/
 	PLAYER_ERROR		= 0x30001,
-	PLAYER_PLAYEND  	= 0x30002,	
-	PLAYER_STOPED   	= 0x30003,  
-	PLAYER_EXIT   		= 0x30004, 
+	PLAYER_PLAYEND  	= 0x30002,
+	PLAYER_STOPED   	= 0x30003,
+	PLAYER_EXIT   		= 0x30004,
 
     /******************************
      * 0x4000x:
@@ -71,7 +71,7 @@ typedef enum {
     DRM_LEVEL1     = 1,
     DRM_LEVEL2     = 2,
     DRM_LEVEL3     = 3,
-    DRM_NONE       = 4, 
+    DRM_NONE       = 4,
 } drm_level_t;
 
 typedef struct drm_info {
@@ -91,9 +91,9 @@ typedef struct drm_info {
 
 
 typedef struct
-{   
+{
 	int index;
-    int id;    
+    int id;
     int width;
     int height;
     int aspect_ratio_num;
@@ -119,15 +119,15 @@ typedef struct
     char author[512];
     char album[512];
     char comment[512];
-    char year[4];  
-    int track;     
-    char genre[32]; 
+    char year[4];
+    int track;
+    char genre[32];
     char copyright[512];
-    audio_cover_type pic; 
+    audio_cover_type pic;
 }audio_tag_info;
 
 typedef struct
-{    
+{
     int index;
     int id;
     int channel;
@@ -135,26 +135,26 @@ typedef struct
     int bit_rate;
     aformat_t aformat;
     int duration;
-	audio_tag_info *audio_tag;    
+	audio_tag_info *audio_tag;
 }maudio_info_t;
 
 typedef struct
 {
     int index;
     char id;
-    char internal_external; //0:internal_sub 1:external_sub       
+    char internal_external; //0:internal_sub 1:external_sub
     unsigned short width;
     unsigned short height;
 	unsigned int sub_type;
     char resolution;
-    long long subtitle_size;  
-    char *sub_language;   
+    long long subtitle_size;
+    char *sub_language;
 }msub_info_t;
 
 typedef struct
-{	
+{
     char *filename;
-    int  duration;  
+    int  duration;
 	long long  file_size;
     pfile_type type;
 	int bitrate;
@@ -166,15 +166,15 @@ typedef struct
     int cur_video_index;
     int total_audio_num;
     int cur_audio_index;
-    int total_sub_num;      
-    int cur_sub_index;	
+    int total_sub_num;
+    int cur_sub_index;
     int seekable;
     int drm_check;
 	int adif_file_flag;
 }mstream_info_t;
 
 typedef struct
-{	
+{
 	mstream_info_t stream_info;
 	mvideo_info_t *video_info[MAX_VIDEO_STREAMS];
 	maudio_info_t *audio_info[MAX_AUDIO_STREAMS];
@@ -190,14 +190,14 @@ typedef struct player_info
     int full_time_ms;  /* mSeconds */
 	int current_time;  /*Seconds	*/
 	int current_ms;	/*ms*/
-	int last_time;		
-	int error_no;  
+	int last_time;
+	int error_no;
 	int start_time;
 	int first_time;
 	int pts_video;
 	//int pts_pcrscr;
 	unsigned int current_pts;
-	long curtime_old_time;    
+	long curtime_old_time;
 	unsigned int video_error_cnt;
 	unsigned int audio_error_cnt;
 	float audio_bufferlevel; // relative value
@@ -233,8 +233,8 @@ typedef struct player_file_type
 typedef int (*update_state_fun_t)(int pid,player_info_t *) ;
 typedef int (*notify_callback)(int pid,int msg,unsigned long ext1,unsigned long ext2);
 typedef enum
-{      
-	PLAYER_EVENTS_PLAYER_INFO=1,			///<ext1=player_info*,ext2=0,same as update_statue_callback 
+{
+	PLAYER_EVENTS_PLAYER_INFO=1,			///<ext1=player_info*,ext2=0,same as update_statue_callback
 	PLAYER_EVENTS_STATE_CHANGED,			///<ext1=new_state,ext2=0,
 	PLAYER_EVENTS_ERROR,					///<ext1=error_code,ext2=message char *
 	PLAYER_EVENTS_BUFFERING,				///<ext1=buffered=d,d={0-100},ext2=0,
@@ -251,11 +251,11 @@ typedef struct
     int vbufsize;
     int vdatasize;
     int abufused;
-    int abufsize;	
-    int adatasize;	
+    int abufsize;
+    int adatasize;
     int sbufused;
-    int sbufsize;	
-    int sdatasize;		
+    int sbufsize;
+    int sdatasize;
 }hwbufstats_t;
 
 
@@ -279,7 +279,7 @@ typedef struct
 	int	read_max_cnt;						//read retry maxium counts, if exceed it, return error
 	int avsync_threshold;                             //for adec av sync threshold in ms
 	union
-	{     
+	{
 		struct{
 			unsigned int loop_mode:16;		//file loop mode 0:loop 1:not loop
 			unsigned int nosound:1;			//0:play with audio  1:play without audio
@@ -292,7 +292,7 @@ typedef struct
 			unsigned int displast_frame : 1;//0:black out when player exit	1:keep last frame when player exit
 		};
 		int mode;							//no use
-	};  
+	};
 	callback_t callback_fn;					//callback function
 	int byteiobufsize;						//byteio buffer size used in ffmpeg
 	int loopbufsize;						//loop buffer size used in ffmpeg
@@ -306,7 +306,7 @@ typedef struct
 	float buffing_middle;					 //auto buffering middle limit
 	float buffing_max;						 //auto buffering high limit
 	int is_playlist;						 //no use
-	int is_type_parser;						 //is try to get file type 
+	int is_type_parser;						 //is try to get file type
 	int buffing_starttime_s;			//for rest buffing_middle,buffering seconds data to start.
 	int buffing_force_delay_s;
 	int lowbuffermode_flag;
@@ -314,6 +314,6 @@ typedef struct
 	int is_ts_soft_demux;
 	int reserved [56];					//reserved  for furthur used,some one add more ,can del reserved num
 	int SessionID;
- }play_control_t; 
+ }play_control_t;
 
 #endif

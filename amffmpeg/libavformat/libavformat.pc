@@ -7,8 +7,8 @@ Name: libavformat
 Description: FFmpeg container format library
 Version: 53.4.0
 Requires: libavcodec = 53.7.0
-Requires.private: 
+Requires.private:
 Conflicts:
 Libs: -L${libdir} -lavformat -ldl -lm -pthread
-Libs.private: 
+Libs.private:
 Cflags: -I${includedir}

@@ -10,16 +10,16 @@
 
 int set_sys_int(const char *path,int val)
 {
-    	int fd;
+	int fd;
         char  bcmd[16];
         fd=open(path, O_CREAT|O_RDWR | O_TRUNC, 0644);
         if(fd>=0)
         {
-        	sprintf(bcmd,"%d",val);
-        	write(fd,bcmd,strlen(bcmd));
-        	close(fd);
-        	LOGI("\n switch %s clk81 freq\n", val?"high":"low");
-        	return 0;
+	sprintf(bcmd,"%d",val);
+	write(fd,bcmd,strlen(bcmd));
+	close(fd);
+	LOGI("\n switch %s clk81 freq\n", val?"high":"low");
+	return 0;
         }
 
         return -1;

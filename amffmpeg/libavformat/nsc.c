@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-       
+
 #include "nsc.h"
 const char szSixtyFour[65] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{}";
 typedef unsigned char BYTE;
@@ -74,7 +74,7 @@ typedef struct item_info{
 	unsigned char *Buf8;
 	int Buf16datalen;
 	struct item_info *next_item;
-}item_info_t; 
+}item_info_t;
 
 struct nsc_file{
 	char location[1024];
@@ -97,18 +97,18 @@ struct nsc_file{
 static int unicode_to_utf8(const char *buffer,int length,char *buf8)
 {
 	int i,j;
-	unsigned short  u16w;	
+	unsigned short  u16w;
 	for(i=0,j=0;i<length;i+=2){
 		u16w=*(unsigned short *)(&buffer[i]);
 		if(u16w<=0x7f){//U-00000000 ¨C U-0000007F--->0xxxxxxx
 			buf8[j++]=u16w;
 		}else if(u16w<=0x7ff){//U-00000080 ¨C U-000007FF -->110xxxxx 10xxxxxx
 			buf8[j++]=0xc0|u16w>>6;
-			buf8[j++]=0x80|u16w&0x3f; 
+			buf8[j++]=0x80|u16w&0x3f;
 		}else{//1110xxxx 10xxxxxx 10xxxxxx--->U-00010000 ¨C U-001FFFFF
 			buf8[j++]=0xe0|u16w>>12;
-			buf8[j++]=0x80|(u16w>>6)&0x3f; 
-			buf8[j++]=0x80|u16w&0x3f; 
+			buf8[j++]=0x80|(u16w>>6)&0x3f;
+			buf8[j++]=0x80|u16w&0x3f;
 		}
 	}
 	return 0;
@@ -144,7 +144,7 @@ static int bitsdecode(char *bufin,char *bufout,int inlen)
 {
 		int t1,t2,t3,t4;
 		int i,j;
-#define IN(n) 		(bInverseSixtyFour[(int)(bufin[n]&0x7f)]&0x3f)		
+#define IN(n) 		(bInverseSixtyFour[(int)(bufin[n]&0x7f)]&0x3f)
 		for(i=0,j=0;i<inlen;){
 					t1=IN(i);
 					t2=IN(i+1);
@@ -165,13 +165,13 @@ static int decode_item(const char *string,item_info_t *item)
 	int type;
 	char *pstr2;
 	int clen;
-  	pstr2=strstr(pstr,"=");	
+	pstr2=strstr(pstr,"=");
 	if(pstr2==NULL){
 		av_log(NULL,AV_LOG_INFO,"no a valied line\n");
 		return -2;
 	}
 	memcpy(item->name,pstr,pstr2-pstr);
-	item->name[pstr2-pstr]='\0';	
+	item->name[pstr2-pstr]='\0';
 	pstr2++;//skip =
 	while(*pstr2==' ') pstr2++;
 	if(pstr2[0]=='0' && pstr2[1]=='x')
@@ -183,10 +183,10 @@ static int decode_item(const char *string,item_info_t *item)
 		return -1;/*unsupport type string*/
 	}
 
-	item->Type=type;	
-	pstr2+=2;	
+	item->Type=type;
+	pstr2+=2;
 	clen=strlen(pstr2);
-	
+
 	if(type==1){
 			int v=0;
 			sscanf(pstr2,"%x",&v);
@@ -197,14 +197,14 @@ static int decode_item(const char *string,item_info_t *item)
 
 			if(decodestr(buf,clen,item)!=0){
 					av_log(NULL,AV_LOG_INFO,"decodestr error\n");
-					av_free(buf);	
+					av_free(buf);
 					return -1;
 			}
 			av_free(buf);
 	}else{
 		return -1;
 	}
-	return 0;	
+	return 0;
 }
 
 int is_nsc_file(AVIOContext *pb,const char *name)
@@ -213,12 +213,12 @@ int is_nsc_file(AVIOContext *pb,const char *name)
 	char line[1024+1];
 	int ret;
 	int linecnt=0;
-	if(!pb) return 0;	
+	if(!pb) return 0;
 	do
-	{	
-		ret=ff_get_assic_line(pb,line,1024);		
-		//av_log(NULL,AV_LOG_INFO,"is_ncs_file check line%s ret=%d\n",line, ret);	
-		if(ret<5) continue;		
+	{
+		ret=ff_get_assic_line(pb,line,1024);
+		//av_log(NULL,AV_LOG_INFO,"is_ncs_file check line%s ret=%d\n",line, ret);
+		if(ret<5) continue;
 		if(!strncmp(line,ADDRESS_ITEM,strlen(ADDRESS_ITEM)))
 			score+=60;
 		else if(!strncmp(line,"Name=02",strlen("Name=02")))
@@ -230,7 +230,7 @@ int is_nsc_file(AVIOContext *pb,const char *name)
 		else if(!strncmp(line,FORMATS_ITEM,strlen(FORMATS_ITEM)))
 			score+=60;
 		else if(!strncmp(line,UNICAST_URL_ITEM,strlen(UNICAST_URL_ITEM)))
-			score+=50;		
+			score+=50;
 	}while(score>=0 && score<100 && ret>0 && linecnt++<5);
 	av_log(NULL,AV_LOG_INFO,"is_ncs_file=%d\n",score);
 	return score>=100?100:score;
@@ -256,14 +256,14 @@ static int nsc_read_asf_file_properties(struct nsc_file *nsc,char * formatbuf,in
 #define buf_rl32(pb)	(buf_rl16(pb)|buf_rl16(pb)<<16)
 #define buf_rl64(pb)	((int64_t)buf_rl32(pb)| ((int64_t)buf_rl32(pb))<<32)
 
-    while(memcmp(ff_asf_file_header,pb,16)!=0 && n>0) 
+    while(memcmp(ff_asf_file_header,pb,16)!=0 && n>0)
     {
-    		pb++;
-    		n--;
+		pb++;
+		n--;
     }
     if(n==0){
-    	av_log(NULL,AV_LOG_INFO,"not valid asf file header\n");
-    	return -1;
+	av_log(NULL,AV_LOG_INFO,"not valid asf file header\n");
+	return -1;
     }
     pb+=16;///skip ff_asf_file_header;
     buf_rl64(pb);// header size
@@ -299,7 +299,7 @@ static int parser_nsc(struct nsc_file *nsc)
 			continue;
 		}
 		while(*pline==' ') pline++;//skip space
-		if(*pline=='\n' || *pline=='\r') 
+		if(*pline=='\n' || *pline=='\r')
 			continue;//enpmty line;
 		item=av_mallocz(sizeof(item_info_t));
 		ret=decode_item(pline,item);
@@ -310,13 +310,13 @@ static int parser_nsc(struct nsc_file *nsc)
 		if(item->Type==2){
 			av_log(NULL,AV_LOG_INFO,"%s=[%s]\n",item->name,item->Buf8);
 		}else
-	 		av_log(NULL,AV_LOG_INFO,"%s=[0x%x]\n",item->name,item->Value);
+			av_log(NULL,AV_LOG_INFO,"%s=[0x%x]\n",item->name,item->Value);
 		if(preitem==NULL){
 			nsc->itemlist=item;
 		}else{
 			preitem->next_item=item;
 		}
-		preitem=item;	
+		preitem=item;
 		reta=0;//have add one item list,
 	}
 	item_info_t *format=find_item_by_name(nsc,FORMAT1_ITEM);
@@ -358,7 +358,7 @@ nsc/sdcard/xxx.nsc
 error1:
 	if(nsc->bio)	avio_close(nsc->bio);
 	av_free(nsc);
-	return ret;	
+	return ret;
 }
 
 struct msb_packet
@@ -375,7 +375,7 @@ static int ncs_muticast_read(struct nsc_file *nsc, uint8_t *buf, int size)
 	int len,datalen;
 	int i=0;
 	int expadlen;
-retry:	
+retry:
 	pbuf=tempbuf;
 	if(url_interrupt_cb())
 		return -1;
@@ -466,7 +466,7 @@ retry:
 			snprintf(nsc->streamurl,1024,"udp://[%s]:%d",ip->Buf8,port->Value);
 			///snprintf(nsc->streamurl,1024,"udp://%s:%d","239.192.5.93",16606);
 			av_log(NULL,AV_LOG_INFO,"To start open %s\n",nsc->streamurl);
-		}else{//unicast mode,is step2 
+		}else{//unicast mode,is step2
 			item_info_t *unicast;
 			unicast=find_item_by_name(nsc,UNICAST_URL_ITEM);
 			if(unicast || !unicast->Buf8)
@@ -480,7 +480,7 @@ retry:
 		}
 		if(ret!=0){
 			return ret;
-		}		
+		}
 		nsc->read_data_len=0;
 	}
 	/*do read....*/
@@ -517,7 +517,7 @@ static int nsc_close(URLContext *h)
 	return 0;
 }
 static int64_t nsc_seek(URLContext *h, int64_t off, int whence)
-{	
+{
 	return -1;
 }
 URLProtocol ff_nsc_protocol = {

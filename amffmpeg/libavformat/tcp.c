@@ -71,13 +71,13 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
         }
     }
     memset(&hints, 0, sizeof(hints));
-    if(am_getconfig_bool_def("media.libplayer.ipv4only",1))	
-    		hints.ai_family = AF_INET;
+    if(am_getconfig_bool_def("media.libplayer.ipv4only",1))
+		hints.ai_family = AF_INET;
     else
-		hints.ai_family = AF_UNSPEC;	
+		hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     snprintf(portstr, sizeof(portstr), "%d", port);
-	av_log(h, AV_LOG_INFO,"tcp will get address from dns!\n");	
+	av_log(h, AV_LOG_INFO,"tcp will get address from dns!\n");
     if (listen_socket)
         hints.ai_flags |= AI_PASSIVE;
     if (!hostname[0])
@@ -174,14 +174,14 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
             av_strerror(ret, errbuf, sizeof(errbuf));
             av_log(h, AV_LOG_ERROR,
                    "TCP connection to %s:%d failed: %s, ret = %d\n",
-                   hostname, port, errbuf, ret);            
+                   hostname, port, errbuf, ret);
             ret = AVERROR(ret);
             if(ret>0)
                 ret = AVERROR(EIO);
             goto fail;
         }
     }
-    av_log(h, AV_LOG_INFO,"tcp  connect %s ok!\n",hostname);	
+    av_log(h, AV_LOG_INFO,"tcp  connect %s ok!\n",hostname);
     s = av_malloc(sizeof(TCPContext));
     if (!s) {
         freeaddrinfo(ai);

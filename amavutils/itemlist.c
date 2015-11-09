@@ -191,7 +191,7 @@ struct item *  itemlist_find_match_item_ex(struct itemlist *itemlist,struct item
            }
        }
     }
-    	
+
     ITEM_UNLOCK(itemlist);
     return finditem;
 }
@@ -297,7 +297,7 @@ flags: 1: before position;
 	  2: after postion;
 	  3: replace postion;
 	  else:
-	  	2:after postion;
+		2:after postion;
 */
 int itemlist_item_insert(struct itemlist *itemlist, struct itemlist *position,struct itemlist *newitem,int flags)
 {
@@ -315,7 +315,7 @@ int itemlist_item_insert(struct itemlist *itemlist, struct itemlist *position,st
     else
         itemlist->item_count++;
     ITEM_UNLOCK(itemlist);
-    return 0;	
+    return 0;
 }
 
 int  itemlist_print(struct itemlist *itemlist,printitem_fun print)

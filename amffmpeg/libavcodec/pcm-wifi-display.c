@@ -30,8 +30,8 @@
 
 /*
  * Private header for wifi display LPCM
- * Field                     Number       Number         Value 
- *                           of bits      of bytes 
+ * Field                     Number       Number         Value
+ *                           of bits      of bytes
  * sub_stream_id              8             1             0xa0
  * number_of_frame_header     8             1             6(AUs)
  * reserved                   7
@@ -46,7 +46,7 @@
  * audio_emphasis_flag           quantization_word_length
  * 0       Emphasis Off            0       16 bits
  * 1       Emphasis On           1,2,3     reserved
- * 
+ *
  * audio_sampling_frequency      number_of_audio_channel
  * 0       reserved              0         2ch(dual-mono)
  * 1       44.1kHz               1         2ch(stereo)
@@ -76,7 +76,7 @@ static int pcm_wifidisplay_parse_header(AVCodecContext *avctx,
 {
 	char number_of_frame_header, audio_emphasis, quant, sample, channel;
     int frame_size = -1;
-    
+
     //check sub id
     if (header[0] == 0xa0)
     {
@@ -85,7 +85,7 @@ static int pcm_wifidisplay_parse_header(AVCodecContext *avctx,
         quant  = header[3] >> 6;
         sample = (header[3] >> 3) & 7;
         channel = header[3] & 7;
-        
+
         if (quant == Quantization_Word_16bit)
         {
             avctx->bits_per_coded_sample = 16;
@@ -95,7 +95,7 @@ static int pcm_wifidisplay_parse_header(AVCodecContext *avctx,
             av_log(avctx, AV_LOG_WARNING, "using reserved bps %d\n", quant);
         }
         avctx->sample_fmt = (avctx->bits_per_coded_sample == 16) ? AV_SAMPLE_FMT_S16 : AV_SAMPLE_FMT_S32;
-        	
+
         if (sample == Audio_Sampling_44_1)
         {
             avctx->sample_rate = 44100;
@@ -108,7 +108,7 @@ static int pcm_wifidisplay_parse_header(AVCodecContext *avctx,
         {
             av_log(avctx, AV_LOG_WARNING, "using reserved sample_rate %d\n", sample);
         }
-        
+
         if (channel == Audio_channel_Dual_Mono)
         {
             avctx->channels = 1;   //note: this is not sure
@@ -121,10 +121,10 @@ static int pcm_wifidisplay_parse_header(AVCodecContext *avctx,
         {
             av_log(avctx, AV_LOG_WARNING, "using reserved channel %d\n", channel);
         }
-        
+
         avctx->bit_rate = avctx->channels * avctx->sample_rate * avctx->bits_per_coded_sample;
 	    frame_size = FramesPerAU * (avctx->bits_per_coded_sample >> 3) * avctx->channels * number_of_frame_header;
-	    
+
 	    av_log(avctx, AV_LOG_ERROR, "audio_emphasis=%d, bps=%d, pcm_samplerate=%d, pcm_channels=%d, frame_size=%d\n",
 	                                   audio_emphasis, avctx->bits_per_coded_sample, avctx->sample_rate, avctx->channels, frame_size);
     }
@@ -145,7 +145,7 @@ static int pcm_wifidisplay_decode_frame(AVCodecContext *avctx,
     int retval, packet_size, i, j;
     int16_t *dst16 = data;
     int32_t *dst32 = data;
-    
+
     if (buf_size < 4) {
         av_log(avctx, AV_LOG_ERROR, "PCM packet too small\n");
         return -1;
@@ -155,22 +155,22 @@ static int pcm_wifidisplay_decode_frame(AVCodecContext *avctx,
     {
         return -1;
     }
-    
+
     if (packet_size != buf_size - 4)
     {
         av_log(avctx, AV_LOG_ERROR, "wrong packet size\n");
         return -1;
     }
-    
+
     if (packet_size > *data_size) {
         av_log(avctx, AV_LOG_ERROR,
                "Insufficient output buffer space (%d bytes, needed %d bytes)\n",
                *data_size, packet_size);
         return -1;
     }
-    
+
     src += 4;
-    
+
     switch (avctx->channels)
     {
         case 1:
@@ -189,7 +189,7 @@ static int pcm_wifidisplay_decode_frame(AVCodecContext *avctx,
             if (avctx->sample_fmt == AV_SAMPLE_FMT_S16)
             {
                 for(i=0,j=0; i< packet_size; i+=2, j++){
-                    dst16[j] = (src[i] << 8) | src[i+1]; 
+                    dst16[j] = (src[i] << 8) | src[i+1];
                 }
             }
             else
@@ -201,9 +201,9 @@ static int pcm_wifidisplay_decode_frame(AVCodecContext *avctx,
             av_log(avctx, AV_LOG_WARNING, "reserved/unsupport channel\n");
             break;
     }
-    
+
     retval = src - avpkt->data;
-    
+
     return retval;
 }
 

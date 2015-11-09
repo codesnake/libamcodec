@@ -5,14 +5,14 @@
 /*
 * =====================================================================================
 * ESPlayer
-* Description:  
+* Description:
 * =====================================================================================
 */
 
 typedef enum MEDIA_CODEC_TYPE
-{ 
-	DAL_ES_VCODEC_TYPE_H264,  /* video codec type */ 
-	DAL_ES_ACODEC_TYPE_AAC, /* audio codec type */ 
+{
+	DAL_ES_VCODEC_TYPE_H264,  /* video codec type */
+	DAL_ES_ACODEC_TYPE_AAC, /* audio codec type */
 	DAL_CODEC_TYPE_UNKNOWN,
 
 } MEDIA_CODEC_TYPE_E;
@@ -40,7 +40,7 @@ void ES_PlayDeinit();
 返回值:无
 */
 void ES_PlayPause();
-/*	
+/*
 函数原型:void ES_PlayResume ()
 参数描述:无
 功能描述:继续ES播放器播放
@@ -75,7 +75,7 @@ void ES_PlayResetESBuffer();
 */
 void ES_PlayGetESBufferStatus (int *audio_rate,int *vid_rate);
 
-/*	
+/*
 参数描述:	 data_type：视音频数据编码类型； *es_buffer：视音频数据buffer； buffer_len：视音频数据buffer的长度（bytes）； PTS：解码器视音频所需要的PTS；
 功能描述:将ES视音频数据推入ES播放器
 返回值:	无

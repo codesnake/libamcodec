@@ -160,7 +160,7 @@ aformat_t audio_type_convert(enum CodecID id, pfile_type File_type)
         format =    AFORMAT_APE;
         break;
     case CODEC_ID_PCM_WIFIDISPLAY:
-    	format = AFORMAT_PCM_WIFIDISPLAY;
+	format = AFORMAT_PCM_WIFIDISPLAY;
         break;
     default:
         format = AFORMAT_UNSUPPORT;
@@ -449,7 +449,7 @@ static int compare_pkt(AVPacket *src, AVPacket *dst)
                 log_print("[%s:%d]pos is larger but data is not the same!\n", __FUNCTION__, __LINE__);
                 return 1;
             }
-        } else 
+        } else
            return 0;
     } else {
         if (dst->pts != (int64_t)AV_NOPTS_VALUE) {
@@ -478,7 +478,7 @@ static int compare_pkt(AVPacket *src, AVPacket *dst)
                 return 0;
             }
         }
-   	}
+	}
 }
 
 static int backup_packet(play_para_t *para, AVPacket *src, AVPacket *dst)
@@ -541,7 +541,7 @@ static int raw_read(play_para_t *para)
         int maxlimitsize=0;
         maxlimitsize=((int)((1-para->buffering_threshhold_max)*AB_SIZE-1))&~0x2000;
         if (para->max_raw_size > maxlimitsize) {
-            para->max_raw_size =maxlimitsize;		
+            para->max_raw_size =maxlimitsize;
             log_print("Enable autobuf , max_raw_size set to =%d\n",para->max_raw_size);
        }
     }
@@ -817,7 +817,7 @@ static int non_raw_read(play_para_t *para)
                 pkt->type = CODEC_AUDIO;
                 para->read_size.apkt_num ++;
                 if(para->astream_info.audio_format ==  AFORMAT_VORBIS)
-                { 
+                {
                      char value[256]={0};
                      int tmp=0;
                      tmp =property_get("media.arm.audio.decoder",value,NULL);
@@ -915,10 +915,10 @@ int read_av_packet(play_para_t *para)
         player_mate_wake(para, 100 * 1000);
         ret = raw_read(para);
 	 if(ret <0 && para->playctrl_info.ignore_ffmpeg_errors){
-	 	 para->playctrl_info.ignore_ffmpeg_errors=0;
+		 para->playctrl_info.ignore_ffmpeg_errors=0;
 		 if(para->pFormatCtx&& para->pFormatCtx->pb)
-		 	para->pFormatCtx->pb->error=0;
-	 	 ret=0;
+			para->pFormatCtx->pb->error=0;
+		 ret=0;
 	 }
         player_mate_sleep(para);
         if (ret != PLAYER_SUCCESS && ret != PLAYER_RD_AGAIN) {
@@ -929,10 +929,10 @@ int read_av_packet(play_para_t *para)
         player_mate_wake(para, 100 * 1000);
         ret = non_raw_read(para);
 	 if(ret <0 && para->playctrl_info.ignore_ffmpeg_errors){
-	 	 para->playctrl_info.ignore_ffmpeg_errors=0;
+		 para->playctrl_info.ignore_ffmpeg_errors=0;
 		 if(para->pFormatCtx&& para->pFormatCtx->pb)
-		 	para->pFormatCtx->pb->error=0;
-	 	 ret=0;
+			para->pFormatCtx->pb->error=0;
+		 ret=0;
 	 }
         player_mate_sleep(para);
         if (ret != PLAYER_SUCCESS && ret != PLAYER_RD_AGAIN) {
@@ -1244,12 +1244,12 @@ int time_search(play_para_t *am_p,int flags)
         seek_flags = flags;
     int sample_size;
 	//-----------------------------------
-	// forcing updating  the value of <first_time> when seeking to the start of file, 
+	// forcing updating  the value of <first_time> when seeking to the start of file,
 	// other wise: <bug 69038 > will happend,
-	//     in this case, after push the <last_song_buton>, the libplayer will seek to start of file  instead of 
-	//     switching to last song, then <first_time> was not the value of first packge and become unvalid, 
+	//     in this case, after push the <last_song_buton>, the libplayer will seek to start of file  instead of
+	//     switching to last song, then <first_time> was not the value of first packge and become unvalid,
 	//    need to update it;
-	
+
     if(time_point==0)
         am_p->state.first_time=-1;
 	//----------------------------------
@@ -1257,18 +1257,18 @@ int time_search(play_para_t *am_p,int flags)
     if((am_p->state.full_time > 0) && (time_point >= am_p->state.full_time)) {
         return ret;
     }
-	
+
      am_p->state.last_time = am_p->playctrl_info.time_point;
      am_p->state.current_time = am_p->playctrl_info.time_point;
      am_p->state.current_ms = (unsigned int)(am_p->playctrl_info.time_point * 1000);
- 
+
     if(am_p->pFormatCtx&&am_p->pFormatCtx->iformat&&am_p->pFormatCtx->iformat->name&&(((am_p->pFormatCtx->flags & AVFMT_FLAG_DRMLEVEL1)&&(memcmp(am_p->pFormatCtx->iformat->name,"DRMdemux",8)==0))||
 	((am_p->pFormatCtx->flags & AVFMT_FLAG_PR_TVP)&&(memcmp(am_p->pFormatCtx->iformat->name,"Demux_no_prot",13)==0)))){
 	if (am_p->vcodec){
 		codec_set_drmmode(am_p->vcodec);
 	}
 	if (am_p->acodec){
-		codec_set_drmmode(am_p->acodec);	
+		codec_set_drmmode(am_p->acodec);
 	}
     }
     url_start_user_seek(s->pb);
@@ -1388,7 +1388,7 @@ int time_search(play_para_t *am_p,int flags)
                     am_p->playctrl_info.seek_frame_fail = 1;
                 }
             }
-            
+
             if (am_p->file_type == MPEG_FILE && time_point > 0 && am_p->pFormatCtx->is_vbr == 1) {
                 double factor_tm = (double)time_point * AV_TIME_BASE / (double)am_p->pFormatCtx->duration;
                 if (factor_tm > 1.0 || factor_tm < 0.0) {
@@ -1450,8 +1450,8 @@ int time_search(play_para_t *am_p,int flags)
             }
             else if (am_p->off_init == 0 && am_p->file_type == MPEG_FILE)
             {
-#define MAX_DIFF_PTS    100  
-#define MAX_FIND_NUM    10            
+#define MAX_DIFF_PTS    100
+#define MAX_FIND_NUM    10
                 char is_find = 0;
                 int64_t l_off = -5;
                 int64_t r_off = 5;
@@ -1477,7 +1477,7 @@ int time_search(play_para_t *am_p,int flags)
                         }
 
                         //if the difference between target and getted pts less than 1%, or less than 3s for very short stream, just find it.
-                        //if (abs(pts_diff * 100) < tot_dur || (abs(pts_diff) <= 3 && tot_dur <= 300)){                        
+                        //if (abs(pts_diff * 100) < tot_dur || (abs(pts_diff) <= 3 && tot_dur <= 300)){
                         if (pts_diff < r_off && pts_diff > l_off){
                             is_find = 1;
                             break;
@@ -1503,7 +1503,7 @@ int time_search(play_para_t *am_p,int flags)
                             break;
                         }
                     }
-                    
+
                 }while(!is_find && num_search > 0);
                 //if find or just use the last offset, then confirm the offset.
                 if (is_find || num_search <= 0) {
@@ -1578,7 +1578,7 @@ int write_av_packet(play_para_t *para)
     float value;
     int dump_data_mode = 0;
     char dump_path[128];
-	
+
 	signed short audio_idx = para->astream_info.audio_index;
 	if (pkt->avpkt_newflag && pkt->avpkt_isvalid &&
 		pkt->type == CODEC_AUDIO && pkt->avpkt->stream_index!=audio_idx)
@@ -1597,11 +1597,11 @@ int write_av_packet(play_para_t *para)
 		pkt->data_size = 0;
 		return PLAYER_SUCCESS;
 	}
-	
+
     if (am_getconfig_float("media.libplayer.dumpmode", &value) == 0) {
-        dump_data_mode = (int)value; 
+        dump_data_mode = (int)value;
     }
-		
+
     if (dump_data_mode == DUMP_WRITE_RAW_DATA && fdw_raw == -1) {
         sprintf(dump_path, "/temp/pid%d_dump_write.dat", para->player_id);
         fdw_raw = open(dump_path, O_CREAT | O_RDWR, 0666);
@@ -1809,8 +1809,8 @@ int write_av_packet(play_para_t *para)
             }
 
 			/*
-			* add two property media.amplayer.vbufthreshold and media.amplayer.abufthreshold to control the a-v-buf data 
-			* level, for some raw read file, the audio data would be dropped after switch audio stream, if the abuf level is too big, 
+			* add two property media.amplayer.vbufthreshold and media.amplayer.abufthreshold to control the a-v-buf data
+			* level, for some raw read file, the audio data would be dropped after switch audio stream, if the abuf level is too big,
 			* the dropped audio data would be too much and lead to apts bigger than vpts
 			*/
 			if (para->vstream_info.has_video && para->astream_info.has_audio
@@ -1818,13 +1818,13 @@ int write_av_packet(play_para_t *para)
 				char value[PROPERTY_VALUE_MAX]={0};
 				float vbuf_threshold = 0.8;
 				float abuf_threshold = 0.6;
-				
-				if (property_get("media.amplayer.vbufthreshold", value, NULL) > 0) 
+
+				if (property_get("media.amplayer.vbufthreshold", value, NULL) > 0)
 					vbuf_threshold = atof(value);
 				memset(value,0,sizeof(value));
-				if (property_get("media.amplayer.abufthreshold", value, NULL) > 0) 
+				if (property_get("media.amplayer.abufthreshold", value, NULL) > 0)
 					abuf_threshold = atof(value);
-				
+
 				if (para->state.video_bufferlevel >= vbuf_threshold || para->state.audio_bufferlevel >= abuf_threshold)
 				{
 					player_thread_wait(para, 10*1000);
@@ -1844,10 +1844,10 @@ int write_av_packet(play_para_t *para)
                     } else {
                         para->playctrl_info.check_lowlevel_eagain_cnt = 0;
                     }
-					
+
                     if (para->playctrl_info.check_lowlevel_eagain_cnt > 500 ||
-                        (para->playctrl_info.check_lowlevel_eagain_cnt > 50 && 
-                         (((pkt->type == CODEC_VIDEO && para->vbuffer.data_level <10000) || 
+                        (para->playctrl_info.check_lowlevel_eagain_cnt > 50 &&
+                         (((pkt->type == CODEC_VIDEO && para->vbuffer.data_level <10000) ||
                          (pkt->type == CODEC_AUDIO && para->abuffer.data_level <1000)) ||
                          (pkt->type == CODEC_COMPLEX && (para->vbuffer.data_level <10000) ||  (para->abuffer.data_level <1000))
                          )
@@ -1956,14 +1956,14 @@ int check_in_pts(play_para_t *para)
 	char value[PROPERTY_VALUE_MAX];
 	int ret;
 	int pts_offset = 0;
-	
+
 	ret = property_get("media.apts.offset",value,NULL);
-	
+
 	//log_error("pts_offset = %d, value = %s \n", pts_offset, value);
 	if (ret > 0)
 	{
 		pts_offset = atoi(value);
-	}	
+	}
 	//log_error("pts_offset = %d, value = %s, ret = %d \n", pts_offset, value, ret);
     if (pkt->type == CODEC_AUDIO) {
         time_base_ratio = para->astream_info.audio_duration;
@@ -1985,7 +1985,7 @@ int check_in_pts(play_para_t *para)
             }
 **/
 			if (pkt->type == CODEC_AUDIO){
-				pts += pts_offset;				
+				pts += pts_offset;
                 //log_error("pts_offset = %d, pts = 0x%llx\n", pts_offset, pts);
 			}
 //if (pkt->type == CODEC_VIDEO)
@@ -2002,7 +2002,7 @@ int check_in_pts(play_para_t *para)
             pts = pkt->avpkt->dts * time_base_ratio * last_duration;
             //log_print("[check_in_pts:%d]type=%d pkt->dts=%llx pts=%llx time_base_ratio=%.2f last_duration=%d\n",__LINE__,pkt->type,pkt->avpkt->dts,pts,time_base_ratio,last_duration);
 			if (pkt->type == CODEC_AUDIO){
-				pts += pts_offset;				
+				pts += pts_offset;
                 //log_error("pts_offset = %d, pts = 0x%llx\n", pts_offset, pts);
 			}
 
@@ -2044,9 +2044,9 @@ int check_in_pts(play_para_t *para)
             }
             pts = para->playctrl_info.time_point * PTS_FREQ;
 			if (pkt->type == CODEC_AUDIO){
-				pts += pts_offset;				
+				pts += pts_offset;
                 //log_error("pts_offset = %d, pts = 0x%llx\n", pts_offset, pts);
-			}			
+			}
             if (codec_checkin_pts(pkt->codec, pts) != 0) {
                 log_print("ERROR pid[%d]: check in 0 to audio pts error!\n", para->player_id);
                 return PLAYER_PTS_ERROR;
@@ -2075,7 +2075,7 @@ int set_header_info(play_para_t *para)
                             ||(pkt->data_size>=4&&(pkt->data[0]==0)&&(pkt->data[1]==0)&&(pkt->data[2]==0)&&(pkt->data[3]==1))){
                     return PLAYER_SUCCESS;
                     }
-                }	
+                }
 
                 if (!(para->p_pkt->avpkt->flags & AV_PKT_FLAG_ISDECRYPTINFO)){
                     ret = h264_update_frame_header(pkt);
@@ -2142,14 +2142,14 @@ int set_header_info(play_para_t *para)
                     }
                 }else if (para->vstream_info.video_codec_type == VIDEO_DEC_FORMAT_MPEG4_4) {
                     /*
-                    * for mpeg4, the global headers can be in the bitstream or extradata, encounter two mov divx file, there are not sequence header in 
-                    * the bitstream, so send the extradata to decode frame, if don't send the extradata, the frame is green colour.if the file is divx and  
-                    * global headers exist not only in the bitstream but also in pCtx->extradata, insert the extradata would affect the file play abnormally, 
+                    * for mpeg4, the global headers can be in the bitstream or extradata, encounter two mov divx file, there are not sequence header in
+                    * the bitstream, so send the extradata to decode frame, if don't send the extradata, the frame is green colour.if the file is divx and
+                    * global headers exist not only in the bitstream but also in pCtx->extradata, insert the extradata would affect the file play abnormally,
                     * so here add the para->file_type == MOV_FILE judgement.
                     */
                     signed short video_idx = para->vstream_info.video_index;
                     AVCodecContext *pCtx= para->pFormatCtx->streams[video_idx]->codec;
-						
+
                     if (para->file_type == MOV_FILE && pCtx->extradata_size) {
                         if ((pkt->hdr != NULL) && (pkt->hdr->data != NULL)) {
                             FREE(pkt->hdr->data);
@@ -2370,7 +2370,7 @@ int set_header_info(play_para_t *para)
                     }
                 }
 				if (!(para->p_pkt->avpkt->flags & AV_PKT_FLAG_ISDECRYPTINFO)){
-                	adts_add_header(para);
+	adts_add_header(para);
 				}
             }
             if (((!para->playctrl_info.raw_mode) &&
@@ -2697,7 +2697,7 @@ void player_switch_audio(play_para_t *para)
     AVCodecContext  *pCodecCtx;
     AVFormatContext *pFCtx = para->pFormatCtx;
     int ret = -1;
-	
+
     if (para->acodec) {
         pcodec = para->acodec;
     } else {
@@ -2738,26 +2738,26 @@ void player_switch_audio(play_para_t *para)
     }
     int filter_afmt = PlayerGetAFilterFormat("media.amplayer.disable-aformat");
     if (para->astream_info.audio_format < 0 || para->astream_info.audio_format >= AFORMAT_MAX || \
-	 (filter_afmt&(1<<para->astream_info.audio_format))){	
+	 (filter_afmt&(1<<para->astream_info.audio_format))){
         log_error("[%s:%d]unkown audio format\n", __FUNCTION__, __LINE__);
         para->astream_info.has_audio = 0;
-	 if(filter_afmt&(1<<para->astream_info.audio_format)){	
-        	set_player_error_no(para, PLAYER_UNSUPPORT_AUDIO);
+	 if(filter_afmt&(1<<para->astream_info.audio_format)){
+	set_player_error_no(para, PLAYER_UNSUPPORT_AUDIO);
 		/* should also update the audio index  to switch back*/
 	       para->astream_info.audio_index = audio_index;
 	       para->media_info.stream_info.cur_audio_index = para->astream_info.audio_index_tab[audio_index];
-	       para->astream_info.audio_pid = pstream->id;			
-	 }		
+	       para->astream_info.audio_pid = pstream->id;
+	 }
 	 else
-        	set_player_error_no(para, PLAYER_NO_AUDIO);	 	
+	set_player_error_no(para, PLAYER_NO_AUDIO);
         update_player_states(para, 1);
         return;
     } else if (para->astream_info.audio_format == AFORMAT_UNSUPPORT) {
         log_error("[%s:%d]unsupport audio format\n", __FUNCTION__, __LINE__);
         para->astream_info.has_audio = 0;
         set_player_error_no(para, PLAYER_UNSUPPORT_AUDIO);
-        update_player_states(para, 1);   
-		
+        update_player_states(para, 1);
+
         //if switch to a unsupported audio format, set the tsync to 0 and close the audio. if switch back, set the tsync to 1 and let audio work.
         set_tsync_enable(0);
         /* close audio */
@@ -2789,14 +2789,14 @@ void player_switch_audio(play_para_t *para)
             goto audio_init;
         } else
             return;
-    }    
+    }
 
 	/* automute */
     codec_audio_automute(pcodec->adec_priv, 1);
 
     /* close audio */
     codec_close_audio(pcodec);
-	
+
 audio_init:
     if (0 != pstream->time_base.den) {
         para->astream_info.audio_duration = PTS_FREQ * ((float)pstream->time_base.num / pstream->time_base.den);
@@ -3072,7 +3072,7 @@ void player_switch_sub(play_para_t *para)
     s_stream_info_t *sinfo = &para->sstream_info;
     int64_t cur_pts = para->state.current_pts;
     char **sub_buf = para->sstream_info.sub_buf;
-	
+
     /* check if it has audio */
     if (para->sstream_info.has_sub == 0) {
         return;
@@ -3095,7 +3095,7 @@ void player_switch_sub(play_para_t *para)
         }
         return;
     }
-	
+
     /* find stream for new id */
     for (i = 0; i < pFCtx->nb_streams; i++) {
         pstream = pFCtx->streams[i];
@@ -3138,7 +3138,7 @@ void player_switch_sub(play_para_t *para)
         if (codec_reset_subtile(para->scodec)) {
             log_print("[%s:%d]reset subtile failed\n", __FUNCTION__, __LINE__);
         }
-		
+
         //xsub avpkt->pts is not the valid timestamp, if sub format is xsub, don't drop packet.
         if (pstream->codec->codec_id == CODEC_ID_XSUB)
             cur_pts = 0;
@@ -3312,7 +3312,7 @@ int check_avbuffer_enough_for_ape(play_para_t *para)
 
         ret = vbuf_enough && abuf_enough;
     }
-    else{ 
+    else{
 		if((float)(para->abuffer.data_level/para->abuffer.buffer_size)>high_limit && para->astream_info.has_audio ){
 			abuf_enough=0;
 		}else if((float)(para->vbuffer.data_level/para->vbuffer.buffer_size)>high_limit && para->vstream_info.has_video){

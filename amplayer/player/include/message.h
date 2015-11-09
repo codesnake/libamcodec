@@ -19,7 +19,7 @@ typedef enum {
     CMD_FF              = (1 << 10),
     CMD_FB              = (1 << 11),
     CMD_SWITCH_AID      = (1 << 12),
-    CMD_SWITCH_SID      = (1 << 13),    
+    CMD_SWITCH_SID      = (1 << 13),
     CMD_CTRL_MAX        = (1 << 31),
 } ctrl_cmd_t;
 
@@ -38,7 +38,7 @@ typedef enum {
     CMD_SWAP_LR         = (1 << 11),
     CMD_LEFT_MONO       = (1 << 12),
     CMD_RIGHT_MONO      = (1 << 13),
-    CMD_SET_STEREO      = (1 << 14),   
+    CMD_SET_STEREO      = (1 << 14),
     CMD_EN_AUTOBUF      = (1 << 15),
     CMD_SET_AUTOBUF_LEV = (1 << 16),
     CMD_SET_FREERUN_MODE = (1 << 17),

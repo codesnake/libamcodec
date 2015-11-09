@@ -351,7 +351,7 @@ typedef struct RTSPState {
     int rtp_muxer_flags;
     /*
 	total received bytes;
-	*/	
+	*/
     uint64_t rcv_bytes;
 } RTSPState;
 

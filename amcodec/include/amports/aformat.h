@@ -7,7 +7,7 @@
 */
 /* Copyright (C) 2007-2011, Amlogic Inc.
 * All right reserved
-* 
+*
 */
 
 /*
@@ -57,16 +57,16 @@ typedef enum {
     AFORMAT_VORBIS    = 18,
     AFORMAT_AAC_LATM   = 19,
     AFORMAT_APE   = 20,
-    AFORMAT_EAC3   = 21,   
+    AFORMAT_EAC3   = 21,
     AFORMAT_PCM_WIFIDISPLAY = 22,
     AFORMAT_UNSUPPORT ,
-    AFORMAT_MAX    
+    AFORMAT_MAX
 
 } aformat_t;
 
 #define AUDIO_EXTRA_DATA_SIZE   (4096)
 #define IS_AFMT_VALID(afmt)	((afmt > AFORMAT_UNKNOWN) && (afmt < AFORMAT_MAX))
-    
+
 #define IS_AUIDO_NEED_EXT_INFO(afmt) ((afmt == AFORMAT_ADPCM) \
 								 ||(afmt == AFORMAT_WMA) \
 								 ||(afmt == AFORMAT_WMAPRO) \
@@ -77,7 +77,7 @@ typedef enum {
 								 ||(afmt == AFORMAT_AMR)\
 								 ||(afmt == AFORMAT_ALAC)\
 								 ||(afmt == AFORMAT_AC3) \
-								 ||(afmt == AFORMAT_EAC3) \								 
+								 ||(afmt == AFORMAT_EAC3) \
 								 ||(afmt == AFORMAT_APE) \
 								 ||(afmt == AFORMAT_FLAC)\
 								 ||(afmt == AFORMAT_PCM_WIFIDISPLAY) \

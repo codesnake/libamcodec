@@ -55,22 +55,22 @@ static void rtmp_log(int level, const char *fmt, va_list args)
 static int rtmp_setupURL(RTMP *r, const char *uri)
 {
     double percent = 0;
-    double duration = 0.0;   
-    int nSkipKeyFrames = DEF_SKIPFRM; 
+    double duration = 0.0;
+    int nSkipKeyFrames = DEF_SKIPFRM;
     int bOverrideBufferTime = FALSE;
     uint32_t dSeek = 0;
     uint32_t bufferTime = DEF_BUFTIME;
-    
+
     // meta header and initial frame for the resume mode (they are read from the file and compared with
     // the stream we are trying to continue
     char *metaHeader = 0;
     uint32_t nMetaHeaderSize = 0;
-    
+
     // video keyframe for matching
     char *initialFrame = 0;
     uint32_t nInitialFrameSize = 0;
     int initialFrameType = 0;	// tye: audio or video
-    
+
     AVal hostname = { 0, 0 };
     AVal playpath = { 0, 0 };
     AVal subscribepath = { 0, 0 };
@@ -81,11 +81,11 @@ static int rtmp_setupURL(RTMP *r, const char *uri)
     int bLiveStream = FALSE;	// is it a live stream? then we can't seek/resume
     int bRealtimeStream = FALSE;  // If true, disable the BUFX hack (be patient)
     int bHashes = FALSE;		// display byte counters not hashes by default
-    
+
     long int timeout = DEF_TIMEOUT;	// timeout connection after 120 seconds
     uint32_t dStartOffset = 0;	// seek position in non-live mode
     uint32_t dStopOffset = 0;
-    
+
     AVal fullUrl = { 0, 0 };
     AVal swfUrl = { 0, 0 };
     AVal tcUrl = { 0, 0 };
@@ -96,18 +96,18 @@ static int rtmp_setupURL(RTMP *r, const char *uri)
     uint32_t swfSize = 0;
     AVal flashVer = { 0, 0 };
     AVal sockshost = { 0, 0 };
-    
+
     #ifdef CRYPTO
      int swfAge = 30;	/* 30 days for SWF cache by default */
      int swfVfy = 0;
      unsigned char hash[RTMP_SWF_HASHLEN];
     #endif
-     
+
     {
         AVal parsedHost, parsedApp, parsedPlaypath;
         unsigned int parsedPort = 0;
         int parsedProtocol = RTMP_PROTOCOL_UNDEFINED;
-        
+
         if (!RTMP_ParseURL
         (uri, &parsedProtocol, &parsedHost, &parsedPort,
         &parsedPlaypath, &parsedApp))
@@ -147,7 +147,7 @@ static int rtmp_setupURL(RTMP *r, const char *uri)
         av_log(NULL,AV_LOG_ERROR,"Couldn't parse playpath !\n");
         return FALSE;
     }
-    
+
     if (protocol == RTMP_PROTOCOL_UNDEFINED && !fullUrl.av_len)
     {
         protocol = RTMP_PROTOCOL_RTMP;
@@ -165,7 +165,7 @@ static int rtmp_setupURL(RTMP *r, const char *uri)
         else
             port = 1935;
     }
-    
+
     #ifdef CRYPTO
     if (swfVfy)
     {
@@ -175,19 +175,19 @@ static int rtmp_setupURL(RTMP *r, const char *uri)
             swfHash.av_len = RTMP_SWF_HASHLEN;
         }
     }
-    
+
     if (swfHash.av_len == 0 && swfSize > 0)
     {
         swfSize = 0;
     }
-    
+
     if (swfHash.av_len != 0 && swfSize == 0)
     {
         swfHash.av_len = 0;
         swfHash.av_val = NULL;
     }
     #endif
-    
+
     if (tcUrl.av_len == 0)
     {
         tcUrl.av_len = strlen(RTMPProtocolStringsLower[protocol]) + hostname.av_len + app.av_len + sizeof("://:65535/");
@@ -195,7 +195,7 @@ static int rtmp_setupURL(RTMP *r, const char *uri)
         if (!tcUrl.av_val)
             return FALSE;
         tcUrl.av_len = snprintf(tcUrl.av_val, tcUrl.av_len, "%s://%.*s:%d/%.*s",
-    	 RTMPProtocolStringsLower[protocol], hostname.av_len,
+	 RTMPProtocolStringsLower[protocol], hostname.av_len,
         hostname.av_val, port, app.av_len, app.av_val);
     }
 
@@ -267,10 +267,10 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
     RTMP_LogSetCallback(rtmp_log);
 
     RTMP_Init(r);
-    
+
     /*
     if (!RTMP_SetupURL(r, s->filename)) {
-	 
+
         rc = -1;
         goto fail;
     }
@@ -292,7 +292,7 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
     s->priv_data   = r;
     s->is_streamed = 1;
     s->is_slowmedia =1;
-    av_log(NULL,AV_LOG_INFO,"rtmp open,url:%s\n",s->filename);		
+    av_log(NULL,AV_LOG_INFO,"rtmp open,url:%s\n",s->filename);
     return 0;
 fail:
     av_free(r);
@@ -311,7 +311,7 @@ static int rtmp_read(URLContext *s, uint8_t *buf, int size)
     RTMP *r = s->priv_data;
     int nRead = 0;
     int retries = 20;
-    
+
     do {
         if (url_interrupt_cb()>0) {
             nRead = 0;
@@ -331,9 +331,9 @@ static int rtmp_read(URLContext *s, uint8_t *buf, int size)
             }else{
                 break;
             }
-        }    
+        }
     } while (retries-- > 0);
-    
+
     return nRead;
 }
 

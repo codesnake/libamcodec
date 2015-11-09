@@ -54,7 +54,7 @@ if user seek.
 try less read seek,for fast seek..
 */
 #define LESS_READ_SEEK	(0x1000)
-#define MORE_READ_SEEK	(0x2000) 
+#define MORE_READ_SEEK	(0x2000)
 
 typedef struct {
     unsigned char *buffer;  /**< Start of the buffer. */
@@ -71,7 +71,7 @@ typedef struct {
     int64_t (*seek)(void *opaque, int64_t offset, int whence);
 
     int (*url_setcmd)(void *opaque, int cmd,int flag,unsigned long info);
-    int (*url_getinfo)(void *opaque, int cmd,int flag,void*info);	
+    int (*url_getinfo)(void *opaque, int cmd,int flag,void*info);
     int64_t pos;            /**< position in the file of the current buffer */
     int must_flush;         /**< true if the next seek should flush */
     int eof_reached;        /**< true if eof reached */
@@ -144,10 +144,10 @@ typedef struct URLContext {
 	char *location;
 	int seekflags;
 	int is_segment_media;
-    int priv_flags;	
+    int priv_flags;
 } URLContext;
 
-#define FLAGS_ISCMF	1<<0 
+#define FLAGS_ISCMF	1<<0
 #define FLAGS_LOCALMEDIA  (1<<1)
 
 
@@ -524,7 +524,7 @@ int avio_put_str16le(AVIOContext *s, const char *str);
 #define AVSEEK_BUFFERED_TIME 	0x40000
 #define AVSEEK_FULLTIME 		0x50000
 
-#define AVSEEK_SLICE_BYINDEX	(0x80000+1)	
+#define AVSEEK_SLICE_BYINDEX	(0x80000+1)
 #define AVSEEK_SLICE_BYTIME	(0x80000+2)
 #define AVSEEK_ITEM_TIME            (0x80000+3)
 #define AVSEEK_CMF_TS_TIME       (0x80000+4)
@@ -680,7 +680,7 @@ int avio_open_h(AVIOContext **s, const char *filename, int flags,const char * he
  *
  * @return 0 on success, an AVERROR < 0 on error.
  */
- 
+
 int avio_close(AVIOContext *s);
 
 int avio_reset(AVIOContext *s,int flags);
@@ -746,7 +746,7 @@ int64_t avio_seek_time(AVIOContext *h, int stream_index,
 
 static inline int url_support_time_seek(AVIOContext *s)
 {
-	URLContext *h;	
+	URLContext *h;
 	if (!s)
 		return 0;
 #if 0
@@ -763,7 +763,7 @@ static inline int url_support_time_seek(AVIOContext *s)
 
 static inline int url_is_segment_media(AVIOContext *s)
 {
-	URLContext *h;	
+	URLContext *h;
 	if (!s)
 		return 0;
 
@@ -775,7 +775,7 @@ static inline int url_is_segment_media(AVIOContext *s)
 		}
 	}
 
-	return s->is_segment_media;	
+	return s->is_segment_media;
 }
  int64_t url_fseektotime(AVIOContext *s,int totime_s,int flags);
  int url_buffering_data(AVIOContext *s,int size);

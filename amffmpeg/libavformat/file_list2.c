@@ -116,7 +116,7 @@ int list_add_item(struct list_mgt *mgt, struct list_item*item)
     item->index = mgt->next_index;
     if(mgt->debug_level>2){
         RLOG("Add item,url:%s,seq:%d,index:%d,start:%.4lf,duration:%.4lf\n",item->file,item->seq,item->index,item->start_time,item->duration);
-    }	
+    }
     mgt->next_index++;
     //av_log(NULL, AV_LOG_INFO, "list_add_item:seq=%d,index=%d\n", item->seq, item->index);
     return 0;
@@ -140,7 +140,7 @@ static struct list_item* list_test_find_samefile_item(struct list_mgt *mgt, stru
 static struct list_item* list_find_item_by_index(struct list_mgt *mgt, int index) {
     struct list_item **list;
 
-    list = &mgt->item_list;   
+    list = &mgt->item_list;
     if (index >= 0) {
         while (*list != NULL) {
             if ((*list)->index == index) {
@@ -180,7 +180,7 @@ static struct list_item* list_find_next_item_by_index(struct list_mgt *mgt, int 
 
 }
 static struct list_item* list_find_item_by_seq(struct list_mgt *mgt, int seq) {
-    struct list_item **list;   
+    struct list_item **list;
     list = &mgt->item_list;
     if (seq >= 0) {
         while (*list != NULL) {
@@ -196,7 +196,7 @@ static struct list_item* list_find_item_by_seq(struct list_mgt *mgt, int seq) {
 }
 int list_test_and_add_item(struct list_mgt *mgt, struct list_item*item)
 {
-#if 0 
+#if 0
     /*don't judge same filename,just by seqence*/
     struct list_item *sameitem;
     sameitem = list_test_find_samefile_item(mgt, item);
@@ -239,13 +239,13 @@ static int list_del_item(struct list_mgt *mgt, struct list_item*item)
     if(item->file!=NULL){
         av_free(item->file);
     }
-	
+
     av_free(item);
     item = NULL;
     return 0;
 }
 
-#define SEGMENT_SHRINK_THRESHOLD 1000  
+#define SEGMENT_SHRINK_THRESHOLD 1000
 static int list_shrink_live_list(struct list_mgt *mgt)
 {
     struct list_item **tmp = NULL;
@@ -260,7 +260,7 @@ static int list_shrink_live_list(struct list_mgt *mgt)
         }
 	  if(mgt->debug_level>4){
 	       RLOG( "shrink live segments from list,total:%d\n", mgt->item_num);
-	  }		
+	  }
     }
 
     return 0;
@@ -279,12 +279,12 @@ static int list_delall_item(struct list_mgt *mgt)
     while (p != NULL) {
         t = p->next;
         mgt->item_num--;
-        if (p->ktype == KEY_AES_128) {           
+        if (p->ktype == KEY_AES_128) {
             av_free(p->key_ctx);
         }
 	  if(p->file!=NULL){
 		av_free(p->file);
-	  }	
+	  }
         av_free(p);
 
         p = NULL;
@@ -292,7 +292,7 @@ static int list_delall_item(struct list_mgt *mgt)
         p = t;
     }
     mgt->item_list = NULL;
-    if(mgt->debug_level>4){	
+    if(mgt->debug_level>4){
         RLOG("delete all items from list,total:%d\n", mgt->item_num);
     }
     return 0;
@@ -328,7 +328,7 @@ int url_is_file_list(ByteIOContext *s, const char *filename)
 
 #define AUDIO_BANDWIDTH_MAX 100000  //100k
 static int  fast_sort_streams(struct list_mgt * mgt){
-    int key,left,middle,right;  
+    int key,left,middle,right;
     struct variant *var= NULL;
     int i,j,tmp,stuff[mgt->n_variants];
     int has_bandwidth = -1;
@@ -338,36 +338,36 @@ static int  fast_sort_streams(struct list_mgt * mgt){
         if(has_bandwidth<0&&stuff[i] >0){
             has_bandwidth = 1;
         }
-       
+
     }
 
     if(has_bandwidth<0){
         for (i=0; i < mgt->n_variants; i++){
             var = mgt->variants[i];
-            var->priority = i;           
+            var->priority = i;
         }
-        
+
         mgt->playing_variant= mgt->variants[mgt->n_variants/2];
         RLOG("Invalid bandwidth streaming,choose url:%s\n",mgt->playing_variant->url);
-        return 0;        
+        return 0;
     }
     for (i=1; i < mgt->n_variants; i++){
         key = stuff[i];
         left = 0;
         right = i-1;
         while(left<=right){
-            middle=(left+right)/2;             
+            middle=(left+right)/2;
             if (key>stuff[middle]) {//down order
                 right=middle-1;
             }else{
                 left=middle+1;
-            }         
-            
+            }
+
         }
         for (j=i;j>left;j--){
             stuff[j]=stuff[j-1];
         }
-        stuff[left]=key; 
+        stuff[left]=key;
     }
 
     j = mgt->n_variants - 1;
@@ -375,7 +375,7 @@ static int  fast_sort_streams(struct list_mgt * mgt){
         for (tmp=0; tmp <  mgt->n_variants; tmp++){
             var = mgt->variants[tmp];
             if (var->bandwidth == stuff[i]){
-                var->priority = j--;    
+                var->priority = j--;
                 //av_log(NULL,AV_LOG_INFO,"===priority:%d,bandwidth:%d\n",var->priority,var->bandwidth);
                 break;
             }
@@ -396,7 +396,7 @@ static int  fast_sort_streams(struct list_mgt * mgt){
 
     }
     ret = am_getconfig_float("libplayer.hls.bw_min", &value);
-    if(ret>=0&&value>0){        
+    if(ret>=0&&value>0){
         for (i=0; i < mgt->n_variants; i++){
             var = mgt->variants[i];
             if(var->bandwidth<value){
@@ -410,7 +410,7 @@ static int  fast_sort_streams(struct list_mgt * mgt){
             if(var->bandwidth<AUDIO_BANDWIDTH_MAX){
                 var->priority = -2;
             }
-        }           
+        }
     }
 
 
@@ -419,10 +419,10 @@ static int  fast_sort_streams(struct list_mgt * mgt){
         for (i=0; i < mgt->n_variants; i++){
             var = mgt->variants[i];
             if(var->priority==(int)value){
-                mgt->playing_variant= var;                
+                mgt->playing_variant= var;
                 break;
             }
-        }        
+        }
 
     }else{
         ret =(int)get_adaptation_ex_para(3);
@@ -432,27 +432,27 @@ static int  fast_sort_streams(struct list_mgt * mgt){
                 if(ret>(mgt->n_variants-1)){
                     ret = mgt->n_variants-1;
                 }
-               
+
                 if(var->priority==ret){
-                    
+
                     mgt->playing_variant= var;
                     break;
-                }               
+                }
             }else{
                 if(var->priority>=0){
-                   
+
                     mgt->playing_variant= var;
                     break;
                 }
             }
-        }         
+        }
 
     }
-   
-    
+
+
     //av_log(NULL,AV_LOG_INFO,"Do fast sort streaming");
     return 0;
-    
+
 }
 
 static int switch_bw_level(struct list_mgt * mgt, int updown){
@@ -461,18 +461,18 @@ static int switch_bw_level(struct list_mgt * mgt, int updown){
     if(updown>0){
         if((mgt->playing_variant->priority+updown)>(mgt->n_variants-1)){
             av_log(NULL,AV_LOG_WARNING,"failed to switch bandwidth,up level:%d\n",updown);
-        }else{            
+        }else{
             priority =  mgt->playing_variant->priority+updown;
             //RLOG("switch up level :%d ,org:%d\n",updown,mgt->playing_variant->priority);
         }
     }else if(updown<0){
         if((mgt->playing_variant->priority+updown)<0){
             av_log(NULL,AV_LOG_WARNING,"failed to switch bandwidth,down level:%d\n",updown);
-        }else{        
+        }else{
             //RLOG("switch down level :%d ,org:%d\n",updown,mgt->playing_variant->priority);
             priority = mgt->playing_variant->priority+updown;
 
-        }        
+        }
     }
     int i,playing_index = -1;
     struct variant *v = NULL;
@@ -489,7 +489,7 @@ static int switch_bw_level(struct list_mgt * mgt, int updown){
     }
     //RLOG("switch bandwidth to stream,level:%d ,bandwidth:%d\n",priority,mgt->variants[playing_index]->bandwidth);
     return playing_index;
-  
+
 
 }
 static int list_open_internet(ByteIOContext **pbio, struct list_mgt *mgt, const char *filename, int flags)
@@ -499,32 +499,32 @@ static int list_open_internet(ByteIOContext **pbio, struct list_mgt *mgt, const 
     ByteIOContext *bio = *pbio;
     char* url = filename;
 reload:
-    
+
     if (url_interrupt_cb()) {
-         ret = -1;       
-         goto error;   
+         ret = -1;
+         goto error;
     }
     if(mgt->debug_level>1){
         RLOG("Fetch m3u manifest file from server,url:%s\n",url);
     }
-    mgt->last_load_time = av_gettime();	
+    mgt->last_load_time = av_gettime();
     if(bio==NULL){
         ret = avio_open_h(&bio, url, flags,mgt->ipad_ex_headers);
-        
+
     }else{
-    	if(am_getconfig_bool("media.libplayer.curlenable")){
-		avio_reset(bio,AVIO_FLAG_READ); 
-	        URLContext* last = (URLContext*)bio->opaque;    
+	if(am_getconfig_bool("media.libplayer.curlenable")){
+		avio_reset(bio,AVIO_FLAG_READ);
+	        URLContext* last = (URLContext*)bio->opaque;
 		 if(last!=NULL){
-		 	ret = ffurl_seek(last, 0, AVSEEK_CURL_HTTP_KEEPALIVE);
+			ret = ffurl_seek(last, 0, AVSEEK_CURL_HTTP_KEEPALIVE);
 		 }else{
 			ret = -1;
 		 }
 	}else{
-		 avio_reset(bio,AVIO_FLAG_READ); 
-	        URLContext* last = (URLContext*)bio->opaque;    
-		 if(last!=NULL){	
-	        	ret = ff_http_do_new_request(last,NULL);
+		 avio_reset(bio,AVIO_FLAG_READ);
+	        URLContext* last = (URLContext*)bio->opaque;
+		 if(last!=NULL){
+		ret = ff_http_do_new_request(last,NULL);
 
 		 }else{
 			ret = -1;
@@ -532,8 +532,8 @@ reload:
 	        //av_log(NULL,AV_LOG_INFO,"do http request,return value: %d\n",ret);
 	}
     }
-    
-    if (ret != 0) {      
+
+    if (ret != 0) {
 	goto error;
     }
     mgt->location = bio->reallocation;
@@ -542,32 +542,32 @@ reload:
     }
     demux = probe_demux(bio, url);
     if (!demux) {
-        ret = -1;       
+        ret = -1;
         goto error;
     }
     ret = demux->parser(mgt, bio);
     if (ret <0 && mgt->n_variants == 0) {
         ret = -1;
-        
+
         goto error;
     } else {
-       
+
         if (mgt->item_num == 0 && mgt->n_variants > 0&&NULL== mgt->playing_variant) { //simplely choose server,mabye need sort variants when got it from server.
             if (bio) {
                 url_fclose(bio);
                 bio = NULL;
-                
+
             }
-            
-            ret = fast_sort_streams(mgt);  
+
+            ret = fast_sort_streams(mgt);
             if(mgt->playing_variant==NULL||mgt->playing_variant->url==NULL||strlen(mgt->playing_variant->url)<4){
                 av_log(NULL,AV_LOG_ERROR,"failed to sort or get streams\n");
                 ret = -1;
                 goto error;
             }
-            url = mgt->playing_variant->url;           
+            url = mgt->playing_variant->url;
             //av_log(NULL, AV_LOG_INFO, "[%d]reload playlist,url:%s\n", __LINE__, url);
-            goto reload;           
+            goto reload;
 
         }
 
@@ -575,8 +575,8 @@ reload:
 	#if 0
 	if(am_getconfig_bool("media.libplayer.curlenable")) {
 		url_fclose(bio);
-        	bio= NULL;
-	  	mgt->cur_uio = NULL;
+	bio= NULL;
+		mgt->cur_uio = NULL;
 	}else{}
 	#endif
 	if(av_strstart(url,"shttps://", NULL)){
@@ -589,10 +589,10 @@ reload:
     mgt->parser_finish_flag = 1;
     return 0;
 error:
-    if (bio) {       
+    if (bio) {
         url_fclose(bio);
         *pbio  = NULL;
-	 mgt->cur_uio = NULL;	
+	 mgt->cur_uio = NULL;
     }
     return ret;
 }
@@ -612,7 +612,7 @@ static char* ffstrndup(const char *s, size_t n)
 static int list_open(URLContext *h, const char *filename, int flags)
 {
     struct list_mgt *mgt;
-    int ret;   
+    int ret;
     mgt = av_malloc(sizeof(struct list_mgt));
     if (!mgt) {
         return AVERROR(ENOMEM);
@@ -657,8 +657,8 @@ static int list_open(URLContext *h, const char *filename, int flags)
 		             "X-Playback-Session-Id: %s\r\n%s", sess_id,h!=NULL&&h->headers!=NULL?h->headers:"");
     }
     //av_log(NULL, AV_LOG_INFO, "Generate ipad http request headers,\r\n%s\n", headers);
-    mgt->ipad_ex_headers = ffstrndup(headers, 2048);    
-   
+    mgt->ipad_ex_headers = ffstrndup(headers, 2048);
+
     if(h->headers!=NULL){
         mgt->ipad_req_media_headers = ffstrndup(h->headers, 2048);
     }else{
@@ -672,29 +672,29 @@ static int list_open(URLContext *h, const char *filename, int flags)
         return ret;
     }
     lp_lock_init(&mgt->mutex, NULL);
-	
+
     float value = 0.0;
     ret = am_getconfig_float("libplayer.hls.stpos", &value);
-    if (ret < 0 || value <= 0) {	
+    if (ret < 0 || value <= 0) {
         if (!mgt->have_list_end) {
             int itemindex =0;
             if(mgt->item_num<=10&&mgt->item_num>2){
-                itemindex = mgt->item_num / 2+1; /*for live streaming ,choose the middle item.*/                  
+                itemindex = mgt->item_num / 2+1; /*for live streaming ,choose the middle item.*/
             }else{
-		   itemindex =  mgt->item_num -1;         		
+		   itemindex =  mgt->item_num -1;
 	     }
             mgt->current_item = list_find_item_by_index(mgt,itemindex);
         } else {
             mgt->current_item = mgt->item_list;
-        }		
+        }
     }else{
-    	mgt->current_item = list_find_item_by_index(mgt,(int)value-1);
-    }	
-   
+	mgt->current_item = list_find_item_by_index(mgt,(int)value-1);
+    }
+
     h->is_streamed = 1;
     h->is_slowmedia = 1;
-    if(!mgt->have_list_end){	
-        //h->flags|=URL_MINI_BUFFER;//no lpbuffer        
+    if(!mgt->have_list_end){
+        //h->flags|=URL_MINI_BUFFER;//no lpbuffer
         //h->flags|=URL_NO_LP_BUFFER;
     }
     if (mgt->full_time > 0 && mgt->have_list_end) {
@@ -704,20 +704,20 @@ static int list_open(URLContext *h, const char *filename, int flags)
     mgt->cache_http_handle = NULL;
     h->is_segment_media = 1;
     ret = CacheHttp_Open(&mgt->cache_http_handle,mgt->ipad_req_media_headers,(void*)mgt);
-    if(ret<0){	
+    if(ret<0){
 	return -1;
     }
     if(mgt->debug_level>0){
         hls_base_info_dump(mgt);
     }
-  
+
 
     return 0;
 }
 
 #define ADAPTATION_PROFILE_DEFAULT  2  //MEAN_ADAPTIVE
 
-#define DEF_UP_COUNTS 3 
+#define DEF_UP_COUNTS 3
 #define DEF_DOWN_COUNTS 1
 static int get_adaptation_profile(){
     float value = 0.0;
@@ -755,7 +755,7 @@ static float get_adaptation_ex_para(int type){
             value = DEF_DOWN_COUNTS;
         }
     }else if(type == 3){
-        ret = am_getconfig_float("libplayer.hls.fixed_bw", &value);       
+        ret = am_getconfig_float("libplayer.hls.fixed_bw", &value);
     }else if(type == 4){
         ret = am_getconfig_float("libplayer.hls.debug", &value);
         if(ret<0){
@@ -769,7 +769,7 @@ static float get_adaptation_ex_para(int type){
             ret = 0;
             value = 0;
         }
-        
+
     }else if(type == 6){
         ret = am_getconfig_float("libplayer.hls.measured_buffer", &value);
         if(ret<0){
@@ -809,7 +809,7 @@ static int hls_base_info_dump(struct list_mgt*  c){
     if(c->current_item!=NULL){
         RLOG("***Is encrypt media?,%s\n",c->current_item->key_ctx!=NULL?"yes":"no");
     }
-    
+
     RLOG("***Debug level:%d\n",c->debug_level);
     RLOG("***Is multi-bandwidth streaming?,%s\n",c->n_variants>0?"yes":"no");
     if(c->n_variants>0){
@@ -831,11 +831,11 @@ static int hls_base_info_dump(struct list_mgt*  c){
         RLOG("***Current adaptive profile: %d\n",rpolicy);
         #if 0
         switch(rpolicy){
-            case CONSTANT_ADAPTIVE:           
+            case CONSTANT_ADAPTIVE:
             case MANUAL_ADAPTIVE:
                 RLOG("***Current adaptive mechnism: manual profile");
                 break;
-            case AGREESSIVE_ADAPTIVE:            
+            case AGREESSIVE_ADAPTIVE:
             case CONSERVATIVE_ADAPTIVE:
                 RLOG("***Current adaptive mechnism: aggreesive adaptive profile");
                 break;
@@ -867,7 +867,7 @@ static int hls_base_info_dump(struct list_mgt*  c){
         }
         RLOG("***Switch-up level counts:%d\n",c->switch_up_num);
         RLOG("***Switch-down level counts:%d\n",c->switch_down_num);
-        
+
     }
     RLOG("**********************hls power info dump end*************************\n");
     return 0;
@@ -890,19 +890,19 @@ static int hls_common_bw_adaptive_check(struct list_mgt *c,int* measued_bw){
     if(measure_bw>c->playing_variant->bandwidth){
 	  struct variant* next_variant = NULL;
 	  if(c->variants[c->n_variants-1]->priority<0||c->variants[0]->priority<0||c->playing_variant->priority==(c->n_variants-1)){//included invalid item for playback.the variant priority will unequal to index.
-		next_variant = c->variants[c->playing_variant->priority]; 
+		next_variant = c->variants[c->playing_variant->priority];
 	  }else{
 		next_variant = c->variants[c->playing_variant->priority+1];
 	  }
 	  if(next_variant->bandwidth <=c->playing_variant->bandwidth){
-	  	if(c->debug_level>3){
+		if(c->debug_level>3){
 			RLOG("Current bandwidth equal to next bandwidth,just drop switch\n");
 		}
 		if(c->strategy_down_counts>0){
 			c->strategy_down_counts=0;
-		}		
+		}
 		*measued_bw  = measure_bw;
-		return 0;		
+		return 0;
 	  }
         float scaleup_per = (float)(measure_bw-c->playing_variant->bandwidth)/(float)(next_variant->bandwidth-c->playing_variant->bandwidth);
 	  if(c->debug_level>0){
@@ -910,10 +910,10 @@ static int hls_common_bw_adaptive_check(struct list_mgt *c,int* measued_bw){
 	  }
 	  //ugly codes,just causes by variants included only audio track.
 	  if(scaleup_per<up_scale||(c->variants[c->n_variants-1]->priority>=0&&c->playing_variant->priority==c->variants[c->n_variants-1]->priority)
-	  	||(c->variants[c->n_variants-1]->priority<0&&c->n_variants-2>0&&c->playing_variant->priority==c->variants[c->n_variants-2]->priority)){
+		||(c->variants[c->n_variants-1]->priority<0&&c->n_variants-2>0&&c->playing_variant->priority==c->variants[c->n_variants-2]->priority)){
 		if(c->strategy_down_counts>0){
 			c->strategy_down_counts=0;
-		}	  	
+		}
 		*measued_bw  = measure_bw;
 		return 0;
 	  }
@@ -930,8 +930,8 @@ static int hls_common_bw_adaptive_check(struct list_mgt *c,int* measued_bw){
             *measued_bw = measure_bw;
             //c->strategy_up_counts = 0;
             return 1;
-        }        
-        
+        }
+
     }else if(measure_bw<c->playing_variant->bandwidth){
         c->strategy_down_counts++;
         if(c->strategy_up_counts>0){
@@ -946,7 +946,7 @@ static int hls_common_bw_adaptive_check(struct list_mgt *c,int* measued_bw){
             *measued_bw  = measure_bw;
             //c->strategy_down_counts = 0;
             return -1;
-        }           
+        }
     }else{//keep original speed
         *measued_bw  = measure_bw;
         return 0;
@@ -979,8 +979,8 @@ static  struct variant* hls_get_right_variant(struct list_mgt* c,int bw){
     if (best_index < 0) { /*no low rate streaming found,used the lowlest*/
         best_index = min_index;
     }
-	
-    if(c->debug_level>3){	
+
+    if(c->debug_level>3){
         RLOG("Measured bw:%d,select best bandwidth,index:%d,bandwidth:%d,priority:%d\n", \
             bw,best_index, c->variants[best_index]->bandwidth, c->variants[best_index]->priority);
     }
@@ -993,14 +993,14 @@ static int hls_aggressive_adaptive_bw_set(struct list_mgt* c,int bw){
         c->playing_variant = var;
         if(c->strategy_down_counts>0){
             c->strategy_down_counts=0;
-        }		
+        }
         return 0;
     }else if(c->playing_variant->bandwidth < var->bandwidth){
         c->switch_up_num++;
         c->playing_variant = var;
         if(c->strategy_up_counts>0){
             c->strategy_up_counts=0;
-        }		
+        }
         return 0;
     }
     return -1;
@@ -1010,7 +1010,7 @@ static int hls_aggressive_adaptive_bw_set(struct list_mgt* c,int bw){
 #define CODEC_BUFFER_HIGH_FLAG (10)			 //10s
 
 static int hls_calculate_buffer_time(struct list_mgt* mgt,int cur_bw){
-	int dat_len = 0;	
+	int dat_len = 0;
 	int buffer_t = 0;
 	if(mgt->codec_buf_level>0&&cur_bw>0){
 		dat_len = mgt->codec_vdat_size+mgt->codec_adat_size;
@@ -1022,34 +1022,34 @@ static int hls_calculate_buffer_time(struct list_mgt* mgt,int cur_bw){
 	return buffer_t;
 }
 static int hls_mean_adaptive_bw_set(struct list_mgt* c,int flag){
-    int  codec_buf_time= 0;   
-    int cur_bw = c->playing_variant!=NULL?c->playing_variant->bandwidth:0;	
-    codec_buf_time =hls_calculate_buffer_time(c,cur_bw);   
+    int  codec_buf_time= 0;
+    int cur_bw = c->playing_variant!=NULL?c->playing_variant->bandwidth:0;
+    codec_buf_time =hls_calculate_buffer_time(c,cur_bw);
     int playing_index = -1;
-    
-    if(flag<0&&codec_buf_time<FFMAX(c->target_duration,CODEC_BUFFER_LOW_FLAG)){  
-        playing_index = switch_bw_level(c,-1);     
+
+    if(flag<0&&codec_buf_time<FFMAX(c->target_duration,CODEC_BUFFER_LOW_FLAG)){
+        playing_index = switch_bw_level(c,-1);
         if(playing_index>=0)
             c->switch_down_num++;
         if(c->strategy_down_counts>0){
             c->strategy_down_counts=0;
-        }		
+        }
 
     }else if(flag>0&&codec_buf_time>FFMIN(c->target_duration,CODEC_BUFFER_HIGH_FLAG)){
-        playing_index = switch_bw_level(c,1); 
+        playing_index = switch_bw_level(c,1);
         if(playing_index>=0)
             c->switch_up_num++;
         if(c->strategy_up_counts>0){
             c->strategy_up_counts=0;
         }
     }
-	
+
     if(playing_index>=0&&c->playing_variant->bandwidth!= c->variants[playing_index]->bandwidth){
         c->playing_variant = c->variants[playing_index];
         return 0;
 
     }else{
-        return -1;    
+        return -1;
     }
 
 }
@@ -1066,7 +1066,7 @@ static int hls_manual_adaptive_bw_set(struct list_mgt* c){
     int is_found = -1;
     for(i=0;i<c->n_variants;i++){
         struct variant* var = c->variants[i];
-        if(priority!=c->playing_variant->priority&&var->priority ==priority){           
+        if(priority!=c->playing_variant->priority&&var->priority ==priority){
             c->playing_variant = var;
             is_found = 1;
             break;
@@ -1079,7 +1079,7 @@ static int hls_manual_adaptive_bw_set(struct list_mgt* c){
     }else{
         return -1;
     }
-  
+
 }
 static int select_best_variant(struct list_mgt *c)
 {
@@ -1091,25 +1091,25 @@ static int select_best_variant(struct list_mgt *c)
     flag = hls_common_bw_adaptive_check(c,&cur_bw);
 
     switch(adaptive_profile){
-        case CONSTANT_ADAPTIVE:           
+        case CONSTANT_ADAPTIVE:
         case MANUAL_ADAPTIVE:
             ret = hls_manual_adaptive_bw_set(c);
             if(ret ==0){
-                
+
                 change_flag = 1;
             }
             break;
-        case AGREESSIVE_ADAPTIVE:            
+        case AGREESSIVE_ADAPTIVE:
         case CONSERVATIVE_ADAPTIVE:
             if(flag!=0){
                 ret = hls_aggressive_adaptive_bw_set(c,cur_bw);
                 if(ret==0){
                     change_flag = 1;
                 }
-            }            
+            }
             break;
         case MEAN_ADAPTIVE:
-            
+
             ret = hls_mean_adaptive_bw_set(c,flag);
             if(ret==0){
                 change_flag =1;
@@ -1131,20 +1131,20 @@ static struct list_item * switchto_next_item(struct list_mgt *mgt) {
     int isNeedFetch = 1;
     int64_t reload_interval = mgt->item_num > 0 && mgt->current_item != NULL ?\
                               mgt->current_item->duration:mgt->target_duration;
-                              
+
     if(reload_interval >0){ //to usec
         reload_interval *= 1000000;
     }
-    int mean_bps, fast_bps, avg_bps,ret = -1;     
+    int mean_bps, fast_bps, avg_bps,ret = -1;
     ret =CacheHttp_GetSpeed(mgt->cache_http_handle, &fast_bps, &mean_bps, &avg_bps);
     mgt->measure_bw = fast_bps;
-	
+
     if (mgt->n_variants > 1&&mgt->codec_buf_level>=0) { //vod,have mulit-bandwidth streams
         //av_log(NULL, AV_LOG_INFO, "current playing item index: %d,current playing seq:%d\n", mgt->playing_item_index, mgt->playing_item_seq);
         int is_switch = select_best_variant(mgt);
         if (is_switch>0) { //will remove this tricks.
-            
-            if (mgt->item_num > 0) {		   	
+
+            if (mgt->item_num > 0) {
                 list_delall_item(mgt);
                 mgt->parser_finish_flag = 0;
             }
@@ -1159,7 +1159,7 @@ static struct list_item * switchto_next_item(struct list_mgt *mgt) {
             }
             mgt->next_index = 0;
             mgt->item_num = 0;
-            mgt->full_time = 0;            
+            mgt->full_time = 0;
 
             if(mgt->cur_uio){
                 url_fclose(mgt->cur_uio);
@@ -1175,13 +1175,13 @@ static struct list_item * switchto_next_item(struct list_mgt *mgt) {
 
         //av_log(NULL, AV_LOG_INFO, "select best variant,bandwidth: %d\n", mgt->playing_variant->bandwidth);
 
-    }   
+    }
 
 reload:
     if (mgt->current_item == NULL || mgt->current_item->next == NULL) {
         /*new refresh this mgtlist now*/
         ByteIOContext *bio = mgt->cur_uio;
-	 
+
         int ret;
         char* url = NULL;
 
@@ -1209,12 +1209,12 @@ reload:
 				playing_index = switch_bw_level(mgt,1);
 			}
 			if(playing_index>=0&&mgt->playing_variant->bandwidth!= mgt->variants[playing_index]->bandwidth){
-			    mgt->playing_variant = mgt->variants[playing_index];			     
+			    mgt->playing_variant = mgt->variants[playing_index];
 
-			}				
+			}
             }
-#endif		
-	      mgt->cur_uio = bio;		
+#endif
+	      mgt->cur_uio = bio;
             goto switchnext;
         }
         mgt->cur_uio = bio;
@@ -1248,7 +1248,7 @@ switchnext:
 
     } else {
         if (!mgt->have_list_end) { //live tv
-            next = mgt->item_list;            
+            next = mgt->item_list;
         } else {
             next = list_find_next_item_by_index(mgt, mgt->playing_item_index);
         }
@@ -1258,14 +1258,14 @@ switchnext:
 	return NULL;
 
     }
-    if (next){   
+    if (next){
         if(next->file!=NULL){
             if(mgt->debug_level>1){
                 RLOG("Player switch to new item,url =%s,total item=%d,start=%.4lf,duration=%.4lf,index:%d,seq:%d\n",
                    next->file[0]=='s'?next->file+1:next->file, mgt->item_num, next->start_time, next->duration,next->index,next->seq);
 
             }
-        }       
+        }
     }else {
         if(mgt->debug_level>1){
             RLOG("Player can't find new item,total=%d\n", mgt->item_num);
@@ -1334,7 +1334,7 @@ static int64_t list_seek(URLContext *h, int64_t pos, int whence)
 {
     struct list_mgt *mgt = h->priv_data;
     struct list_item *item;
-    
+
     int fulltime;
 
     if (whence == AVSEEK_BUFFERED_TIME) {
@@ -1426,7 +1426,7 @@ static int64_t list_seek(URLContext *h, int64_t pos, int whence)
             }
         }
     }
-    
+
     if(whence == SEEK_SET) {
         av_log(NULL, AV_LOG_INFO, "-----------> listseek SEEK_SET");
         for (item = mgt->item_list; item; item = item->next) {
@@ -1447,7 +1447,7 @@ static int64_t list_seek(URLContext *h, int64_t pos, int whence)
         while(mgt->parser_finish_flag != 1 && !url_interrupt_cb()) {
             usleep(10*1000);
         }
-        if(!mgt->have_list_end && (!pos||mgt->current_item->index == 0)) { //need to relocate when live streaming 
+        if(!mgt->have_list_end && (!pos||mgt->current_item->index == 0)) { //need to relocate when live streaming
             for (item = mgt->item_list; item; item = item->next) {
                 if(item == mgt->current_item) {
                     pos = item->index;
@@ -1459,7 +1459,7 @@ static int64_t list_seek(URLContext *h, int64_t pos, int whence)
 RETRY:
             for (item = mgt->item_list; item; item = item->next) {
                 if(pos == item->index) {
-                    mgt->cmf_item_index = pos;                  
+                    mgt->cmf_item_index = pos;
                     mgt->current_item = NULL;
                     CacheHttp_Reset(mgt->cache_http_handle, 1);
                     mgt->current_item = item;
@@ -1500,7 +1500,7 @@ RETRY:
          }
     }
 #endif
-    
+
     if(mgt->debug_level>1){
         RLOG("Seek failed,just return seek time:%lld,whence:%d\n",pos,whence);
     }
@@ -1541,8 +1541,8 @@ static int list_close(URLContext *h)
     }
 
     av_free(mgt);
-    unused(h);    
-    RLOG("Close hls list manager session\n");	 	
+    unused(h);
+    RLOG("Close hls list manager session\n");
     return 0;
 }
 static int list_get_handle(URLContext *h)
@@ -1554,11 +1554,11 @@ static int list_setcmd(URLContext *h, int cmd,int flag,unsigned long info)
 	struct list_mgt *mgt = h->priv_data;
 	int ret=-1;
 	if(AVCMD_SET_CODEC_BUFFER_INFO==cmd){
-		if(flag ==0){	
+		if(flag ==0){
 			mgt->codec_buf_level=info;
 		}else if(flag ==1){
 			mgt->codec_vbuf_size = info;
- 		}else if(flag ==2){
+		}else if(flag ==2){
 			mgt->codec_abuf_size = info;
 		}else if(flag ==3){
 			mgt->codec_vdat_size = info;
@@ -1581,7 +1581,7 @@ static int list_getinfo(URLContext *h, uint32_t  cmd, uint32_t flag, int64_t *in
     if (!mgt) {
         return 0;
     }
-    
+
     if (cmd == AVCMD_TOTAL_DURATION) {
         *info = mgt->full_time * 1000;
         if(!mgt->have_list_end)
@@ -1622,10 +1622,10 @@ static int list_getinfo(URLContext *h, uint32_t  cmd, uint32_t flag, int64_t *in
         return 0;
     } else if(cmd == AVCMD_GET_NETSTREAMINFO){
         if(flag == 1){
-		if(mgt->read_eof_flag == 0){	
+		if(mgt->read_eof_flag == 0){
                 *info = mgt->measure_bw;
 		}else{
-		   *info = 0;	
+		   *info = 0;
 		}
 		if(mgt->debug_level>3){
 			RLOG("Get measured bandwidth: %0.3f kbps\n",(float)*info/1000.000);
@@ -1640,7 +1640,7 @@ static int list_getinfo(URLContext *h, uint32_t  cmd, uint32_t flag, int64_t *in
 		}
 		if(mgt->debug_level>3){
 			RLOG("Get current bandwidth: %0.3f kbps\n",(float)*info/1000.000);
-		}		
+		}
 	  }else if(flag == 3){
 		int64_t val = 0;
 		CacheHttp_GetErrorCode(mgt->cache_http_handle,&val);
@@ -1671,7 +1671,7 @@ static int list_getinfo(URLContext *h, uint32_t  cmd, uint32_t flag, int64_t *in
     }
 
     return 0;
-    
+
 }
 
 URLProtocol file_list_protocol = {
@@ -1688,7 +1688,7 @@ URLProtocol file_list_protocol = {
 };
 list_item_t* getCurrentSegment(void* hSession)
 {
-    if (hSession == NULL) {		
+    if (hSession == NULL) {
         return NULL;
     }
     struct list_mgt* mgt = (struct list_mgt_t*)hSession;
@@ -1716,7 +1716,7 @@ const char* getCurrentSegmentUrl(void* hSession)
 	struct list_mgt* mgt = (struct list_mgt_t*)hSession;
 	const char* url = getCurrentSegment(mgt)->file;
 
-   	return url;
+	return url;
 }
 
 long long getTotalDuration(void* hSession)
@@ -1724,8 +1724,8 @@ long long getTotalDuration(void* hSession)
 	if (hSession == NULL) {
 	    return 0;
 	}
-	struct list_mgt* mgt = (struct list_mgt_t*)hSession;	
-    	return mgt->full_time;
+	struct list_mgt* mgt = (struct list_mgt_t*)hSession;
+	return mgt->full_time;
 }
 
 int switchNextSegment(void* hSession)
@@ -1733,7 +1733,7 @@ int switchNextSegment(void* hSession)
 	if(hSession == NULL){
 		return 0;
 	}
-	struct list_mgt* mgt = (struct list_mgt_t*)hSession;		
+	struct list_mgt* mgt = (struct list_mgt_t*)hSession;
 	mgt->current_item = switchto_next_item(mgt);
 	return 0;
 }

@@ -113,7 +113,7 @@ int ffurl_open_h(URLContext **puc, const char *filename, int flags,const char *h
  * indicates that it is not possible to read more from the accessed
  * resource (except if the value of the size argument is also zero).
  */
- 
+
 
 int ffurl_read(URLContext *h, unsigned char *buf, int size);
 

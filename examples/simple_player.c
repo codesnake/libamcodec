@@ -18,7 +18,7 @@ int main(int argc,char ** argv)
 {
 		play_control_t ctrl;
 		int pid;
-		
+
 		if(argc<2)
 		{
 			printf("USAG:%s file\n",argv[0]);

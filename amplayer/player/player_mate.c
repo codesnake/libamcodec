@@ -86,11 +86,11 @@ int player_mate_sleep(play_para_t *player)
         return -1;
     }
     if(player->playctrl_info.temp_interrupt_ffmpeg){
-	     player->playctrl_info.temp_interrupt_ffmpeg=0;	
-	     log_print("ffmpeg_uninterrupt tmped by player mate!\n");	 
+	     player->playctrl_info.temp_interrupt_ffmpeg=0;
+	     log_print("ffmpeg_uninterrupt tmped by player mate!\n");
             ffmpeg_uninterrupt(player->thread_mgt.pthread_id);
     }
-    mate->mate_should_sleep = 1;	 
+    mate->mate_should_sleep = 1;
     while (mate->mate_isrunng) {
         pthread_mutex_lock(&mate->pthread_mutex);
         ret = pthread_cond_signal(&mate->pthread_cond);
@@ -171,7 +171,7 @@ static int player_mate_thread_cmd_proxy(play_para_t *player, struct player_mate 
         if (ret <= 0) {
             return NONO_FLAG;
         }
-    }	
+    }
     cmd = get_message(player);
     if (!cmd) {
         return 0;    /*no cmds*/
@@ -184,14 +184,14 @@ static int player_mate_thread_cmd_proxy(play_para_t *player, struct player_mate 
 		/*not search now,resore the sync states...*/
 		set_tsync_enable(p_para->oldavsyncstate);
 		p_para->avsynctmpchanged = 0;
-    }	
+    }
     check_msg(player,cmd);
     message_free(cmd);
     if(player->playctrl_info.search_flag){
 	/*in mate thread seek,and interrupt the read thread.
 	    so we need to ignore the first ffmpeg erros.
 	*/
-	player->playctrl_info.ignore_ffmpeg_errors=1;	
+	player->playctrl_info.ignore_ffmpeg_errors=1;
 	player->playctrl_info.temp_interrupt_ffmpeg=1;
 	log_print("ffmpeg_interrupt tmped by player mate!\n");
 	ffmpeg_interrupt(player->thread_mgt.pthread_id);

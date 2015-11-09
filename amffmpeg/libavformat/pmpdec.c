@@ -96,11 +96,11 @@ static int pmp_header(AVFormatContext *s, AVFormatParameters *ap) {
         ast->codec->codec_type = AVMEDIA_TYPE_AUDIO;
         ast->codec->codec_id = audio_codec_id;
         ast->codec->channels = channels;
-        ast->codec->sample_rate = srate; 
-        
-       if(audio_codec_id == CODEC_ID_AAC)  // William workaround : set aac profile value as a default 
-            ast->codec->audio_profile = 2; 
-        
+        ast->codec->sample_rate = srate;
+
+       if(audio_codec_id == CODEC_ID_AAC)  // William workaround : set aac profile value as a default
+            ast->codec->audio_profile = 2;
+
         av_set_pts_info(ast, 32, 1, srate);
     }
     pos = avio_tell(pb) + 4*index_cnt;
@@ -126,21 +126,21 @@ static int pmp_packet(AVFormatContext *s, AVPacket *pkt) {
     if (pmp->cur_stream == 0) {
         int num_packets;
         pmp->audio_packets = avio_r8(pb);
-        if (!pmp->audio_packets) {                               
-            av_log_ask_for_sample(s, "0 audio packets\n");       
+        if (!pmp->audio_packets) {
+            av_log_ask_for_sample(s, "0 audio packets\n");
             return AVERROR_EOF;
             //return AVERROR_PATCHWELCOME;
-        }                                                    
+        }
         num_packets = (pmp->num_streams - 1) * pmp->audio_packets + 1;
         avio_skip(pb, 8);
         pmp->current_packet = 0;
         av_fast_malloc(&pmp->packet_sizes,
                        &pmp->packet_sizes_alloc,
                        num_packets * sizeof(*pmp->packet_sizes));
-        if (!pmp->packet_sizes_alloc) {                                             
-            av_log(s, AV_LOG_ERROR, "Cannot (re)allocate packet buffer\n");         
-            return AVERROR(ENOMEM);                                             
-        }                                                                       
+        if (!pmp->packet_sizes_alloc) {
+            av_log(s, AV_LOG_ERROR, "Cannot (re)allocate packet buffer\n");
+            return AVERROR(ENOMEM);
+        }
         for (i = 0; i < num_packets; i++)
             pmp->packet_sizes[i] = avio_rl32(pb);
     }
@@ -154,7 +154,7 @@ static int pmp_packet(AVFormatContext *s, AVPacket *pkt) {
         else
         {
             /* PMP media data format :  |Video-audio-audio ** |Video-audio-audio -**  |Video-audio-audio**|
-          * Video has dts-pts ,but audio not have 
+          * Video has dts-pts ,but audio not have
           * So,we need to rebuild audio pts, only set first audio pts after video packeage
           */
              if(pmp->current_packet%pmp->audio_packets == 1)
@@ -165,7 +165,7 @@ static int pmp_packet(AVFormatContext *s, AVPacket *pkt) {
                 //av_log(s,NULL," pts_video_cur:%lf  pts_audio_each:%lf pts_audio:%ld",pts_video_cur,pts_audio_each,(int64_t)(pkt->pts*pts_audio_each));
              }
         }
-           
+
         pkt->stream_index = pmp->cur_stream;
     }
     if (pmp->current_packet % pmp->audio_packets == 0)

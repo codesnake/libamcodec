@@ -195,7 +195,7 @@ static int parse_apic_tag(AVFormatContext *s, AVIOContext *pb, int taglen, const
     char mime[32];
     char dscrp[512];
     int ret;
-	
+
     if(s->cover_data){
         av_log(s, AV_LOG_INFO, "Has parsed APIC tag!\n");
         return 0;
@@ -220,7 +220,7 @@ static int parse_apic_tag(AVFormatContext *s, AVIOContext *pb, int taglen, const
         ret = avio_get_str(pb, cover_len, dscrp, sizeof(dscrp));  // Description
         cover_len -= ret;
     }
-	
+
     s->cover_data = av_malloc(cover_len);
     if(!s->cover_data){
         av_log(s, AV_LOG_INFO, "no memery, av_alloc failed!\n");
@@ -230,7 +230,7 @@ static int parse_apic_tag(AVFormatContext *s, AVIOContext *pb, int taglen, const
             av_log(NULL, AV_LOG_INFO, "cover is image/jpeg, first byte must be 0xff!\n");
             do{
                 ret = avio_r8(pb);
-                cover_len --;           
+                cover_len --;
             }while(ret!=0xff& cover_len > 0);
             avio_seek(pb, -1, SEEK_CUR);
             cover_len ++;
@@ -434,13 +434,13 @@ static void ff_id3v2_parse(AVFormatContext *s, int len, uint8_t version, uint8_t
             if (tag[0] == 'T')
                 /* parse text tag */
                 read_ttag(s, pbx, tlen, tag);
-        	else if(tag[0] == 'A' && tag[1] == 'P' && tag[2] == 'I' && tag[3] == 'C') {
-	     		parse_apic_tag(s, pbx, tlen, tag, isv34);
-	 	}
-	 	else if(tag[0] == 'P' && tag[1] == 'I' && tag[2] == 'C') {
-	     		parse_apic_tag(s, pbx, tlen, tag, isv34);
-	 	}			
-			
+	else if(tag[0] == 'A' && tag[1] == 'P' && tag[2] == 'I' && tag[3] == 'C') {
+			parse_apic_tag(s, pbx, tlen, tag, isv34);
+		}
+		else if(tag[0] == 'P' && tag[1] == 'I' && tag[2] == 'C') {
+			parse_apic_tag(s, pbx, tlen, tag, isv34);
+		}
+
         } else if (!tag[0]) {
             if (tag[1])
                 av_log(s, AV_LOG_WARNING, "invalid frame id, assuming padding\n");

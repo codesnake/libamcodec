@@ -27,8 +27,8 @@ OBJS = allformats.o         \
        cmfdec.o	\
        cmfvpb.o	\
        bandwidth_measure.o      \
-       ptslist.o      
-       
+       ptslist.o
+
 
 # muxers/demuxers
 OBJS-$(CONFIG_A64_MUXER)                 += a64.o

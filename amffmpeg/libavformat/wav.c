@@ -201,20 +201,20 @@ static int dts_in_wav_probe(AVProbeData *p)
 	/*wav file probe,may does not have much dts frames,so only check 1 frame.as maybe one frame in 2048 bytes probed  */
     if (markers[max]>= 1){
         return AVPROBE_SCORE_MAX/4;
-    }		
+    }
     else if (markers[max] > 3 && p->buf_size / markers[max] < 32*1024 &&
-        markers[max] * 4 > sum * 3){        
+        markers[max] * 4 > sum * 3){
         return AVPROBE_SCORE_MAX/2+1;
     }
-    return 0;	
- 
+    return 0;
+
 }
 static int wav_probe(AVProbeData *p)
 {
     /* check file header */
     if (p->buf_size <= 32)
         return 0;
-    unsigned dts_score = 0;	
+    unsigned dts_score = 0;
     if (!memcmp(p->buf + 8, "WAVE", 4)) {
         if (!memcmp(p->buf, "RIFF", 4)){
             /*
@@ -222,16 +222,16 @@ static int wav_probe(AVProbeData *p)
               returning score is decreased to avoid probe conflict
               between ACT and WAV.
             */
-            /* probe dts in wav at least 4k size */            
+            /* probe dts in wav at least 4k size */
             if(p->buf_size < 4096)
-	     		return 0;
-  	     dts_score = dts_in_wav_probe(p);	
+			return 0;
+	     dts_score = dts_in_wav_probe(p);
 	     if(dts_score >= AVPROBE_SCORE_MAX/4){
-		 	av_log(NULL,AV_LOG_INFO,"DTS in wav may found, check more data to verify \n");
+			av_log(NULL,AV_LOG_INFO,"DTS in wav may found, check more data to verify \n");
 			return AVPROBE_SCORE_MAX/4;
 	     }
             return AVPROBE_SCORE_MAX - 1;
-        }		
+        }
         else if (!memcmp(p->buf,      "RF64", 4) &&
                  !memcmp(p->buf + 12, "ds64", 4))
             return AVPROBE_SCORE_MAX;
@@ -466,8 +466,8 @@ break_loop:
 			else
 				st->duration = (min_samples_est1 > sample_count? min_samples_est1:sample_count);
 	    }
-	}	
-	
+	}
+
     ff_metadata_conv_ctx(s, NULL, wav_metadata_conv);
 
     return 0;

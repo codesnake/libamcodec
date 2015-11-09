@@ -52,14 +52,14 @@ static int cmfvpb_open(struct cmfvpb *cv , int *index)
     if (ret < 0){
         av_log(NULL, AV_LOG_INFO, "seek failed %s---%d \n",__FUNCTION__,__LINE__);
         return -1;
-    } 
-    ret = cv->input->prot->url_getinfo(cv->input, AVCMD_TOTAL_DURATION, 0, &cv->total_duration); 
+    }
+    ret = cv->input->prot->url_getinfo(cv->input, AVCMD_TOTAL_DURATION, 0, &cv->total_duration);
     ret = cv->input->prot->url_getinfo(cv->input, AVCMD_TOTAL_NUM, 0, &cv->total_num);
-    ret = cv->input->prot->url_getinfo(cv->input, AVCMD_SLICE_START_OFFSET, 0, &cv->start_offset); 
+    ret = cv->input->prot->url_getinfo(cv->input, AVCMD_SLICE_START_OFFSET, 0, &cv->start_offset);
     ret = cv->input->prot->url_getinfo(cv->input, AVCMD_SLICE_SIZE, 0 , &cv->size);
     ret = cv->input->prot->url_getinfo(cv->input, AVCMD_SLICE_STARTTIME, 0 , &cv->start_time);
     ret = cv->input->prot->url_getinfo(cv->input, AVCMD_SLICE_ENDTIME, 0 , &cv->end_time);
-    
+
     if(cv->start_offset <= 0)
         cv->start_offset = 0;
     if(cv->size <= 0)
@@ -84,39 +84,39 @@ int cmfvpb_getinfo(struct cmfvpb *cv, int cmd,int flag,int64_t*info)
     int64_t *outinfo;
     switch(cmd){
             case AVCMD_TOTAL_DURATION:
-                   outinfo= &cv->total_duration; 
+                   outinfo= &cv->total_duration;
                    tmpcmd=AVCMD_TOTAL_DURATION;
                    break;
             case AVCMD_TOTAL_NUM:
-                   outinfo= &cv->total_num; 
+                   outinfo= &cv->total_num;
                    tmpcmd=AVCMD_TOTAL_NUM;
                    break;
             case AVCMD_SLICE_START_OFFSET:
-                   outinfo= &cv->start_offset; 
+                   outinfo= &cv->start_offset;
                    tmpcmd=AVCMD_SLICE_START_OFFSET;
                    break;
             case AVCMD_SLICE_SIZE:
-                   outinfo= &cv->size; 
+                   outinfo= &cv->size;
                    tmpcmd=AVCMD_SLICE_SIZE;
-                   break;       
+                   break;
            case AVCMD_SLICE_STARTTIME:
-                   outinfo= &cv->start_time; 
+                   outinfo= &cv->start_time;
                    tmpcmd=AVCMD_SLICE_STARTTIME;
                    break;
             case AVCMD_SLICE_ENDTIME:
-                   outinfo= &cv->end_time; 
+                   outinfo= &cv->end_time;
                    tmpcmd=AVCMD_SLICE_ENDTIME;
-                   break;      
+                   break;
             case AVCMD_SLICE_INDEX:
-                   outinfo= &cv->cur_index; 
+                   outinfo= &cv->cur_index;
                    tmpcmd=AVCMD_SLICE_INDEX;
-                   break;             
-                   
+                   break;
+
             default:
-				return 0; 
+				return 0;
     }
 
-    ret = cv->input->prot->url_getinfo(cv->input, tmpcmd, flag, outinfo); 
+    ret = cv->input->prot->url_getinfo(cv->input, tmpcmd, flag, outinfo);
     if (ret < 0){
         av_log(NULL,AV_LOG_INFO,"url_get info errorcmd [%d] [%lld] \n",tmpcmd,*outinfo);
         return -1;
@@ -124,12 +124,12 @@ int cmfvpb_getinfo(struct cmfvpb *cv, int cmd,int flag,int64_t*info)
         *info = *outinfo;
        // av_log(NULL,AV_LOG_INFO,"url_get info cmd [%d] [%lld] \n",tmpcmd,*outinfo);
     }
-    return 0;  
+    return 0;
 }
 static int cmfvpb_read(URLContext *v, uint8_t *buf, int buf_size)
 {
     int len, rsize;
-    struct cmfvpb *cv;	
+    struct cmfvpb *cv;
     cv = (cmfvpb*)v->priv_data;
     if (!cv || ! cv->input   || !cv->input->prot->url_read) {
         av_log(NULL, AV_LOG_INFO, "cmfvpb_read failed\n");
@@ -144,7 +144,7 @@ RETRY:
     len = ffurl_read(cv->input, buf, rsize);
     if(len == AVERROR(EAGAIN))
         goto RETRY;
-    
+
 #if 0
     if(len > 0) {
         FILE *fp = NULL;
@@ -166,12 +166,12 @@ RETRY:
 }
 
 static int64_t cmfvpb_seek(URLContext*v, int64_t offset, int whence)
-{     
+{
     av_log(NULL, AV_LOG_INFO, "cmfvpb_seek  offset[%lld] whence[%d] \n",offset,whence);
     int64_t lowoffset=0;
     int ret=-1;
-    struct cmfvpb *cv;	
-    cv = (cmfvpb*)v->priv_data;	
+    struct cmfvpb *cv;
+    cv = (cmfvpb*)v->priv_data;
     if (!cv || ! cv->input   || !cv->input->prot->url_seek) {
         av_log(NULL, AV_LOG_INFO, "cmfvpb_seek failed\n");
         return -1;
@@ -184,11 +184,11 @@ static int64_t cmfvpb_seek(URLContext*v, int64_t offset, int whence)
         av_log(NULL, AV_LOG_INFO, "cmfvpb_seek cv->size\n",cv->size);
         return cv->size;
     } else if (whence == SEEK_END) {
-    		lowoffset=cv->end_offset+offset;
+		lowoffset=cv->end_offset+offset;
     } else if (whence == SEEK_SET) {
-        	lowoffset=cv->start_offset+offset;
+	lowoffset=cv->start_offset+offset;
     } else if (whence == SEEK_CUR) {
-       	lowoffset=cv->start_offset+cv->seg_pos+offset;
+	lowoffset=cv->start_offset+cv->seg_pos+offset;
     } else if(whence==AVSEEK_SLICE_BYTIME){
             av_log(NULL, AV_LOG_INFO, " AVSEEK_SLICE_BYTIME time [%lld]\n",offset);
             ret = cv->input->prot->url_seek(cv->input,offset, AVSEEK_SLICE_BYTIME);
@@ -231,11 +231,11 @@ static int cmfvpb_lpread(void *opaque, uint8_t *buf, int buf_size)
         return -1;
     }
    return  url_lpread(&cv->vlpcontext,buf,buf_size);
-      
+
 }
 static int64_t cmfvpb_lpseek(void *opaque, int64_t offset, int whence)
 {
-    struct cmfvpb *cv=opaque;	
+    struct cmfvpb *cv=opaque;
     if (!cv ) {
         av_log(NULL, AV_LOG_INFO, "cmfvpb_lpseek error %s---%d \n",__FUNCTION__,__LINE__);
         return -1;
@@ -244,7 +244,7 @@ static int64_t cmfvpb_lpseek(void *opaque, int64_t offset, int whence)
 }
 static int64_t cmfvpb_lpexseek(void *opaque, int64_t offset, int whence)
 {
-    struct cmfvpb *cv=opaque;	
+    struct cmfvpb *cv=opaque;
     if (!cv ) {
         av_log(NULL, AV_LOG_INFO, "cmfvpb_lpexseek error %s---%d \n",__FUNCTION__,__LINE__);
         return -1;
@@ -257,13 +257,13 @@ int cmfvpb_dup_pb(AVIOContext *pb, struct cmfvpb **cmfvpb, int *index)
     struct cmfvpb *cv ;
     AVIOContext *vpb;
     void * read_buffer=NULL;
- 
+
     int ret =-1;
     int lpbufsize=0;
     cv = av_mallocz(sizeof(struct cmfvpb));
     cv->input = pb->opaque;
 
-    cv->vlpcontext.priv_data = cv; 
+    cv->vlpcontext.priv_data = cv;
     cv->vlpcontext.prot = &cv->alcprot;
     cv->vlpcontext.is_slowmedia=1;
     cv->vlpcontext.is_streamed=0;
@@ -294,7 +294,7 @@ int cmfvpb_dup_pb(AVIOContext *pb, struct cmfvpb **cmfvpb, int *index)
 
     if (lpbufsize >IO_LP_BUFFER_SIZE) {
          lpbufsize= IO_LP_BUFFER_SIZE;
-   }  
+   }
     av_log(NULL, AV_LOG_INFO, "cmfvpb_LPBUF cv->size[%lld] [%lld]M   lpbuf [%d][%d]M      cv->vlpcontext.is_slowmedia=[%d]\n",cv->size,(cv->size/(1024*1024)),lpbufsize,(lpbufsize/(1024*1024)),cv->vlpcontext.is_slowmedia);
     if(url_lpopen_ex(&cv->vlpcontext,lpbufsize,AVIO_FLAG_READ,cmfvpb_read,cmfvpb_seek)==0){
                 ffio_init_context(vpb, read_buffer, INITIAL_BUFFER_SIZE, 0, cv,

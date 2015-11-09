@@ -12,7 +12,7 @@
 
 
 
-typedef struct  url_lpbuf{
+typedef struct  url_lpbuf{
 	unsigned char *buffer;
 	unsigned char *buffer_end;
 	int buffer_size;
@@ -35,7 +35,7 @@ typedef struct  url_lpbuf{
 
 int url_lpopen(URLContext *s,int size);
 int url_lpfillbuffer(URLContext *s,int size);
-int64_t url_lpexseek(URLContext *s, int64_t offset, int whence); 
+int64_t url_lpexseek(URLContext *s, int64_t offset, int whence);
 int url_lpread(URLContext *s,unsigned char * buf,int size);
 int64_t url_lpseek(URLContext *s, int64_t offset, int whence);
 int url_lpreset(URLContext *s);
@@ -48,8 +48,8 @@ int64_t url_buffed_size(AVIOContext *s);
 int url_lpopen_ex(URLContext *s,
 			int size,
 			int flags,
-	 	    	int (*read_packet)(void *opaque, uint8_t *buf, int buf_size),
-                  	int64_t (*seek)(void *opaque, int64_t offset, int whence));
+		    	int (*read_packet)(void *opaque, uint8_t *buf, int buf_size),
+	int64_t (*seek)(void *opaque, int64_t offset, int whence));
 
 #endif
 

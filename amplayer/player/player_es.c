@@ -112,11 +112,11 @@ static void acodec_info_init(play_para_t *p_para, codec_para_t *a_codec)
                   a_codec->audio_info.sample_rate, a_codec->audio_info.channels, a_codec->audio_info.extradata_size, a_codec->audio_info.block_align, a_codec->audio_info.codec_id);
 
     }
-	a_codec->SessionID = p_para->start_param->SessionID;		
+	a_codec->SessionID = p_para->start_param->SessionID;
 	if(IS_AUDIO_NOT_SUPPORTED_BY_AUDIODSP(a_codec->audio_type,pCodecCtx)){
 			a_codec->dspdec_not_supported = 1;
 			log_print("main profile aac not supported by dsp decoder,so set dspdec_not_supported flag\n");
-	}	
+	}
 }
 
 static void scodec_info_init(play_para_t *p_para, codec_para_t *s_codec)
@@ -205,7 +205,7 @@ static int stream_es_init(play_para_t *p_para)
         codec_set_freerun_mode(v_codec, p_para->playctrl_info.freerun_mode);
         codec_set_vsync_upint(v_codec, p_para->playctrl_info.vsync_upint);
     }
-    
+
     return PLAYER_SUCCESS;
 
 error1:

@@ -36,7 +36,7 @@ static codec_para_t *vpcodec = NULL;
 
 void ES_PlayInit()
 {
-	
+
 	int ret = CODEC_ERROR_NONE;
 
 	//Init Video Codecs
@@ -48,7 +48,7 @@ void ES_PlayInit()
 
 	vpcodec->has_video = 1;
 	vpcodec->video_type = VFORMAT_H264;
-	
+
 	vpcodec->am_sysinfo.format = VIDEO_DEC_FORMAT_H264;
 
 	vpcodec->am_sysinfo.param = (void *)(EXTERNAL_PTS | SYNC_OUTSIDE);
@@ -63,7 +63,7 @@ void ES_PlayInit()
 	vpcodec->noblock = 0;
 
 	apcodec = &a_codec_para;
-	
+
 	memset(apcodec, 0, sizeof(codec_para_t ));
 
 	apcodec->audio_type = AFORMAT_AAC;
@@ -71,7 +71,7 @@ void ES_PlayInit()
 //	apcodec->audio_pid = 0x1023;
 	apcodec->has_audio = 1;
 	apcodec->noblock = 0;
-	
+
 	//Do NOT set audio info if we do not know it
 	apcodec->audio_channels = 0;
 	apcodec->audio_samplerate = 0;
@@ -82,7 +82,7 @@ void ES_PlayInit()
 	//apcodec->audio_info.channels = 2;
 	//apcodec->audio_info.sample_rate = 44100;
 
-	
+
 	ret = codec_init(vpcodec);
 	if(ret != CODEC_ERROR_NONE)
 	{
@@ -96,7 +96,7 @@ void ES_PlayInit()
 		printf("a codec init failed, ret=-0x%x", -ret);
 		return;
 	}
-	
+
 	//codec_set_av_threshold(apcodec, 180);
 }
 
@@ -107,13 +107,13 @@ void ES_PlayDeinit()
 		codec_close(apcodec);
 	//	apcodec = NULL;
 	}
-	
+
 	if( vpcodec != NULL )
 	{
 		codec_close(vpcodec);
 		vpcodec = NULL;
 	}
-		
+
 }
 
 void ES_PlayPause()
@@ -128,7 +128,7 @@ void ES_PlayResume()
 
 void ES_PlayFreeze ()
 {
-	
+
 }
 
 void ES_PlayResetESBuffer ()
@@ -138,10 +138,10 @@ void ES_PlayResetESBuffer ()
 
 void ES_PlayGetESBufferStatus ( int *audio_rate,int *vid_rate )
 {
-	
+
 	int ret;
 	struct buf_status vbuf;
-	
+
 	if( vpcodec == NULL)
 	{
 		*vid_rate=0;
@@ -152,8 +152,8 @@ void ES_PlayGetESBufferStatus ( int *audio_rate,int *vid_rate )
 
 		*vid_rate = ( vbuf.data_len * 100 )/vbuf.size ;
 	}
-	
-	
+
+
 	if( apcodec == NULL )
 	{
 		*audio_rate=0;
@@ -164,29 +164,29 @@ void ES_PlayGetESBufferStatus ( int *audio_rate,int *vid_rate )
 
 		*audio_rate = ( vbuf.data_len * 100 )/vbuf.size ;
 	}
-	
-	
+
+
 }
 
 void ES_PlayInjectionMediaDatas ( MEDIA_CODEC_TYPE_E data_type, void *es_buffer, unsigned int buffer_len, unsigned int PTS )
 {
-	
+
 	int ret;
 
 	if( (DAL_ES_VCODEC_TYPE_H264 == data_type) && ( vpcodec != NULL) )
 	{
 		int len = buffer_len;
 		int wcnt = buffer_len;
-		
+
         if( PTS != 0xffffffff )
 			ret = codec_checkin_pts( vpcodec, PTS);
-	    
+
 		while( 1 )
 		{
 			wcnt = codec_write( vpcodec, es_buffer, buffer_len);
 			if( wcnt > 0 )
 			{
-				len = len - wcnt;			
+				len = len - wcnt;
 				if( len <= 0 )
 				{
 					break;
@@ -200,18 +200,18 @@ void ES_PlayInjectionMediaDatas ( MEDIA_CODEC_TYPE_E data_type, void *es_buffer,
 			}
 		}
 	}
-	else if( (DAL_ES_ACODEC_TYPE_AAC == data_type) && ( apcodec != NULL) ) 
-	{	
+	else if( (DAL_ES_ACODEC_TYPE_AAC == data_type) && ( apcodec != NULL) )
+	{
 
 		int len = buffer_len;
 		int wcnt = buffer_len;
         ret = codec_checkin_pts( apcodec, PTS);
 		while( 1 )
-		{			
+		{
 			wcnt = codec_write( apcodec, es_buffer, buffer_len);
 			if( wcnt > 0 )
 			{
-				len = len - wcnt;			
+				len = len - wcnt;
 				if( len <= 0 )
 				{
 					break;

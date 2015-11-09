@@ -73,7 +73,7 @@ int ffmpeg_pthread_create(pthread_t *thread_out, pthread_attr_t const * attr,
 	ret=pthread_create(&pid,attr,start_routine,arg);
 	if(ret==0){
 		*thread_out=pid;
-		struct item *piditem= item_alloc(4); 
+		struct item *piditem= item_alloc(4);
 		if(piditem){
 			piditem->item_data=pid;
 			piditem->extdata[0]=pthread_self();
@@ -332,9 +332,9 @@ int ffurl_open_h(URLContext **puc, const char *filename, int flags,const char *h
 	if(headers){
 		(*puc)->headers=av_strdup(headers);
 	}
-    if(flags&URL_SEGMENT_MEDIA){	 
+    if(flags&URL_SEGMENT_MEDIA){
         (*puc)->is_segment_media = 1;
-    }else{       
+    }else{
 	 (*puc)->is_segment_media = 0;
     }
     ret = ffurl_connect(*puc);
@@ -371,14 +371,14 @@ static inline int retry_transfer_wrapper(URLContext *h, unsigned char *buf, int 
             continue;
         if (h->flags & AVIO_FLAG_NONBLOCK)
             return ret;
-        if (ret == AVERROR(EAGAIN)) { 
+        if (ret == AVERROR(EAGAIN)) {
 			if(av_gettime()>=timeouttime)
 				return AVERROR(EAGAIN);
 			//av_log(NULL,AV_LOG_INFO,"retry_transfer_wrapper,retry=%d\n",retry++);
         } else if (ret < 1){
             return ret < 0 ? ret : len;
         }else{
-        	len+=ret;
+	len+=ret;
         }
         if (url_interrupt_cb()) /*at least try several times for some teardown cmd finished.*/
             return AVERROR_EXIT;
@@ -404,7 +404,7 @@ int ffurl_read_complete(URLContext *h, unsigned char *buf, int size)
         return AVERROR(EIO);
     while(toread>0 && maxretry-->0){
 		int ret;
-     		ret=retry_transfer_wrapper(h, buf+readedlen, toread, toread, h->prot->url_read);
+		ret=retry_transfer_wrapper(h, buf+readedlen, toread, toread, h->prot->url_read);
 		if(ret>0){
 			toread-=ret;
 			readedlen+=ret;
@@ -416,7 +416,7 @@ int ffurl_read_complete(URLContext *h, unsigned char *buf, int size)
     }
     if((size-toread)!=0)
 		return (size-toread);
- 	else
+	else
 		return AVERROR(ETIMEDOUT);/*retry too long time,//time out...*/
 }
 
@@ -520,7 +520,7 @@ int url_interrupt_cb(void)
 	piditem=itemlist_find_match_item(&pidlist,(unsigned long)tid);
 	if(piditem){
 		ptid=piditem->extdata[0];
-	}	
+	}
 	return url_interrupt_cb_ext(ptid);
     }
     return 0;

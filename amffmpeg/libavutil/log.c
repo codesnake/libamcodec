@@ -47,7 +47,7 @@ static HANDLE con;
 #define  LOG_TAG    "amffmpeg"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
-#define set_color(x) 
+#define set_color(x)
 #define reset_color()
 #define  LOG(tag,...)  __android_log_print(ANDROID_LOG_INFO,tag,__VA_ARGS__)
 #else
@@ -82,7 +82,7 @@ static void colored_fputs(int level, const char *str){
     }
 #ifdef ANDROID
 	LOGI("%s", str);
-#else	
+#else
     fputs(str, stderr);
 #endif
     if(use_color){
@@ -195,8 +195,8 @@ int av_tag_log(const char * tag,const char *fmt, ...)
 	//LOG(tag,"%s",line);
 	#ifdef ANDROID
 	    LOG(tag,"%s",line);
-	#else	
-    	    fputs(line, stderr);
+	#else
+	    fputs(line, stderr);
 	#endif
 	va_end(vl);
 	return 0;

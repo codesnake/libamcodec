@@ -37,7 +37,7 @@ int osd_blank(char *path,int cmd)
 
 
 static void signal_handler(int signum)
-{   
+{
 	printf("Get signum=%x\n",signum);
 	codec_close(apcodec);
 	codec_close(vpcodec);
@@ -52,15 +52,15 @@ int main(int argc,char *argv[])
 	int ret = CODEC_ERROR_NONE;
 	char buffer[READ_SIZE];
 
-	int len = 0;	
+	int len = 0;
 	int size = READ_SIZE;
-	uint32_t cnt = 0, pos=0,i,Readlen;	
+	uint32_t cnt = 0, pos=0,i,Readlen;
 	uint32_t  isize,max_size,length,has_sent,type,filesize,totalsize;
 	uint64_t  pts;
 	uint32_t last_tick,tick;
 	bool s_bStopSendStream = false;
 	char  header[32],*buf;
-	
+
 
 
 	//buf=buffer;
@@ -70,8 +70,8 @@ int main(int argc,char *argv[])
 	osd_blank("/sys/class/tsync/enable",1);
 	apcodec = &a_codec_para;
 	vpcodec = &v_codec_para;
-	memset(apcodec, 0, sizeof(codec_para_t ));	
-	memset(vpcodec, 0, sizeof(codec_para_t ));	
+	memset(apcodec, 0, sizeof(codec_para_t ));
+	memset(vpcodec, 0, sizeof(codec_para_t ));
 	vpcodec->has_video = 1;
 	vpcodec->video_pid = 0x1022;
 	vpcodec->video_type = VFORMAT_H264;
@@ -99,7 +99,7 @@ int main(int argc,char *argv[])
 	apcodec->audio_samplerate = 48000;
 	apcodec->noblock = 0;
 	apcodec->audio_info.channels = 2;
-	apcodec->audio_info.sample_rate = 48000;	
+	apcodec->audio_info.sample_rate = 48000;
 
 	if((fp = fopen(filename,"rb")) == NULL)
 	{
@@ -133,14 +133,14 @@ int main(int argc,char *argv[])
 	codec_set_cntl_syncthresh(vpcodec, vpcodec->has_audio);
 
 //	codec_set_cntl_mode(vpcodec, 0);
-	
 
-	cnt = 0;	
+
+	cnt = 0;
 	while(!feof(fp))
 	{
 	   memset(header,0,sizeof(header));
 	   len = fread(header,1,17,fp);
-	   if(len <= 0) 
+	   if(len <= 0)
 		{
 			printf("no data!\n");
 			return -1;
@@ -152,7 +152,7 @@ int main(int argc,char *argv[])
 	//   printf("type=%x,size=%x,pts=%llx,tick=%d\n",type,isize,pts,tick);
 
 	  if(type==0)
-	   {	
+	   {
 		  pcodec = vpcodec;
 	   }
 	   else
@@ -169,7 +169,7 @@ int main(int argc,char *argv[])
 	  codec_checkin_pts(pcodec,pts);
 	 do{
 	  ret = codec_write(pcodec, buffer, Readlen);
-	 }while(ret<0);	 
+	 }while(ret<0);
 	signal(SIGCHLD, SIG_IGN);
     signal(SIGTSTP, SIG_IGN);
     signal(SIGTTOU, SIG_IGN);
@@ -177,8 +177,8 @@ int main(int argc,char *argv[])
     signal(SIGHUP, signal_handler);
     signal(SIGTERM, signal_handler);
 	signal(SIGSEGV, signal_handler);
-	}	
-error:	
+	}
+error:
 	codec_close(apcodec);
 	codec_close(vpcodec);
 	fclose(fp);

@@ -165,12 +165,12 @@ static int crypto_close(URLContext *h)
 
 static int64_t crypto_seek(URLContext *h, int64_t off, int whence){
     CryptoContext *c = h->priv_data;
-    
+
     if (c->hd){
         if((whence ==SEEK_CUR&&off>=0)||whence == SEEK_END){
             c->indata = c->indata_used =c->outdata = 0;
         }
-        return ffurl_seek(c->hd,off,whence); 
+        return ffurl_seek(c->hd,off,whence);
     }else{
         return -1;
     }

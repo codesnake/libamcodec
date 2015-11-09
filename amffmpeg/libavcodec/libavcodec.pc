@@ -7,8 +7,8 @@ Name: libavcodec
 Description: FFmpeg codec library
 Version: 53.7.0
 Requires: libavutil = 51.9.1
-Requires.private: 
+Requires.private:
 Conflicts:
 Libs: -L${libdir} -lavcodec -ldl -lm -pthread
-Libs.private: 
+Libs.private:
 Cflags: -I${includedir}

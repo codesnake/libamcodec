@@ -32,7 +32,7 @@ struct am_packet;
 #define FREE(d) \
 do { \
     if((d)!=NULL)\
-    		free((d)); \
+		free((d)); \
     (d) = NULL; \
 }while(0)
 #define  MEMCPY(d,s,l)  memcpy(d,s,l)
@@ -49,7 +49,7 @@ do { \
 #define RESERVE_VIDEO_SIZE  (256)
 #define RESERVE_AUDIO_SIZE  (64)
 #define MAX_PACKET_SIZE     (8*1024*1024+0x400)
-#define FILE_BUFFER_SIZE    (512)//(1024*512)   
+#define FILE_BUFFER_SIZE    (512)//(1024*512)
 #define CHECK_END_COUNT     (40)
 #define CHECK_AUDIO_HALT_CNT (50)
 #define CHECK_VIDEO_HALT_CNT (20)
@@ -117,8 +117,8 @@ typedef union {
 } read_write_size;
 
 typedef struct{
-	int		data_level;   // real audio data length	    
-	int		buffer_size;	
+	int		data_level;   // real audio data length
+	int		buffer_size;
 	int 	check_rp_change_cnt;
 	unsigned int	buffer_rp;
 	unsigned int	rp_is_changed;
@@ -144,7 +144,7 @@ typedef struct play_para {
     int             sstream_num;
     int             first_index;
     int             max_raw_size;
-    int    discontinue_point;     
+    int    discontinue_point;
     unsigned int    discontinue_time;
     unsigned int    discontinue_flag;
     unsigned int    karaok_flag;
@@ -162,12 +162,12 @@ typedef struct play_para {
     s_stream_info_t sstream_info;
     media_info_t    media_info;
 
-/*for toomany seek cmd*/	
+/*for toomany seek cmd*/
     player_cmd_t   oldcmd;
-    long oldcmdtime;	
+    long oldcmdtime;
     int    oldavsyncstate;
     int    avsynctmpchanged;
-   
+
     AVFormatContext *pFormatCtx;
 
     codec_para_t    *vcodec;
@@ -198,9 +198,9 @@ typedef struct play_para {
     float buffering_threshhold_middle;
     float buffering_threshhold_max;
     float buffering_start_time_s;
-    float buffering_force_delay_s; 
-    long buffering_check_point;	
-   
+    float buffering_force_delay_s;
+    long buffering_check_point;
+
     struct am_packet *p_pkt;
 
 	void *player_mate;/*player's mate thread handle*/

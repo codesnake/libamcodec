@@ -7,7 +7,7 @@
  *
  * Description: decode one PCE
  *
- * Inputs:      BitStreamInfo struct pointing to start of PCE (14496-3, table 4.4.2) 
+ * Inputs:      BitStreamInfo struct pointing to start of PCE (14496-3, table 4.4.2)
  *
  * Outputs:     filled-in ProgConfigElement struct
  *              updated BitStreamInfo struct
@@ -170,15 +170,15 @@ static int GetNumChannelsADIF(ProgConfigElement *fhPCE, int nPCE)
 }
 
 int adif_header_parse(AVStream *st,ByteIOContext *pb)
-{ 
+{
 	GetBitContext gbc;
-	ADIFHeader hADIF;	
-	ADIFHeader *fhADIF = &hADIF;	
+	ADIFHeader hADIF;
+	ADIFHeader *fhADIF = &hADIF;
 	int ch,sr_index,i;
 	ProgConfigElement pce[MAX_NUM_PCE_ADIF];
 	const int aac_sample_rates[16] = {
-    	96000, 88200, 64000, 48000, 44100, 32000,
-    	24000, 22050, 16000, 12000, 11025, 8000, 7350
+	96000, 88200, 64000, 48000, 44100, 32000,
+	24000, 22050, 16000, 12000, 11025, 8000, 7350
 	};
 	init_get_bits(&gbc, pb->buffer+4, pb->buffer_size-4);//skip adif tag
 	/* read ADIF header fields */
@@ -197,7 +197,7 @@ int adif_header_parse(AVStream *st,ByteIOContext *pb)
 	   if (fhADIF->bsType == 0)
 		   fhADIF->bufferFull = get_bits(&gbc, 20);
 	   else
-	   	   fhADIF->bufferFull = 0;
+		   fhADIF->bufferFull = 0;
 		DecodeProgramConfigElement(pce + i, &gbc);
 	}
 
@@ -211,9 +211,9 @@ int adif_header_parse(AVStream *st,ByteIOContext *pb)
 	av_log(st, AV_LOG_INFO,"ADIF_INFO:ch=%d sr_index=%d\n",ch,sr_index);
 	//	/* check validity of header */
 	if (ch < 0 || sr_index < 0 || sr_index >= NUM_SAMPLE_RATES){
-		
+
 		return -1;
-	}	
+	}
 	st->codec->bit_rate = 	fhADIF->bitRate;
 	st->codec->channels = ch;
 	st->codec->sample_rate = aac_sample_rates[sr_index];

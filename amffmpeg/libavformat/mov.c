@@ -297,7 +297,7 @@ static int mov_read_default(MOVContext *c, AVIOContext *pb, MOVAtom atom)
     int i;
 	int searchtag = 0;/*found a error tag,changed to search mod*/
 	int serachenable = (atom.type==MKTAG('r','o','o','t'));
-	
+
     if (atom.size < 0)
         atom.size = INT64_MAX;
     while (total_size + 8 < atom.size && !url_feof(pb) && !url_interrupt_cb()) {
@@ -316,7 +316,7 @@ static int mov_read_default(MOVContext *c, AVIOContext *pb, MOVAtom atom)
             a.size = avio_rb64(pb) - 8;
             total_size += 8;
         }
-        if (a.size == 0) {			
+        if (a.size == 0) {
 			a.size = atom.size - total_size;
             if (a.size <= 8){
 				av_log(c->fc, AV_LOG_INFO, "L%d: a.size (%x)<8, break!\n", __LINE__, a.size);
@@ -331,13 +331,13 @@ static int mov_read_default(MOVContext *c, AVIOContext *pb, MOVAtom atom)
 			}
             continue;
 		}
-		
+
         if(a.size < 0){
 			av_log(c->fc, AV_LOG_INFO, "L%d: a.size (%x)<8, break!\n", __LINE__, a.size);
             break;
         }
-		
-        a.size = FFMIN(a.size, atom.size - total_size);        	
+
+        a.size = FFMIN(a.size, atom.size - total_size);
 
         for (i = 0; mov_default_parse_table[i].type; i++)
             if (mov_default_parse_table[i].type == a.type) {
@@ -348,15 +348,15 @@ static int mov_read_default(MOVContext *c, AVIOContext *pb, MOVAtom atom)
 				}
                 break;
             }
-	
+
         // container is user data
         if (!parse && (atom.type == MKTAG('u','d','t','a') ||
                        atom.type == MKTAG('i','l','s','t')))
             parse = mov_read_udta_string;
 
-        if (!parse) { /* skip leaf atoms data */	
+        if (!parse) { /* skip leaf atoms data */
 			if(!searchtag)
-            	avio_skip(pb, a.size);
+	avio_skip(pb, a.size);
 			else
 				continue;
         } else {
@@ -364,7 +364,7 @@ static int mov_read_default(MOVContext *c, AVIOContext *pb, MOVAtom atom)
             int64_t left;
             int err = parse(c, pb, a);
             if (err < 0)
-                return err;			
+                return err;
             if (c->found_moov && c->found_mdat &&
                 (!pb->seekable  ||pb->is_slowmedia  ||pb->is_streamed|| start_pos + a.size == avio_size(pb)))
                 return 0;/*can't seek,slowmedia,streamed all don't do else parser now*/
@@ -620,10 +620,10 @@ static int mov_read_mdat(MOVContext *c, AVIOContext *pb, MOVAtom atom)
     c->found_mdat=1;
     /*
     * Lujian.Hu 2012-12-14
-    * only use media_dataoffset to time_search(player_av.c) can not work correctly, because in mov_read_seek not only modify the pos to 
+    * only use media_dataoffset to time_search(player_av.c) can not work correctly, because in mov_read_seek not only modify the pos to
     * media data offset but reset the sample pointer to the correct position according to the very timestamp
     */
-    //c->fc->media_dataoffset = url_ftell(pb); 
+    //c->fc->media_dataoffset = url_ftell(pb);
     return 0; /* now go for moov */
 }
 
@@ -1571,7 +1571,7 @@ static int mov_read_stts(MOVContext *c, AVIOContext *pb, MOVAtom atom)
 	 if(url_interrupt_cb()) {
 	     av_log(NULL, AV_LOG_WARNING, "mov_read_stts interrupt, exit\n");
 	     return AVERROR_EXIT;
-         }	
+         }
     }
 
     st->nb_frames= total_sample_count;
@@ -1632,7 +1632,7 @@ static int mov_read_ctts(MOVContext *c, AVIOContext *pb, MOVAtom atom)
     /*
     * PTS = DTS (from stts) + CTS (from ctts)
     *
-    * According to MPEG-4 ISO standard, CTS can never be negative, but quicktime allows 
+    * According to MPEG-4 ISO standard, CTS can never be negative, but quicktime allows
     * negative value. The CTS must be all positive or negative in that case, otherwise ignore the dts_shift.
     */
     if(positive_count > negative_count)
@@ -2055,25 +2055,25 @@ static int mov_read_tkhd(MOVContext *c, AVIOContext *pb, MOVAtom atom)
     sc->width = width >> 16;
     sc->height = height >> 16;
 
-    if (display_matrix[0][0] == -65536 
+    if (display_matrix[0][0] == -65536
         && display_matrix[0][1] == 0
         && display_matrix[1][0] == 0
         && display_matrix[1][1] == -65536) {
         av_dict_set(&st->metadata, "rotate", "180", 0);
         st->rotation_degree = 2;
-    } else if (display_matrix[0][0] == 0 
+    } else if (display_matrix[0][0] == 0
         && display_matrix[0][1] == 65536
         && display_matrix[1][0] == -65536
         && display_matrix[1][1] == 0) {
         av_dict_set(&st->metadata, "rotate", "90", 0);
         st->rotation_degree = 1;
-    } else if (display_matrix[0][0] == 0 
+    } else if (display_matrix[0][0] == 0
         && display_matrix[0][1] == -65536
         && display_matrix[1][0] == 65536
         && display_matrix[1][1] == 0) {
         av_dict_set(&st->metadata, "rotate", "270", 0);
         st->rotation_degree = 3;
-    } else if (display_matrix[0][0] == 65536 
+    } else if (display_matrix[0][0] == 65536
         && display_matrix[0][1] == 0
         && display_matrix[1][0] == 0
         && display_matrix[1][1] == 65536) {
@@ -2577,21 +2577,21 @@ static int mov_read_header(AVFormatContext *s, AVFormatParameters *ap)
 
     if (pb->seekable && mov->chapter_track > 0)
         mov_read_chapters(s);
-	
 
-    if(s->pb&&s->pb->local_playback!=1){//web live playback,check movie file 
+
+    if(s->pb&&s->pb->local_playback!=1){//web live playback,check movie file
           int64_t amin_pos=INT64_MAX,vmin_pos=INT64_MAX,min=INT64_MAX;
           int64_t amax_pos=0,vmax_pos=0,max=0;
 
           for (int i = 0; i < s->nb_streams; i++) {
 	       AVStream *avst = s->streams[i];
                 min=INT64_MAX;
-                max=0;	 
+                max=0;
 	      if(avst->nb_index_entries>0&&avst->index_entries[avst->nb_index_entries-1].pos>max)
 		max=avst->index_entries[avst->nb_index_entries-1].pos;
 	      if(avst->nb_index_entries>0&&avst->index_entries[0].pos<min)
 		min=avst->index_entries[0].pos;
-		
+
 	      if(avst->codec->codec_type==AVMEDIA_TYPE_AUDIO&&min<amin_pos&&max>amax_pos){
 		amin_pos=min;
 		amax_pos=max;
@@ -2599,10 +2599,10 @@ static int mov_read_header(AVFormatContext *s, AVFormatParameters *ap)
 	      if(avst->codec->codec_type==AVMEDIA_TYPE_VIDEO&&min<vmin_pos&&max>vmax_pos){
 		vmin_pos=min;
 		vmax_pos=max;
-	     }	
+	     }
          }
          if((vmin_pos>amax_pos&&abs(vmin_pos-amin_pos)>MAX_READ_SEEK&&amin_pos>=0&&amin_pos!=INT64_MAX)||
-	     (amin_pos>vmax_pos&&abs(amin_pos-vmin_pos)>MAX_READ_SEEK&&vmin_pos>=0&&vmin_pos!=INT64_MAX)){	     
+	     (amin_pos>vmax_pos&&abs(amin_pos-vmin_pos)>MAX_READ_SEEK&&vmin_pos>=0&&vmin_pos!=INT64_MAX)){
 		url_set_more_data_seek(s->pb);
 		av_log(NULL,AV_LOG_WARNING, "May need cache more for smooth playback on line\n");
          }
@@ -2617,7 +2617,7 @@ static AVIndexEntry *mov_find_next_sample(AVFormatContext *s, AVStream **st)
     int64_t best_dts = INT64_MAX;
     int i;
     float limit_sec = 0;
-    float bit_rateKB = 0;	
+    float bit_rateKB = 0;
     for (i = 0; i < s->nb_streams; i++) {
         AVStream *avst = s->streams[i];
         MOVStreamContext *msc = avst->priv_data;
@@ -2641,12 +2641,12 @@ static AVIndexEntry *mov_find_next_sample(AVFormatContext *s, AVStream **st)
             (FFABS(best_dts - dts) > AV_TIME_BASE && dts < best_dts))) {
                 wantnew=1;
             }else if((s->pb->seekable && s->pb->is_slowmedia)){/*seekable network,seek is slow...*/
-                int64_t curentpos=avio_tell(s->pb); 
+                int64_t curentpos=avio_tell(s->pb);
                 bit_rateKB = (s->bit_rate/(1024 * 8));
                 limit_sec = (float)LIMIT_BUFSIZE / (bit_rateKB * 1024);
                 if (limit_sec > 10){
                    limit_sec = 10;
-                }  				
+                }
                 if((FFABS(best_dts - dts) < AV_TIME_BASE*limit_sec)&& beststream_readed_cnt > 10 && msc->readed_count> 10){/*not first parse.*/
                     if(FFABS(curentpos-current_sample->pos)<FFABS(curentpos-sample->pos)){
                         wantnew=1;
@@ -2657,13 +2657,13 @@ static AVIndexEntry *mov_find_next_sample(AVFormatContext *s, AVStream **st)
                 }
                 ///av_log(s, AV_LOG_WARNING, "curentpos=%llx,dts=%llx,best_dts=%llx,%llx,%llx,new=%d\n",curentpos,dts,best_dts,current_sample->pos,sample->pos,wantnew);
             }
-           
+
             if(wantnew){
                 sample = current_sample;
                 best_dts = dts;
                 *st = avst;
             }
-            
+
         }
     }
     return sample;
@@ -2698,7 +2698,7 @@ static int mov_read_packet(AVFormatContext *s, AVPacket *pkt)
     if (st->discard != AVDISCARD_ALL) {
 		offset = avio_seek(sc->pb, sample->pos, SEEK_SET);
         if (offset != sample->pos) {
-            av_log(mov->fc, AV_LOG_ERROR, "stream %d, seekto offset 0x%"PRIx64" ret 0x%"PRIx64":partial file\n", 
+            av_log(mov->fc, AV_LOG_ERROR, "stream %d, seekto offset 0x%"PRIx64" ret 0x%"PRIx64":partial file\n",
 				sc->ffindex, sample->pos, offset);
             if (sample->pos > s->file_size || offset == AVERROR_EOF)
                 return AVERROR_EOF;

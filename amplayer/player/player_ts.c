@@ -87,7 +87,7 @@ static int stream_ts_init(play_para_t *p_para)
 		if(IS_AUDIO_NOT_SUPPORTED_BY_AUDIODSP(codec->audio_type,pCodecCtx)){
 				codec->dspdec_not_supported = 1;
 				log_print("main profile aac not supported by dsp decoder,so set dspdec_not_supported flag\n");
-		}	
+		}
         codec->avsync_threshold = p_para->start_param->avsync_threshold;
         log_print("[%s:%d]audio bitrate=%d sample_rate=%d channels=%d codec_id=%x block_align=%d,extra size\n",
                   __FUNCTION__, __LINE__, codec->audio_info.bitrate, codec->audio_info.sample_rate, codec->audio_info.channels,
@@ -108,14 +108,14 @@ static int stream_ts_init(play_para_t *p_para)
         }
         goto error1;
     }
-    
+
     if(am_getconfig_bool("media.libplayer.wfd")) {
         ret = codec_init_audio_utils(codec);
         if (ret != CODEC_ERROR_NONE) {
             codec_close(codec);
             goto error1;
         }
-    }    
+    }
 
     p_para->codec = codec;
     if (vinfo->has_video) {
@@ -133,7 +133,7 @@ static int stream_ts_release(play_para_t *p_para)
     if (p_para->codec) {
         if (p_para->codec->audio_utils_handle >= 0) {
             codec_set_audio_resample_type(p_para->codec, 0);
-            codec_set_audio_resample_ena(p_para->codec, 0); 
+            codec_set_audio_resample_ena(p_para->codec, 0);
             codec_release_audio_utils(p_para->codec);
         }
 

@@ -229,7 +229,7 @@ typedef struct AVProbeData {
     const char *filename;
     unsigned char *buf; /**< Buffer must have AVPROBE_PADDING_SIZE of extra allocated bytes filled with zero. */
     int buf_size;       /**< Size of buf except extra allocated bytes */
-    AVIOContext *s;		
+    AVIOContext *s;
     unsigned long pads[8];
 } AVProbeData;
 
@@ -714,7 +714,7 @@ typedef struct AVFormatContext {
      * streams.
      */
     struct AVPacketList *packet_buffer;
-	
+
     /**
      * Decoding: position of the first frame of the component, in
      * AV_TIME_BASE fractional seconds. NEVER set this value directly:
@@ -910,13 +910,13 @@ typedef struct AVFormatContext {
 	//--***********************************************
     /* added by C.S for divx drm certification:drm information */
     drm_t       drm;
-//--***********************************************  
+//--***********************************************
 
     /* added by GP for storing music's embedded picture */
     int cover_data_len;
     uint8_t *cover_data;
 
-	/* 
+	/*
 	 *added by XH for avoid repeat seek binary failed
 	 */
 	int seek_binary_failed;

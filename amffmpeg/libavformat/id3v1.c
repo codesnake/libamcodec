@@ -177,7 +177,7 @@ const char * const ff_id3v1_genre_str[ID3v1_GENRE_MAX + 1] = {
 static void convert_iso8859_to_string(const uint8_t *data, int size, char *s) {
     int utf8len = 0;
     int i;
-	
+
     for (i = 0; i < size; ++i) {
         if (data[i] == '\0') {
             size = i;

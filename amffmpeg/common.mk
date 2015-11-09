@@ -19,7 +19,7 @@ ALL_S_FILES := $(addprefix $(TARGET_ARCH)/, $(notdir $(ALL_S_FILES)))
 
 ifneq ($(ALL_S_FILES),)
 ALL_S_OBJS := $(patsubst %.S,%.o,$(ALL_S_FILES))
-C_OBJS := $(filter-out $(ALL_S_OBJS),$(OBJS)) 
+C_OBJS := $(filter-out $(ALL_S_OBJS),$(OBJS))
 S_OBJS := $(filter $(ALL_S_OBJS),$(OBJS))
 else
 C_OBJS := $(OBJS)

@@ -249,7 +249,7 @@ void get_display_mode(char *mode)
     memset(mode, 0, 16); // clean buffer and read 15 byte to avoid strlen > 15
 
     get_sysfs_str(path, mode, 16);
-    
+
     log_print("[get_display_mode]display_mode=%s\n", mode);
     return ;
 }
@@ -263,7 +263,7 @@ void get_display_mode2(char *mode)
     }
     fd = open(path, O_RDONLY);
     if (fd >= 0) {
-        memset(mode, 0, 16); // clean buffer and read 15 byte to avoid strlen > 15	
+        memset(mode, 0, 16); // clean buffer and read 15 byte to avoid strlen > 15
         read(fd, mode, 15);
         log_print("[get_display_mode]mode=%s strlen=%d\n", mode, strlen(mode));
         mode[strlen(mode)] = '\0';
@@ -482,9 +482,9 @@ struct fb_var_screeninfo vinfo;
 char daxis_str[32];
 
 int DisableFreeScale(display_mode mode, const int vpp) {
-    
+
     int fd0 = -1, fd1 = -1;
-    int osd_width = 0, osd_height = 0;	
+    int osd_width = 0, osd_height = 0;
     int ret = -1;
 
     char* daxis_path = NULL;
@@ -511,7 +511,7 @@ int DisableFreeScale(display_mode mode, const int vpp) {
         return 0;
 
     if (vpp) {
-        
+
         daxis_path = "/sys/class/display2/axis";
 
         if((fd0 = open("/dev/graphics/fb2", O_RDWR)) < 0) {
@@ -521,20 +521,20 @@ int DisableFreeScale(display_mode mode, const int vpp) {
 
         memset(daxis_str,0,32);
         if(ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0) {
-            
+
             osd_width = vinfo.xres;
             osd_height = vinfo.yres;
-    
+
             log_print("osd_width = %d", osd_width);
             log_print("osd_height = %d", osd_height);
-        } 
+        }
         else {
-            
+
             log_print("get FBIOGET_VSCREENINFO fail.");
             goto exit;
         }
-        
-    } else {        
+
+    } else {
 
         daxis_path = "/sys/class/display/axis";
 
@@ -542,26 +542,26 @@ int DisableFreeScale(display_mode mode, const int vpp) {
             log_print("open /dev/graphics/fb0 fail.");
             goto exit;
         }
-        
+
         if((fd1 = open("/dev/graphics/fb1", O_RDWR)) < 0) {
             log_print("open /dev/graphics/fb1 fail.");
-            goto exit;	
+            goto exit;
         }
 
         memset(daxis_str,0,32);
         if(ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0) {
-            
+
             osd_width = vinfo.xres;
             osd_height = vinfo.yres;
-    
+
             //log_print("osd_width = %d", osd_width);
             //log_print("osd_height = %d", osd_height);
-        } 
+        }
         else {
             log_print("get FBIOGET_VSCREENINFO fail.");
             goto exit;
-        }    
-        
+        }
+
     }
 
     switch (mode) {
@@ -571,22 +571,22 @@ int DisableFreeScale(display_mode mode, const int vpp) {
             set_sysfs_str(video_path, "1");
 			if(isM8==0)
 				ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
-            
-            if (!vpp) 
+
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,0);
-            
+
             sprintf(daxis_str, "0 0 %d %d 0 0 18 18", vinfo.xres, vinfo.yres);
             set_sysfs_str(daxis_path, daxis_str);
             set_sysfs_str(ppmgr_rect_path, "0 0 0 0 1");
             set_sysfs_str(vaxis_path, "0 0 0 0");
             ret = 0;
         break;
-        
+
         case DISP_MODE_720P: //720p
             set_sysfs_str(ppmgr_path, "0");
             set_sysfs_str(video_path, "1");
 			if(isM8==0)
-           		 ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
+		 ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
             if (!vpp) ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,0);
             sprintf(daxis_str, "%d %d %d %d %d %d 18 18", 1280 > vinfo.xres ? (1280 - vinfo.xres) / 2 : 0,
                     720 > vinfo.yres ? (720 - vinfo.yres) / 2 : 0,
@@ -599,14 +599,14 @@ int DisableFreeScale(display_mode mode, const int vpp) {
             set_sysfs_str(vaxis_path, "0 0 0 0");
             ret = 0;
         break;
-        
+
         case DISP_MODE_1080I: //1080i
-        case DISP_MODE_1080P: //1080p  
+        case DISP_MODE_1080P: //1080p
             set_sysfs_str(ppmgr_path, "0");
             set_sysfs_str(video_path, "1");
             if(isM8==0)
 				ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
-            if (!vpp) 
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,0);
             sprintf(daxis_str, "%d %d %d %d %d %d 18 18", 1920 > vinfo.xres ? (1920 - vinfo.xres) / 2 : 0,
                     1080 > vinfo.yres ? (1080 - vinfo.yres) / 2 : 0,
@@ -619,7 +619,7 @@ int DisableFreeScale(display_mode mode, const int vpp) {
             set_sysfs_str(vaxis_path, "0 0 0 0");
             ret = 0;
         break;
-        
+
     default:
         break;
     }
@@ -632,9 +632,9 @@ exit:
 }
 
 int EnableFreeScale(display_mode mode, const int vpp) {
-    
+
     int fd0 = -1, fd1 = -1;
-    int osd_width = 0, osd_height = 0;	
+    int osd_width = 0, osd_height = 0;
     int ret = -1;
 
     char* daxis_path = NULL;
@@ -642,7 +642,7 @@ int EnableFreeScale(display_mode mode, const int vpp) {
     char* ppmgr_rect_path = "/sys/class/ppmgr/ppscaler_rect";
     char* video_path = "/sys/class/video/disable_video";
     char* vaxis_path = "/sys/class/video/axis";
-    log_print("EnableFreeScale: mode=%d", mode);	
+    log_print("EnableFreeScale: mode=%d", mode);
 
 	int isM8 = 0;
 	char value[128];
@@ -657,7 +657,7 @@ int EnableFreeScale(display_mode mode, const int vpp) {
 
     if (mode < DISP_MODE_480I || mode > DISP_MODE_1080P)
         return 0;
-    
+
     if (vpp) {
         daxis_path = "/sys/class/display2/axis";
 
@@ -668,42 +668,42 @@ int EnableFreeScale(display_mode mode, const int vpp) {
 
         memset(daxis_str,0,32);
         if(ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0) {
-            
+
             osd_width = vinfo.xres;
             osd_height = vinfo.yres;
             sprintf(daxis_str, "0 0 %d %d 0 0 18 18", vinfo.xres, vinfo.yres);
-            
+
             log_print("osd_width = %d", osd_width);
             log_print("osd_height = %d", osd_height);
-        } 
+        }
         else {
             log_print("get FBIOGET_VSCREENINFO fail.");
             goto exit;
-        }    
+        }
     } else {
-    
+
         daxis_path = "/sys/class/display/axis";
 
         if((fd0 = open("/dev/graphics/fb0", O_RDWR)) < 0) {
             log_print("open /dev/graphics/fb0 fail.");
             goto exit;
         }
-        
+
         if((fd1 = open("/dev/graphics/fb1", O_RDWR)) < 0) {
             log_print("open /dev/graphics/fb1 fail.");
-            goto exit;	
+            goto exit;
         }
-    
+
         memset(daxis_str,0,32);
         if(ioctl(fd0, FBIOGET_VSCREENINFO, &vinfo) == 0) {
-            
+
             osd_width = vinfo.xres;
             osd_height = vinfo.yres;
             sprintf(daxis_str, "0 0 %d %d 0 0 18 18", vinfo.xres, vinfo.yres);
 
             //log_print("osd_width = %d", osd_width);
             //log_print("osd_height = %d", osd_height);
-        } 
+        }
         else {
             log_print("get FBIOGET_VSCREENINFO fail.");
             goto exit;
@@ -719,107 +719,107 @@ int EnableFreeScale(display_mode mode, const int vpp) {
             if(set_sysfs_str(ppmgr_rect_path, "20 10 700 470 0") == -1) {
             set_sysfs_str(vaxis_path, "20 10 700 470");
             }
-            
+
             set_sysfs_str(daxis_path, daxis_str);
 			if(isM8==0)
-            	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
-            
+	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
+
             if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,0);
-            
+
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_WIDTH, osd_width);
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_HEIGHT, osd_height);
-            
-            if (!vpp) 
+
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_WIDTH,osd_width);
-            
-            if (!vpp) 
-                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_HEIGHT,osd_height);  
-            
+
+            if (!vpp)
+                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_HEIGHT,osd_height);
+
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 1);
             ioctl(fd1, FBIOPUT_OSD_FREE_SCALE_ENABLE, 1);
 
-            if (!vpp) 
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,1);
-            
+
             set_sysfs_str(video_path, "1");
 
             ret = 0;
         break;
-        
+
         case DISP_MODE_720P: //720p
-        
+
             set_sysfs_str(ppmgr_path, "1");
             set_sysfs_str(video_path, "1");
             if(set_sysfs_str(ppmgr_rect_path, "40 15 1240 705 0") == -1) {
                 set_sysfs_str(vaxis_path, "40 15 1240 705");
             }
-            
+
             set_sysfs_str(daxis_path, daxis_str);
 
 			if(isM8==0)
-            	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
-            
-            if (!vpp) 
+	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
+
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,0);
-            
+
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_WIDTH, osd_width);
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_HEIGHT, osd_height);
-            
-            if (!vpp) 
-                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_WIDTH,osd_width);
-            
-            if (!vpp) 
-                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_HEIGHT,osd_height);  
 
-			
+            if (!vpp)
+                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_WIDTH,osd_width);
+
+            if (!vpp)
+                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_HEIGHT,osd_height);
+
+
 			if(isM8==0)
                 ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 1);
 
-            if (!vpp) 
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,1);
-            
+
             set_sysfs_str(video_path, "1");
 
             ret = 0;
         break;
-        
+
         case DISP_MODE_1080I: //1080i
         case DISP_MODE_1080P: //1080p
             set_sysfs_str(ppmgr_path, "1");
             set_sysfs_str(video_path, "1");
-            
+
             if(set_sysfs_str(ppmgr_rect_path, "40 20 1880 1060 0") == -1) {
                 set_sysfs_str(vaxis_path, "40 20 1880 1060");
             }
-            
+
             set_sysfs_str(daxis_path, daxis_str);
-			
+
 			if(isM8==0)
-            	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
-            
-            if (!vpp) 
+	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 0);
+
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,0);
-            
+
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_WIDTH, osd_width);
             ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_HEIGHT, osd_height);
-            
-            if (!vpp) 
+
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_WIDTH,osd_width);
-            
-            if (!vpp) 
-                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_HEIGHT,osd_height);  
 
-			
+            if (!vpp)
+                ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_HEIGHT,osd_height);
+
+
 			if(isM8==0)
-            	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 1);
+	ioctl(fd0, FBIOPUT_OSD_FREE_SCALE_ENABLE, 1);
 
-            if (!vpp) 
+            if (!vpp)
                 ioctl(fd1,FBIOPUT_OSD_FREE_SCALE_ENABLE,1);
             set_sysfs_str(video_path, "1");
             ret = 0;
         break;
-        
+
     default:
         break;
     }
@@ -843,7 +843,7 @@ int disable_freescale(int cfg)
         && strcmp(prop2, "true") == 0) {
         vpp2_freescale = 1;
     }
-    
+
     char mode[16];
     display_mode disp_mode;
 
@@ -918,7 +918,7 @@ int disable_freescale_MBX()
     char* freeScaleOsd1File_path = "/sys/class/graphics/fb1/free_scale";
     char* ppmgr_path = "/sys/class/ppmgr/ppscaler";
     char* ppmgr_rect_path = "/sys/class/ppmgr/ppscaler_rect";
-    
+
     //set_sysfs_str(ppmgr_path, "0");
     //set_sysfs_str(freeScaleOsd0File_path, "0");
     //set_sysfs_str(freeScaleOsd1File_path, "0");
@@ -960,7 +960,7 @@ int enable_freescale_MBX()
     char* axis_path = "/sys/class/video/axis";
     char* ppmgr_path = "/sys/class/ppmgr/ppscaler";
     char* ppmgr_rect_path = "/sys/class/ppmgr/ppscaler_rect";
-    
+
     if (strncmp(mode, "fail", 4)) { //mode !=fail
         disp_mode = display_mode_convert(mode);
         if (disp_mode < DISP_MODE_480I || disp_mode > DISP_MODE_1080P) {
@@ -1029,7 +1029,7 @@ int enable_freescale_MBX()
     //if(fd_ppmgr_rect >= 0)
     //write(fd_ppmgr_rect, ppmgr_rect_str, strlen(ppmgr_rect_str));
     set_sysfs_str(axis_path, vaxis_str);
-    
+
     set_sysfs_str(ppmgr_path, "1");
     set_sysfs_str(freeScaleOsd0File_path, "1");
     set_sysfs_str(freeScaleOsd1File_path, "1");
@@ -1048,18 +1048,18 @@ int wait_play_end()
     ret = amsysfs_get_sysfs_str("/sys/class/amstream/videobufused", buf, 32);
     log_print("[wait_Play_end] ret %d buf %s\n",ret,buf);
     while((ret>=0)&&(!strstr(buf, "0"))){
-        
+
         log_print("[wait_Play_end] wait count %d\n",waitcount);
         if(waitcount > 500){
-            
+
             return -1;
 
         }
         waitcount++;
         usleep(500);
         memset(buf,0,sizeof(buf));
-        ret = amsysfs_get_sysfs_str("/sys/class/amstream/videobufused", buf, 32);     	
-    } 
+        ret = amsysfs_get_sysfs_str("/sys/class/amstream/videobufused", buf, 32);
+    }
     return 0;
 }
 
@@ -1110,7 +1110,7 @@ int enable_2Xscale()
 
     char* scale_path = "/sys/class/graphics/fb0/scale";
     char* scaleaxis_path = "/sys/class/graphics/fb0/scale_axis";
-    
+
     memset(saxis_str, 0, 32);
     sprintf(saxis_str, "0 0 %d %d", vinfo.xres / 2 - 1, vinfo.yres - 1);
 
@@ -1162,7 +1162,7 @@ int GL_2X_scale(int mSwitch)
     int vaxis_newx= -1,vaxis_newy = -1,vaxis_width= -1,vaxis_height= -1;
     int ret = 0;
     char buf[32];
-        
+
     property_get("ro.platform.has.1080scale",m1080scale,"fail");
     if(!strncmp(m1080scale, "fail", 4))
     {
@@ -1174,7 +1174,7 @@ int GL_2X_scale(int mSwitch)
         log_print("[enable_2XYscale]not freescale mode!\n");
         return 0;
     }
-    
+
     /*ret = get_sysfs_str("/sys/class/graphics/fb0/free_scale", buf, 32);
 
     log_print("[GL_2X_scale]get free_scale %s!\n",buf);
@@ -1191,11 +1191,11 @@ int GL_2X_scale(int mSwitch)
     char* request2X_scale_path = "/sys/class/graphics/fb0/request2XScale";
     char* fb0_blank_path = "/sys/class/graphics/fb0/blank";
     char* fb1_blank_path = "/sys/class/graphics/fb1/blank";
-    
+
     if(mSwitch == 0)
     {
         ret = get_sysfs_str("/sys/class/graphics/fb1/scale", buf, 32);
-        
+
         if((ret >=0) && strncmp(buf, "scale:[0x10001]", strlen("scale:[0x10001]"))==0){
             set_sysfs_str(fb0_blank_path, "1");
         }
@@ -1206,7 +1206,7 @@ int GL_2X_scale(int mSwitch)
         }
 
         ret = get_sysfs_str("/sys/class/graphics/fb0/request2XScale", buf, 32);
-        
+
         if((ret >=0) && strncmp(buf, "2", strlen("2"))==0){
             set_sysfs_str(request2X_scale_path, "4");
             log_print("write 4 to request2XScaleFile!!");
@@ -1218,16 +1218,16 @@ int GL_2X_scale(int mSwitch)
 
         if(!strncmp(mode, "1080i", 5) || !strncmp(mode, "1080p", 5)){
             set_sysfs_str(scale_Osd0_path, "0");
-            set_sysfs_str(scale_Osd0_axis_path, "0 0 959 1079");          
+            set_sysfs_str(scale_Osd0_axis_path, "0 0 959 1079");
         }
-        
+
         set_sysfs_str(display_axis_path, "0 0 1280 720 0 0 18 18");
         set_sysfs_str(scale_Osd1_path, "0");
     }
     else if(mSwitch == 1){
-        
+
         ret = get_sysfs_str("/sys/class/graphics/fb1/scale", buf, 32);
-        
+
         if((ret >=0) && strncmp(buf, "scale:[0x0]", strlen("scale:[0x0]"))==0){
             set_sysfs_str(fb0_blank_path, "1");
         }
@@ -1241,14 +1241,14 @@ int GL_2X_scale(int mSwitch)
             if(!strncmp(mode, "480i", 4)){
                 property_get("ubootenv.var.480ioutputx",vaxis_newx_str,"0");
                 property_get("ubootenv.var.480ioutputy",vaxis_newy_str,"0");
-                property_get("ubootenv.var.480ioutputwidth",vaxis_width_str,"720"); 
+                property_get("ubootenv.var.480ioutputwidth",vaxis_width_str,"720");
                 property_get("ubootenv.var.480ioutputheight",vaxis_height_str,"480");
             }
-            else{            
+            else{
                 property_get("ubootenv.var.480poutputx",vaxis_newx_str,"0");
-                property_get("ubootenv.var.480poutputy",vaxis_newy_str,"0"); 
-                property_get("ubootenv.var.480poutputwidth",vaxis_width_str,"720");  
-                property_get("ubootenv.var.480poutputheight",vaxis_height_str,"480");        
+                property_get("ubootenv.var.480poutputy",vaxis_newy_str,"0");
+                property_get("ubootenv.var.480poutputwidth",vaxis_width_str,"720");
+                property_get("ubootenv.var.480poutputheight",vaxis_height_str,"480");
             }
 
             vaxis_newx = atoi(vaxis_newx_str);
@@ -1268,37 +1268,37 @@ int GL_2X_scale(int mSwitch)
                     vaxis_width,
                     vaxis_height);
             set_sysfs_str(request2X_scale_path, writedata);
-            
+
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"1280 720 %d %d",vaxis_width,vaxis_height);
             set_sysfs_str(scale_Osd1_axis_path, writedata);
-            
+
             set_sysfs_str(scale_Osd1_path, "0x10001");
-            
+
         }
         else if(!strncmp(mode, "576i", 4) || !strncmp(mode, "576p", 4) || !strncmp(mode, "576cvbs", 7)){
-            
+
             if(!strncmp(mode, "576i", 4)){
                 property_get("ubootenv.var.576ioutputx",vaxis_newx_str,"0");
                 property_get("ubootenv.var.576ioutputy",vaxis_newy_str,"0");
-                property_get("ubootenv.var.576ioutputwidth",vaxis_width_str,"720"); 
+                property_get("ubootenv.var.576ioutputwidth",vaxis_width_str,"720");
                 property_get("ubootenv.var.576ioutputheight",vaxis_height_str,"576");
             }
-            else{            
-                property_get("ubootenv.var.576poutputx",vaxis_newx_str,"0"); 
+            else{
+                property_get("ubootenv.var.576poutputx",vaxis_newx_str,"0");
                 property_get("ubootenv.var.576poutputy",vaxis_newy_str,"0");
-                property_get("ubootenv.var.576poutputwidth",vaxis_width_str,"720"); 
-                property_get("ubootenv.var.576poutputheight",vaxis_height_str,"576");        
+                property_get("ubootenv.var.576poutputwidth",vaxis_width_str,"720");
+                property_get("ubootenv.var.576poutputheight",vaxis_height_str,"576");
             }
 
             vaxis_newx = atoi(vaxis_newx_str);
             vaxis_newy = atoi(vaxis_newy_str);
             vaxis_width = atoi(vaxis_width_str);
             vaxis_height = atoi(vaxis_height_str);
-            
+
             log_print("vaxis_newx:%d vaxis_newy:%d vaxis_width:%d vaxis_height:%d\n",
                        vaxis_newx,vaxis_newy,vaxis_width,vaxis_height);
-            
+
             sprintf(writedata,"%d %d 1280 720 %d %d 18 18",
                     vaxis_newx,vaxis_newy,vaxis_newx,vaxis_newy);
             set_sysfs_str(display_axis_path, writedata);
@@ -1306,25 +1306,25 @@ int GL_2X_scale(int mSwitch)
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"16 %d %d",vaxis_width,vaxis_height);
             set_sysfs_str(request2X_scale_path, writedata);
-            
+
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"1280 720 %d %d",vaxis_width,vaxis_height);
             set_sysfs_str(scale_Osd1_axis_path, writedata);
-            
+
             set_sysfs_str(scale_Osd1_path, "0x10001");
         }
         else if(!strncmp(mode, "720p", 4)){
 
             property_get("ubootenv.var.720poutputx",vaxis_newx_str,"0");
-            property_get("ubootenv.var.720poutputy",vaxis_newy_str,"0");  
-            property_get("ubootenv.var.720poutputwidth",vaxis_width_str,"1280"); 
+            property_get("ubootenv.var.720poutputy",vaxis_newy_str,"0");
+            property_get("ubootenv.var.720poutputwidth",vaxis_width_str,"1280");
             property_get("ubootenv.var.720poutputheight",vaxis_height_str,"720");
 
             vaxis_newx = atoi(vaxis_newx_str);
             vaxis_newy = atoi(vaxis_newy_str);
             vaxis_width = atoi(vaxis_width_str);
             vaxis_height = atoi(vaxis_height_str);
-            
+
             log_print("vaxis_newx:%d vaxis_newy:%d vaxis_width:%d vaxis_height:%d\n",
                        vaxis_newx,vaxis_newy,vaxis_width,vaxis_height);
 
@@ -1335,27 +1335,27 @@ int GL_2X_scale(int mSwitch)
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"16 %d %d",vaxis_width,vaxis_height);
             set_sysfs_str(request2X_scale_path, writedata);
-            
+
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"1280 720 %d %d",vaxis_width,vaxis_height);
             set_sysfs_str(scale_Osd1_axis_path, writedata);
-            
+
             set_sysfs_str(scale_Osd1_path, "0x10001");
-            
+
         }
         else if(!strncmp(mode, "1080i", 5) || !strncmp(mode, "1080p", 5)){
-            
-            if(!strncmp(mode, "1080i", 5)){ 
+
+            if(!strncmp(mode, "1080i", 5)){
                 property_get("ubootenv.var.1080ioutputx",vaxis_newx_str,"0");
                 property_get("ubootenv.var.1080ioutputy",vaxis_newy_str,"0");
-                property_get("ubootenv.var.1080ioutputwidth",vaxis_width_str,"1920"); 
+                property_get("ubootenv.var.1080ioutputwidth",vaxis_width_str,"1920");
                 property_get("ubootenv.var.1080ioutputheight",vaxis_height_str,"1080");
             }
-            else{            
+            else{
                 property_get("ubootenv.var.1080poutputx",vaxis_newx_str,"0");
-                property_get("ubootenv.var.1080poutputy",vaxis_newy_str,"0");  
-                property_get("ubootenv.var.1080poutputwidth",vaxis_width_str,"1920");  
-                property_get("ubootenv.var.1080poutputheight",vaxis_height_str,"1080");        
+                property_get("ubootenv.var.1080poutputy",vaxis_newy_str,"0");
+                property_get("ubootenv.var.1080poutputwidth",vaxis_width_str,"1920");
+                property_get("ubootenv.var.1080poutputheight",vaxis_height_str,"1080");
             }
 
             vaxis_newx = atoi(vaxis_newx_str);
@@ -1379,19 +1379,19 @@ int GL_2X_scale(int mSwitch)
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"7 %d %d",(vaxis_width/2),vaxis_height);
             set_sysfs_str(request2X_scale_path, writedata);
-            
+
             memset(writedata,0,strlen(writedata));
             sprintf(writedata,"1280 720 %d %d",vaxis_width,vaxis_height);
             set_sysfs_str(scale_Osd1_axis_path, writedata);
-            
+
             set_sysfs_str(scale_Osd1_path, "0x10001");
-            
+
         }
-        
+
     }
 
     return 0;
-    
+
 }
 
 /*
@@ -1516,7 +1516,7 @@ int set_stb_source_hiu()
 {
     char *path = "/sys/class/stb/source";
     return set_sysfs_str(path, "hiu");
-    
+
 }
 
 int get_stb_demux_source(char *strval, int size)

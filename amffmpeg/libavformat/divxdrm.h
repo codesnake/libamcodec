@@ -189,7 +189,7 @@ typedef struct drmTargetHeader_t
     uint8_t protectedAudioCryptoSize;
     uint8_t frameKeyCount;
     uint16_t drmSubMode;
-    drmGuardExt_t guardExt;    
+    drmGuardExt_t guardExt;
 } drmTargetHeader_t;
 
 typedef struct drmTransactionInfoHeaderStruct_t
@@ -245,7 +245,7 @@ typedef struct drmOwnerSlot
       uint8_t randomPad2;
 #endif
       uint8_t userId[OWNER_USER_ID_BYTES];
-#if DRM_OTHER_SECURE_PLATFORM == 0    
+#if DRM_OTHER_SECURE_PLATFORM == 0
       uint8_t randomPad3;
 #endif
 } drmOwnerSlot_t;
@@ -289,7 +289,7 @@ typedef struct drmRegistrationRequest
 {
       uint8_t userIdGuard[OWNER_GUARD_DMEM_BYTES];
       uint8_t modelId[MODEL_ID_BYTES];
-      uint8_t flag;//only 2 bits are used here 
+      uint8_t flag;//only 2 bits are used here
 } drmRegistrationRequest_t;
 
 /*NOTE: too many magic numbers, fixme*/
@@ -316,10 +316,10 @@ typedef struct {
       unsigned   drm_rental_value;                      /* still can play count */
       drmHeader_t *drm_header;                              /* const key informations */
       char      drm_reg_code[11];                 /* registrationCodeString*/
-      
+
 } drm_t;
 
-typedef enum drmErrorCodes 
+typedef enum drmErrorCodes
 {
       DRM_SUCCESS = 0,
       DRM_NOT_AUTHORIZED,

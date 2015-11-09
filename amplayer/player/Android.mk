@@ -12,10 +12,10 @@ LOCAL_CFLAGS += -DDOLBY_DAP_EN
 endif
 
 ifneq (0, $(shell expr $(PLATFORM_VERSION) \>= 4.3))
-    LOCAL_CFLAGS +=   -DUSE_ARM_AUDIO_DEC 
+    LOCAL_CFLAGS +=   -DUSE_ARM_AUDIO_DEC
 endif
 
-LOCAL_SRC_FILES := $(notdir $(wildcard $(LOCAL_PATH)/*.c)) 												
+LOCAL_SRC_FILES := $(notdir $(wildcard $(LOCAL_PATH)/*.c))
 
 LOCAL_SRC_FILES +=system/android.c system/systemsetting.c
 
@@ -56,7 +56,7 @@ ifdef DOLBY_DAP
 LOCAL_CFLAGS += -DDOLBY_DAP_EN
 endif
 
-LOCAL_SRC_FILES := $(notdir $(wildcard $(LOCAL_PATH)/*.c)) 									
+LOCAL_SRC_FILES := $(notdir $(wildcard $(LOCAL_PATH)/*.c))
 
 LOCAL_SRC_FILES +=system/android.c system/systemsetting.c
 

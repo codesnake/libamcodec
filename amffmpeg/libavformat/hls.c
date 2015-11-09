@@ -62,11 +62,11 @@ struct segment {
     char key[MAX_URL_SIZE];
     enum KeyType key_type;
     uint8_t iv[16];
-     int seg_starttime;	
-     int64_t seg_filesize;	 
-     int flags;	 
+     int seg_starttime;
+     int64_t seg_filesize;
+     int flags;
 #define DISCONTINUE_FLAG			(1<<0)
-	 
+
 };
 
 
@@ -79,7 +79,7 @@ struct variant {
     int bandwidth;
     char url[MAX_URL_SIZE];
     AVIOContext pb;
-    URLContext urllpbuf;	
+    URLContext urllpbuf;
     uint8_t* read_buffer;
     URLContext *input;
     AVFormatContext *parent;
@@ -107,11 +107,11 @@ static int read_chomp_line(AVIOContext *s, char *buf, int maxlen)
     while (len > 0 && isspace(buf[len - 1]))
         buf[--len] = '\0';
      if(len==0){
-	 	if(url_feof(s))
+		if(url_feof(s))
 			return AVERROR_EOF;
 		if(url_ferror(s))
 			return url_ferror(s);
-    }	
+    }
     return len;
 }
 
@@ -134,15 +134,15 @@ typedef struct HLSContext {
     int64_t seek_timestamp;
     int seek_flags;
     int latest_3file_brate;
-    int latest_1file_brate;	
-    int total_brate;		
-/* to support discontinue*/	
+    int latest_1file_brate;
+    int total_brate;
+/* to support discontinue*/
     int64_t discontinue_diff_timestamp;
-    int64_t expect_next_pts;	
-    int64_t expect_next_dts;	
+    int64_t expect_next_pts;
+    int64_t expect_next_dts;
     int discontinue_pts_interval_ms;
-	
-#ifdef  AVIO_OPEN2		
+
+#ifdef  AVIO_OPEN2
     AVIOInterruptCB *interrupt_callback;
 #endif
 } HLSContext;
@@ -242,17 +242,17 @@ static int parse_playlist(HLSContext *c, const char *url,
     const char *locattion=NULL;
     int totaltime=0;
     int isdiscontinued=0;
-	
+
     if (!in) {
         close_in = 1;
-#ifdef  AVIO_OPEN2	
+#ifdef  AVIO_OPEN2
         if ((ret = avio_open2(&in, url, AVIO_FLAG_READ | URL_NO_LP_BUFFER,c->interrupt_callback, NULL)) < 0)
             return ret;
 #else
 	if ((ret = avio_open(&in, url, AVIO_FLAG_READ | URL_NO_LP_BUFFER)) < 0){
-		av_log(NULL, AV_LOG_ERROR, "parse_playlist :open [%s]failed=%d\n",url,ret);	 
+		av_log(NULL, AV_LOG_ERROR, "parse_playlist :open [%s]failed=%d\n",url,ret);
             return ret;
-	}		
+	}
 #endif
     }
     if(in->reallocation)
@@ -261,7 +261,7 @@ static int parse_playlist(HLSContext *c, const char *url,
 		locattion=url;
     read_chomp_line(in, line, sizeof(line));
     if (strcmp(line, "#EXTM3U")) {
-	 av_log(NULL, AV_LOG_ERROR, "not a valid m3u file,first line is [%s]\n",line);	 
+	 av_log(NULL, AV_LOG_ERROR, "not a valid m3u file,first line is [%s]\n",line);
         ret = AVERROR_INVALIDDATA;
         goto fail;
     }
@@ -274,14 +274,14 @@ static int parse_playlist(HLSContext *c, const char *url,
 		int sret;
 		 line[0]=0;
 		 if(url_interrupt_cb())
-		 	break;
+			break;
 	        sret=read_chomp_line(in, line, sizeof(line));
 		 if(sret<0){
-		 	 av_log(NULL, AV_LOG_ERROR, "read_chomp_line end,ret=%d,var=%x,c->n_variants=%x\n",sret,var,c->n_variants);	 
-		 	ret=(var!=NULL ||c->n_variants>0)?0:sret;
-		 	break;
+			 av_log(NULL, AV_LOG_ERROR, "read_chomp_line end,ret=%d,var=%x,c->n_variants=%x\n",sret,var,c->n_variants);
+			ret=(var!=NULL ||c->n_variants>0)?0:sret;
+			break;
 		 }
-	    av_log(NULL, AV_LOG_INFO+1, "parse_playlist :[%s]\n",line);	 
+	    av_log(NULL, AV_LOG_INFO+1, "parse_playlist :[%s]\n",line);
         if (av_strstart(line, "#EXT-X-STREAM-INF:", &ptr)) {
             struct variant_info info = {{0}};
             is_variant = 1;
@@ -354,7 +354,7 @@ static int parse_playlist(HLSContext *c, const char *url,
                 }
                 seg->duration = duration;
                 seg->key_type = key_type;
-		  seg->seg_starttime=totaltime;	
+		  seg->seg_starttime=totaltime;
 		  seg->flags=DISCONTINUE_FLAG;
 		  totaltime+=duration;
                 if (has_iv) {
@@ -373,7 +373,7 @@ static int parse_playlist(HLSContext *c, const char *url,
     }
     if (var){
         var->last_load_time = av_gettime();
-	 var->total_time_s=totaltime;	
+	 var->total_time_s=totaltime;
      }
 fail:
     if (close_in)
@@ -387,7 +387,7 @@ static int open_input(struct variant *var)
     int ret;
 
     if (seg->key_type == KEY_NONE) {
-#ifdef  AVIO_OPEN2			
+#ifdef  AVIO_OPEN2
         return ffurl_open(&var->input, seg->url, AVIO_FLAG_READ,
                           &var->parent->interrupt_callback, NULL);
 #else
@@ -402,8 +402,8 @@ static int open_input(struct variant *var)
         int ret;
         if (strcmp(seg->key, var->key_url)) {
             URLContext *uc;
-	     		
-#ifdef  AVIO_OPEN2	
+
+#ifdef  AVIO_OPEN2
 		ret=ffurl_open(&uc, seg->key, AVIO_FLAG_READ ,
                            &var->parent->interrupt_callback, NULL);
 #else
@@ -429,15 +429,15 @@ static int open_input(struct variant *var)
             snprintf(url, sizeof(url), "crypto+%s", seg->url);
         else
             snprintf(url, sizeof(url), "crypto:%s", seg->url);
-#ifdef  AVIO_OPEN2			
+#ifdef  AVIO_OPEN2
 	if ((ret = ffurl_alloc(&var->input, url, AVIO_FLAG_READ,
                                &var->parent->interrupt_callback)) < 0)
-               return ret;                
+               return ret;
  #else
 	if ((ret = ffurl_alloc(&var->input, url, AVIO_FLAG_READ  |URL_MINI_BUFFER | URL_NO_LP_BUFFER)) < 0)
 		return ret;
  #endif
-            
+
         //av_opt_set(var->input->priv_data, "key", key, 0);
        // av_opt_set(var->input->priv_data, "iv", iv, 0);
 
@@ -445,14 +445,14 @@ static int open_input(struct variant *var)
 	 av_set_string3(var->input->priv_data, "key", key, 0, NULL);
         av_set_string3(var->input->priv_data, "iv", iv, 0, NULL);
 
-		
+
         if ((ret = ffurl_connect(var->input)) < 0) {
             ffurl_close(var->input);
             var->input = NULL;
             return ret;
         }
 	  if(var->input)
-		seg->seg_filesize=ffurl_size(var->input);	
+		seg->seg_filesize=ffurl_size(var->input);
         return 0;
     }
     return AVERROR(ENOSYS);
@@ -486,13 +486,13 @@ static int64_t read_data_exseek(URLContext *opaque, int64_t offset, int whence)
 		}
 	}
 	else if(whence == AVSEEK_TO_TIME ){
-	 	//no support
+		//no support
 	}
 	else if(whence == AVSEEK_SIZE){
-	 	//no support
+		//no support
 	}
 	return ret;
-}	
+}
 static int read_data(void *opaque, uint8_t *buf, int buf_size)
 {
 #ifdef  USED_LP_BUF
@@ -535,7 +535,7 @@ reload:
             if (v->finished)
                 return AVERROR_EOF;
             while (av_gettime() - v->last_load_time < reload_interval) {
-#ifdef  AVIO_OPEN2			
+#ifdef  AVIO_OPEN2
               if (ff_check_interrupt(c->interrupt_callback))
                     return AVERROR_EXIT;
 #else
@@ -587,22 +587,22 @@ static int select_best_variant(HLSContext *c,int bitrate)
 	int best_index=-1,best_band=-1;
 	int min_index=0,min_band=-1;
 	int max_index=0,max_band=-1;
-	
+
 	for (i = 0; i < c->n_variants; i++) {
 		struct variant *v = c->variants[i];
 		if(v->bandwidth<=bitrate && v->bandwidth>best_band){
 			best_band=v->bandwidth;
 			best_index=i;
-		}	
+		}
 		if(v->bandwidth<min_band || min_band<0){
 			min_band=v->bandwidth;
 			min_index=i;
-		}	
+		}
 		if(v->bandwidth>max_band || max_band<0){
 			max_band=v->bandwidth;
 			max_index=i;
-		}	
-	}	
+		}
+	}
 	if(best_index<0)/*no low rate streaming found,used the lowlest*/
 		best_index=min_index;
 	return 0;
@@ -613,13 +613,13 @@ static int hls_buffering_data(AVFormatContext *s,int size){
 	int ret=-1;
 	struct variant *var =NULL,*v;
 	 if (c && c->end_of_segment || c->first_packet) {
-        	recheck_discard_flags(s, c->first_packet);
-		c->end_of_segment=0;		
+	recheck_discard_flags(s, c->first_packet);
+		c->end_of_segment=0;
 		c->first_packet=0;
-    	}
-	
+	}
+
 	for (i = 0; i < c->n_variants; i++) {
-      	  	v = c->variants[i];
+	  	v = c->variants[i];
 		if(v->needed){
 			var=v;
 			break;
@@ -637,7 +637,7 @@ static int hls_buffering_data(AVFormatContext *s,int size){
 			return bufedtime;
 		}
 		seg=var->segments[var->cur_seq_no - var->start_seq_no];
-		
+
 		if(seg){
 			int64_t pos,filesize;
 			bufedtime=seg->seg_starttime;
@@ -646,14 +646,14 @@ static int hls_buffering_data(AVFormatContext *s,int size){
 				filesize=url_filesize(var->input);
 				if(filesize>0 && pos<=filesize){
 					bufedtime+=seg->duration*pos/filesize;
-				}	
+				}
 			}
 			return bufedtime;
 		}
 		return -1;
 	}else{
-	 	if(var->urllpbuf.lpbuf)
-	  		ret=url_lp_intelligent_buffering(&var->urllpbuf,size);
+		if(var->urllpbuf.lpbuf)
+			ret=url_lp_intelligent_buffering(&var->urllpbuf,size);
 	}
 	 return ret;
 }
@@ -667,7 +667,7 @@ static int hls_read_header(AVFormatContext *s)
     //c->interrupt_callback = &s->interrupt_callback;
    c->total_brate=500*1024;
    c->latest_3file_brate=c->total_brate;
-   c->latest_1file_brate=c->total_brate;	
+   c->latest_1file_brate=c->total_brate;
     s->bit_rate=0;
     if ((ret = parse_playlist(c, s->filename, NULL, s->pb)) < 0){
 	av_log(NULL, AV_LOG_WARNING, "parse_playlist failed ret=%d\n",ret);
@@ -703,12 +703,12 @@ static int hls_read_header(AVFormatContext *s)
             duration += c->variants[0]->segments[i]->duration;
         s->duration = duration * AV_TIME_BASE;
     }
- 
-   if(only_parser_one_variants){	
-   		parser_start=select_best_variant(c,c->total_brate);
+
+   if(only_parser_one_variants){
+		parser_start=select_best_variant(c,c->total_brate);
 		parser_end=parser_start+1;
    }else{
-   		parser_start=0;
+		parser_start=0;
 		parser_end=c->n_variants;
    }
     /* Open the demuxer for each variant */
@@ -740,8 +740,8 @@ static int hls_read_header(AVFormatContext *s)
 		ffio_init_context(&v->pb, v->read_buffer, INITIAL_BUFFER_SIZE, 0, &v->urllpbuf,
                           url_lpread, NULL, NULL);
 	}else{
-		
-        	ffio_init_context(&v->pb, v->read_buffer, INITIAL_BUFFER_SIZE, 0, &v->urllpbuf,
+
+	ffio_init_context(&v->pb, v->read_buffer, INITIAL_BUFFER_SIZE, 0, &v->urllpbuf,
                           read_data, NULL, NULL);
 	}
 	v->urllpbuf.is_streamed=1;
@@ -751,7 +751,7 @@ static int hls_read_header(AVFormatContext *s)
         v->read_buffer = av_malloc(INITIAL_BUFFER_SIZE);
         ffio_init_context(&v->pb, v->read_buffer, INITIAL_BUFFER_SIZE, 0, v,
                           read_data, NULL, NULL);
-#endif		
+#endif
         v->pb.seekable = 0;
         ret = av_probe_input_buffer(&v->pb, &in_fmt, v->segments[0]->url,
                                     NULL, 0, 0);
@@ -769,7 +769,7 @@ static int hls_read_header(AVFormatContext *s)
         if (ret < 0)
             goto fail;
 	 if(v->bandwidth<=0 && v->segments[0]->seg_filesize>0 && v->segments[0]->duration>0){
-	 	v->bandwidth=v->segments[0]->seg_filesize/v->segments[0]->duration;
+		v->bandwidth=v->segments[0]->seg_filesize/v->segments[0]->duration;
 	 }
         v->stream_offset = stream_offset;
         snprintf(bitrate_str, sizeof(bitrate_str), "%d", v->bandwidth);
@@ -796,10 +796,10 @@ static int hls_read_header(AVFormatContext *s)
     c->first_packet = 1;
     c->first_timestamp = AV_NOPTS_VALUE;
     c->seek_timestamp  = AV_NOPTS_VALUE;
-    c->discontinue_pts_interval_ms=2000;	
+    c->discontinue_pts_interval_ms=2000;
     s->flags|=AVFMT_FLAG_FILESIZE_NOT_VALID;
    if(s->pb){
-	 	/*reset read and free lp buf.*/
+		/*reset read and free lp buf.*/
 		/*del lp buf,to free memory*/
 		ffio_fdopen_resetlpbuf(s->pb,0);
 		s->pb->flags|=AVIO_FLAG_SIZE_NOTVALID;
@@ -808,7 +808,7 @@ static int hls_read_header(AVFormatContext *s)
     return 0;
 fail:
     free_variant_list(c);
-    
+
      return ret;
 }
 
@@ -850,26 +850,26 @@ static int recalculated_pkt_pts(AVFormatContext *s,  AVStream *st,AVPacket *pkt)
 {
 	HLSContext *c = s->priv_data;
 	int64_t max_discontinue=av_rescale_rnd(c->discontinue_pts_interval_ms,st->time_base.den,1000*st->time_base.num,AV_ROUND_ZERO);
-	int64_t real_pts,real_dts;	
+	int64_t real_pts,real_dts;
 	/*not on seek/ recalculated the pts/cts,because the pts,dts may reset on DISCONTINUE*/
 	real_pts=pkt->pts;
 	real_dts=pkt->dts;
 	av_log(s, AV_LOG_DEBUG1, "hls:recalculated_pkt_pts max_discontinue=%lld,realpts=%lld,expect_next_pts=%lld,discontinue_diff_timestamp=%lld\n", max_discontinue,real_pts,c->expect_next_pts,c->discontinue_diff_timestamp);
 	av_log(s, AV_LOG_DEBUG2, "hls:recalculated_pkt_pts max_discontinue=%lld,real_dts=%lld,expect_next_dts=%lld,discontinue_diff_timestamp=%lld\n", max_discontinue,real_dts,c->expect_next_dts,c->discontinue_diff_timestamp);
-	
-	if(c->discontinue_diff_timestamp!=0){	
+
+	if(c->discontinue_diff_timestamp!=0){
 		if(pkt->pts>=0)
 			pkt->pts=pkt->pts+c->discontinue_diff_timestamp;
 		if(pkt->dts>=0)
 			pkt->dts=pkt->dts+c->discontinue_diff_timestamp;
-	}		
+	}
 	if(pkt->pts>=0 &&( c->expect_next_pts>0&& pkt->pts>c->expect_next_pts+max_discontinue || pkt->pts<c->expect_next_pts-max_discontinue)){
 		/*the pts is jumped,we think the stream have reset the pts. do fix here */
 		c->discontinue_diff_timestamp=c->expect_next_pts-real_pts;
 		pkt->pts=c->expect_next_pts;
 		av_log(s, AV_LOG_INFO, "hls:pts DISCONTINUE found max_discontinue=%lld,realpts=%lld,expect_next_pts=%lld,discontinue_diff_timestamp=%lld\n", max_discontinue,real_pts,c->expect_next_pts,c->discontinue_diff_timestamp);
 	}else if(pkt->dts>=0 && (c->expect_next_dts>0 && pkt->dts>c->expect_next_dts+max_discontinue || pkt->dts<c->expect_next_dts-max_discontinue)){
-		/*the pts is jumped,we think the stream have reset the pts. do fix here */	
+		/*the pts is jumped,we think the stream have reset the pts. do fix here */
 		c->discontinue_diff_timestamp=c->expect_next_dts-real_dts;
 		pkt->dts=c->expect_next_dts;
 		av_log(s, AV_LOG_INFO, "hls:pts DISCONTINUE found max_discontinue=%lld,realpts=%lld,expect_next_pts=%lld,discontinue_diff_timestamp=%lld\n", max_discontinue,real_pts,c->expect_next_pts,c->discontinue_diff_timestamp);
@@ -919,13 +919,13 @@ start:
             while (!url_interrupt_cb()) {
                 int64_t ts_diff;
                 AVStream *st;
-		  st = var->ctx->streams[var->pkt.stream_index];		
+		  st = var->ctx->streams[var->pkt.stream_index];
                 ret = av_read_frame(var->ctx, &var->pkt);
                 if (ret < 0) {
                     if (!url_feof(&var->pb))
                         return ret;
-                   	reset_packet(&var->pkt);
-                    	break;
+	reset_packet(&var->pkt);
+	break;
                 } else {
                     if (c->first_timestamp == AV_NOPTS_VALUE)
                         c->first_timestamp = var->pkt.dts;
@@ -936,16 +936,16 @@ start:
                     break;
 
                 if (var->pkt.dts == AV_NOPTS_VALUE) {
-                   
-			if(retry++<20)		
-                   	 	continue;
+
+			if(retry++<20)
+	 	continue;
 			else{
 				 c->seek_timestamp = AV_NOPTS_VALUE;
 				break;/*retry too long used this pkt*/
-			}	
+			}
                 }
 
-               
+
                 ts_diff = av_rescale_rnd(var->pkt.dts, AV_TIME_BASE,
                                          st->time_base.den, AV_ROUND_DOWN) -
                           c->seek_timestamp;
@@ -1020,7 +1020,7 @@ static int hls_read_seek(AVFormatContext *s, int stream_index,
                                s->streams[stream_index]->time_base.den :
                                AV_TIME_BASE, flags & AVSEEK_FLAG_BACKWARD ?
                                AV_ROUND_DOWN : AV_ROUND_UP);
-          */                     
+          */
          if (var->input) {
             ffurl_close(var->input);
             var->input = NULL;
@@ -1040,7 +1040,7 @@ static int hls_read_seek(AVFormatContext *s, int stream_index,
                 var->cur_seq_no = var->start_seq_no + j;
                 ret = 0;
 		  c->discontinue_diff_timestamp=0;
-                c->expect_next_pts=av_rescale_rnd(pos,s->streams[stream_index]->time_base.den,s->streams[stream_index]->time_base.num,AV_ROUND_ZERO)+c->first_timestamp;	
+                c->expect_next_pts=av_rescale_rnd(pos,s->streams[stream_index]->time_base.den,s->streams[stream_index]->time_base.num,AV_ROUND_ZERO)+c->first_timestamp;
                 c->expect_next_dts=c->expect_next_pts;
                 break;
             }

@@ -100,7 +100,7 @@ int amsysfs_set_sysfs_int16(const char *path, int val)
     } else {
         LOGE("unable to open file %s,err: %s", path, strerror(errno));
     }
-    
+
     return -1;
 }
 
@@ -126,9 +126,9 @@ unsigned long amsysfs_get_sysfs_ulong(const char *path)
 	char bcmd[24]="";
 	unsigned long num=0;
 	if ((fd = open(path, O_RDONLY)) >=0) {
-    	read(fd, bcmd, sizeof(bcmd));
-    	num = strtoul(bcmd, NULL, 0);
-    	close(fd);
+	read(fd, bcmd, sizeof(bcmd));
+	num = strtoul(bcmd, NULL, 0);
+	close(fd);
 	} else {
         LOGE("unable to open file %s,err: %s", path, strerror(errno));
     }

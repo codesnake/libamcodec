@@ -113,7 +113,7 @@ static int udp_join_multicast_group(int sockfd, struct sockaddr *addr)
 #if HAVE_STRUCT_IPV6_MREQ && defined(IPPROTO_IPV6)
     if (addr->sa_family == AF_INET6) {
         struct ipv6_mreq mreq6;
-    	av_log(NULL,AV_LOG_INFO,"IPV6_ADD_MEMBERSHIP\n");
+	av_log(NULL,AV_LOG_INFO,"IPV6_ADD_MEMBERSHIP\n");
         memcpy(&mreq6.ipv6mr_multiaddr, &(((struct sockaddr_in6 *)addr)->sin6_addr), sizeof(struct in6_addr));
         mreq6.ipv6mr_interface= 0;
         if (setsockopt(sockfd, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &mreq6, sizeof(mreq6)) < 0) {
@@ -188,7 +188,7 @@ static int udp_set_url(struct sockaddr_storage *addr,
     struct addrinfo *res0;
     int addr_len;
     int family = AF_UNSPEC;
-    if(am_getconfig_bool_def("media.libplayer.ipv4only",1))	
+    if(am_getconfig_bool_def("media.libplayer.ipv4only",1))
 		family = AF_INET;
     res0 = udp_resolve_host(hostname, port, SOCK_DGRAM, family, 0);
     if (res0 == 0) return AVERROR(EIO);
@@ -205,7 +205,7 @@ static int udp_socket_create(UDPContext *s,
     int udp_fd = -1;
     struct addrinfo *res0 = NULL, *res = NULL;
     int family = AF_UNSPEC;
-    if(am_getconfig_bool_def("media.libplayer.ipv4only",1))	
+    if(am_getconfig_bool_def("media.libplayer.ipv4only",1))
 		family = AF_INET;
     if (((struct sockaddr *) &s->dest_addr)->sa_family)
         family = ((struct sockaddr *) &s->dest_addr)->sa_family;

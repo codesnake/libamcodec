@@ -82,15 +82,15 @@ static inline int ff_network_wait_fd(int fd, int write)
     struct pollfd p = { .fd = fd, .events = ev, .revents = 0 };
     int ret=0;
 	#define RETRY_MAX 10	//100*10=1S,low level READ.
-	int retry=RETRY_MAX; 
+	int retry=RETRY_MAX;
 	do{
 		if(retry<RETRY_MAX-5  && url_interrupt_cb()) /*at lest try 5 times, for some teardown command*/
 			return AVERROR_EXIT;
-    	ret = poll(&p, 1, 100);/*100ms*/
+	ret = poll(&p, 1, 100);/*100ms*/
 		if(ret!=0)
 			break;/*fd ready or errors*/
 		if(p.revents & (ev | POLLERR | POLLHUP))
-			return 0;/*disconnect , EOF*/	
+			return 0;/*disconnect , EOF*/
 		if(retry %4==1)
 			av_log(NULL,AV_LOG_INFO,"ff_network_wait_fd,retry=%d\n",retry);
 	}while(retry-->0);

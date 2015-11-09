@@ -154,7 +154,7 @@ static int check_decoder_worksta(play_para_t *para)
                     } else {
                         para->vbuffer.check_rp_change_cnt = CHECK_VIDEO_HALT_CNT;
                     }
-                    if ((para->vbuffer.check_rp_change_cnt <= 0 && para->playctrl_info.video_low_buffer) || 
+                    if ((para->vbuffer.check_rp_change_cnt <= 0 && para->playctrl_info.video_low_buffer) ||
 		        ((vdec.status >> 16) & PARSER_FATAL_ERROR && para->playctrl_info.video_low_buffer) ||/* parser error,do reset on low buffer level.*/
                         para->vbuffer.check_rp_change_cnt < - CHECK_VIDEO_HALT_CNT*2 ) {/*too long time no changes.*/
                         para->vbuffer.check_rp_change_cnt = CHECK_VIDEO_HALT_CNT;
@@ -275,7 +275,7 @@ void check_msg(play_para_t *para, player_cmd_t *msg)
         para->playctrl_info.end_flag = 1;
         para->playctrl_info.loop_flag = 0;
         para->playctrl_info.search_flag = 0;
-        para->playctrl_info.request_end_flag = 1;      
+        para->playctrl_info.request_end_flag = 1;
         para->playctrl_info.fast_forward = 0;
         para->playctrl_info.fast_backward = 0;
     } else if (msg->ctrl_cmd & CMD_SEARCH) {
@@ -329,7 +329,7 @@ void check_msg(play_para_t *para, player_cmd_t *msg)
         para->playctrl_info.pause_flag = 1;
     } else if (msg->ctrl_cmd & CMD_RESUME) {
         para->playctrl_info.pause_flag = 0;
-    } else if (msg->ctrl_cmd & CMD_FF) {         
+    } else if (msg->ctrl_cmd & CMD_FF) {
         if (para->vstream_info.has_video) {
             para->playctrl_info.init_ff_fr = 0;
             if (msg->param == 0) {
@@ -338,12 +338,12 @@ void check_msg(play_para_t *para, player_cmd_t *msg)
                 para->playctrl_info.f_step = msg->param * FF_FB_BASE_STEP;
                 para->playctrl_info.fast_forward = 1;
                 para->playctrl_info.fast_backward = 0;
-					        
+
                 if (para->playctrl_info.pause_flag) {
                     int has_audio_saved=para->codec->has_audio ;
 		    if (para->codec->has_audio) {
                         para->codec->has_audio = 0;
-     	            }	
+	            }
                     codec_resume(para->codec);      //clear pause state
                     para->codec->has_audio=has_audio_saved;
                     para->playctrl_info.pause_flag = 0;
@@ -354,7 +354,7 @@ void check_msg(play_para_t *para, player_cmd_t *msg)
             log_error("pid[%d]::no video, can't support ff!\n", para->player_id);
             set_player_error_no(para, PLAYER_FFFB_UNSUPPORT);
         }
-    } else if (msg->ctrl_cmd & CMD_FB) {         
+    } else if (msg->ctrl_cmd & CMD_FB) {
         if (para->vstream_info.has_video) {
             para->playctrl_info.init_ff_fr = 0;
             if (msg->param == 0) {
@@ -362,12 +362,12 @@ void check_msg(play_para_t *para, player_cmd_t *msg)
             } else {
                 para->playctrl_info.f_step = msg->param * FF_FB_BASE_STEP;
                 para->playctrl_info.fast_backward = 1;
-                para->playctrl_info.fast_forward = 0;					        
+                para->playctrl_info.fast_forward = 0;
                 if (para->playctrl_info.pause_flag) {
                     int has_audio_saved=para->codec->has_audio ;
 		     if (para->codec->has_audio) {
                          para->codec->has_audio = 0;
-     	             }	
+	             }
                     codec_resume(para->codec);      //clear pause state
                     para->codec->has_audio=has_audio_saved;
                     para->playctrl_info.pause_flag = 0;
@@ -608,7 +608,7 @@ int check_flag(play_para_t *p_para)
         if (p_para->sstream_info.has_sub) {
             subtitle_curr = av_get_subtitle_curr();
         }
-	
+
         if (subtitle_curr >= 0 && subtitle_curr < p_para->sstream_num && \
             subtitle_curr != p_para->sstream_info.cur_subindex) {
             log_print("start change subtitle from %d to %d \n", p_para->sstream_info.cur_subindex, subtitle_curr);
@@ -645,9 +645,9 @@ int check_flag(play_para_t *p_para)
             } else {
                 player_switch_sub(p_para);
             }
-        }	
+        }
     }
-	
+
     return NONO_FLAG;
 }
 
@@ -740,7 +740,7 @@ void update_player_start_paras(play_para_t *p_para, play_control_t *c_para)
               p_para->playctrl_info.black_out,
               p_para->playctrl_info.time_point,
               p_para->playctrl_info.read_max_retry_cnt);
-    if(am_getconfig_bool_def("media.amplayer.disp_url",1)>0){          
+    if(am_getconfig_bool_def("media.amplayer.disp_url",1)>0){
         log_print("file::::[%s],len=%d\n", c_para->file_name, strlen(c_para->file_name));
     }
 }
@@ -980,8 +980,8 @@ void *player_thread(play_para_t *player)
         //set_player_state(player, PLAYER_ERROR);
         //goto release;
         if (player->playctrl_info.raw_mode) {
-        	//log_print("*****data offset 0x%x\n", p_para->data_offset);
-        	url_fseek(player->pFormatCtx->pb, player->data_offset, SEEK_SET);
+	//log_print("*****data offset 0x%x\n", p_para->data_offset);
+	url_fseek(player->pFormatCtx->pb, player->data_offset, SEEK_SET);
         }
     }
     log_print("pid[%d]::decoder prepare\n", player->player_id);
@@ -1000,7 +1000,7 @@ void *player_thread(play_para_t *player)
     update_playing_info(player);
     update_player_states(player, 1);
     player_mate_init(player, 1000 * 10);
-    ffmpeg_seturl_buffered_level(player,0);	
+    ffmpeg_seturl_buffered_level(player,0);
     if (player->vstream_info.video_format == VFORMAT_SW) {
         log_print("Use SW video decoder\n");
 
@@ -1225,7 +1225,7 @@ write_packet:
                   player->playctrl_info.loop_flag, player->playctrl_info.search_flag,
                   player->playctrl_info.fast_forward, player->playctrl_info.fast_backward,
                   player->playctrl_info.reset_flag, player->playctrl_info.f_step);
-	
+
 	if ((player->playctrl_info.loop_flag < 0xffff) && (player->playctrl_info.loop_flag > 0))
 		player->playctrl_info.loop_flag--;
         exit_flag = (!player->playctrl_info.loop_flag)   &&
@@ -1304,14 +1304,14 @@ release0:
             set_player_state(player, PLAYER_STOPED);
             set_player_error_no(player, 0);
         } else {
-        	int64_t value = 0;
+	int64_t value = 0;
 		int rv = ffmpeg_geturl_netstream_info(player,3,&value);
 		if(rv ==0){//get http download errors for HLS streaming
 			ret  = value;
 		}
             set_player_error_no(player, ret);
         }
-		
+
         log_print("player error,force video blackout\n");
         set_black_policy(1);
     }

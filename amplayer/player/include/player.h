@@ -11,7 +11,7 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
- 
+
 int 	player_init();
 int     player_start(play_control_t *p,unsigned long  priv);
 int 	player_stop(int pid);

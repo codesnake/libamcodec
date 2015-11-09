@@ -41,10 +41,10 @@ int player_request_pid(void)
     static int last = -1;
     pthread_mutex_lock(&priv_pid_mutex);
     log_debug1("[player_request_pid:%d]last=%d\n", __LINE__, last);
-    i = last+1;  
+    i = last+1;
     if (i >= (MAX_PLAYER_THREADS)) {
          i = 0;
-    } 	
+    }
     for (j=0;j < MAX_PLAYER_THREADS; j++) {
         if (!(priv_pid_pool & (1 << i))) {
             priv_pid_pool |= (1 << i);
@@ -57,7 +57,7 @@ int player_request_pid(void)
         }
 	 i = i + 1;
         if (i >= (MAX_PLAYER_THREADS)) {
-        	 i = 0;
+	 i = 0;
 	 }
     }
     pthread_mutex_unlock(&priv_pid_mutex);

@@ -61,7 +61,7 @@ int set_tsync_enable(int enable)
         close(fd);
         return 0;
     }
-    
+
     return -1;
 }
 
@@ -77,7 +77,7 @@ int set_disable_video(int mode)
         close(fd);
         return 0;
     }
-    
+
     return -1;
 }
 
@@ -130,10 +130,10 @@ int set_display_axis(int recovery)
             count = parse_para(str, 8, axis);
         }
         if (recovery) {
-            sprintf(str, "%d %d %d %d %d %d %d %d", 
+            sprintf(str, "%d %d %d %d %d %d %d %d",
                 axis[0],axis[1], axis[2], axis[3], axis[4], axis[5], axis[6], axis[7]);
         } else {
-            sprintf(str, "2048 %d %d %d %d %d %d %d", 
+            sprintf(str, "2048 %d %d %d %d %d %d %d",
                 axis[1], axis[2], axis[3], axis[4], axis[5], axis[6], axis[7]);
         }
         write(fd, str, strlen(str));
@@ -145,7 +145,7 @@ int set_display_axis(int recovery)
 }
 
 static void signal_handler(int signum)
-{   
+{
     printf("Get signum=%x\n",signum);
     codec_close(pcodec);
     fclose(fp);
@@ -255,7 +255,7 @@ int process_rm_header(void)
         }
         if (read_buf32(i) == MKTAG('.', 'r', 'a', 0xfd)) {
             int version;
-            
+
             printf("get audio tag\n");
             tagsize = read_buf32(i-4);
             codec_pos = i;
@@ -438,7 +438,7 @@ int main(int argc,char *argv[])
                 isize += ret;
             }
             //printf("ret %d, isize %d\n", ret, isize);
-        }while(isize < Readlen);	 
+        }while(isize < Readlen);
 
         signal(SIGCHLD, SIG_IGN);
         signal(SIGTSTP, SIG_IGN);
@@ -449,16 +449,16 @@ int main(int argc,char *argv[])
         signal(SIGSEGV, signal_handler);
         signal(SIGINT, signal_handler);
         signal(SIGQUIT, signal_handler);
-    }	
+    }
 
     do {
         ret = codec_get_vbuf_state(pcodec, &vbuf);
         if (ret != 0) {
             printf("codec_get_vbuf_state error: %x\n", -ret);
             goto error;
-        }        
+        }
     } while (vbuf.data_len > 0x100);
-    
+
 error:
     codec_close(pcodec);
     fclose(fp);
@@ -466,7 +466,7 @@ error:
     osd_blank("/sys/class/graphics/fb0/blank",0);
     //osd_blank("/sys/class/graphics/fb1/blank",1);
     set_display_axis(1);
-    
+
     return 0;
 }
 

@@ -101,7 +101,7 @@ static const char avi_headers[][8] = {
 };
 
 #define VALID_VIDEO_4CC(a) (((a)==0x6264)||((a)==0x6364)||((a)==0x6464))
-      
+
 static int avi_load_index(AVFormatContext *s);
 static int guess_ni_flag(AVFormatContext *s);
 
@@ -221,7 +221,7 @@ static int read_braindead_odml_indx(AVFormatContext *s, int frame_num){
             if(last_pos == pos || pos == base - 8)
                 avi->non_interleaved= 1;
             if(last_pos != pos && (len || !ast->sample_size))
-            {            
+            {
                 av_add_index_entry(st, pos, ast->cum_len, len, 0, key ? AVINDEX_KEYFRAME : 0);
             }
 
@@ -258,7 +258,7 @@ static int read_braindead_odml_indx(AVFormatContext *s, int frame_num){
         }
     }
     avi->index_loaded=1;
-	
+
 	//add by X.H.
 	//av_log(NULL, AV_LOG_INFO, "[%s:%d]nb_frames=%x nb_index_entries=%d\n",__FUNCTION__, __LINE__, st->nb_frames, st->nb_index_entries);
 	if((st->nb_frames>>3) < st->nb_index_entries){
@@ -685,7 +685,7 @@ static int avi_read_header(AVFormatContext *s, AVFormatParameters *ap)
                             memcpy(st->codec->extradata + st->codec->extradata_size - 9, "BottomUp", 9);
                     }
                     st->codec->height= FFABS(st->codec->height);
-                    
+
                     /* patched for WVC1, do NOT use extra data if biBitCount unavailable
                      * we got a file with bits_per_coded_sample equals 0
                      */
@@ -961,10 +961,10 @@ static int avi_read_packet(AVFormatContext *s, AVPacket *pkt)
             }
         }
         if(!best_st)
-        {                      
+        {
             //return -1;
             av_log(s, AV_LOG_ERROR, "[%s:%d]can't find stream\n", __FUNCTION__, __LINE__);
-            return AVERROR_EOF; 
+            return AVERROR_EOF;
         }
 
         best_ast = best_st->priv_data;
@@ -998,7 +998,7 @@ resync:
         av_log(s, AV_LOG_WARNING, "[%s]interrupt, return error!\n", __FUNCTION__);
         return AVERROR_EXIT;
     }
-    
+
     if(avi->stream_index >= 0){
         AVStream *st= s->streams[ avi->stream_index ];
         AVIStream *ast= st->priv_data;
@@ -1112,7 +1112,7 @@ resync:
         // if exceed valid data, return EOF
         if (s->valid_offset_done && (i >= s->valid_offset))
             return AVERROR_EOF;
-        
+
         for(j=0; j<7; j++)
             d[j]= d[j+1];
         d[7]= avio_r8(pb);
@@ -1278,7 +1278,7 @@ static int avi_read_idx1(AVFormatContext *s, int size)
             first_key_frame = 0;
             ast->sequence_head_offset = pos;
         }
-        
+
         last_pos= pos;
     }
     return 0;
@@ -1320,11 +1320,11 @@ static int avi_save_sequence_head(AVFormatContext *s, AVIStream *avi_stream)
     unsigned int pos = avi_stream->sequence_head_offset;
     unsigned char *first_key_chunk = NULL;
     int i, sequence_head_pos = -1;
-    
+
     first_key_chunk = av_malloc(2048);
     if (first_key_chunk == NULL)
         return -1;
-    
+
     avio_seek(s->pb, pos, SEEK_SET);
     avio_read(s->pb, first_key_chunk, 2048);
 
@@ -1340,7 +1340,7 @@ static int avi_save_sequence_head(AVFormatContext *s, AVIStream *avi_stream)
                 sequence_head_pos = i;
             }
         }
-        else 
+        else
         {
             if ((first_key_chunk[i]==0x00)
                 && (first_key_chunk[i+1]==0x00)
@@ -1407,12 +1407,12 @@ static int avi_load_index(AVFormatContext *s)
         }
     }
  the_end:
-    for (i=0; i<s->nb_streams; i++) {        
-        avi_stream = (AVIStream *)s->streams[i]->priv_data;        
+    for (i=0; i<s->nb_streams; i++) {
+        avi_stream = (AVIStream *)s->streams[i]->priv_data;
         if (avi_stream->sequence_head_offset) {
             av_log(NULL, AV_LOG_INFO, "[%s]stream %d sequence head 0x%x\n", __FUNCTION__, i, avi_stream->sequence_head_offset);
             avi_save_sequence_head(s, avi_stream);
-        }    
+        }
     }
     avio_seek(pb, pos, SEEK_SET);
     return ret;

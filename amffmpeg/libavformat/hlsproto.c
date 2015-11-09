@@ -74,7 +74,7 @@ static int read_chomp_line(AVIOContext *s, char *buf, int maxlen)
     while (len > 0 && isspace(buf[len - 1]))
         buf[--len] = '\0';
      if(len==0){
-	 	if(url_feof(s))
+		if(url_feof(s))
 			return AVERROR_EOF;
 		if(url_ferror(s))
 			return url_ferror(s);
@@ -121,7 +121,7 @@ static int parse_playlist(URLContext *h, const char *url)
     char line[1024];
     const char *ptr;
     int segnum=0;
-#ifdef  AVIO_OPEN2		
+#ifdef  AVIO_OPEN2
     if ((ret = avio_open2(&in, url, AVIO_FLAG_READ,
                           &h->interrupt_callback, NULL)) < 0)
         return ret;
@@ -137,11 +137,11 @@ static int parse_playlist(URLContext *h, const char *url)
     s->finished = 0;
     while (1) {
 	if(url_interrupt_cb())
-	 	break;
+		break;
         ret=read_chomp_line(in, line, sizeof(line));
 	 if(ret<0){
-	 	ret=(segnum>0)?0:ret;
-	 	break;
+		ret=(segnum>0)?0:ret;
+		break;
 	 }
         if (av_strstart(line, "#EXT-X-STREAM-INF:", &ptr)) {
             struct variant_info info = {{0}};
@@ -170,7 +170,7 @@ static int parse_playlist(URLContext *h, const char *url)
                 seg->duration = duration;
                 ff_make_absolute_url(seg->url, sizeof(seg->url), url, line);
                 dynarray_add(&s->segments, &s->n_segments, seg);
-		  segnum++;	
+		  segnum++;
                 is_segment = 0;
             } else if (is_variant) {
                 struct variant *var = av_malloc(sizeof(struct variant));
@@ -383,15 +383,15 @@ int  hlsproto_probe(ByteIOContext *s,const char *file)
 		{
 
 			if(memcmp(line,EXTM3U,strlen(EXTM3U))==0)
-			{				
+			{
 				av_log(NULL, AV_LOG_INFO, "hls_probe get m3u flags!!\n");
 				return 100;
 			}
-		}	
+		}
 	}
 	else
 	{
-		if((av_match_ext(file, "m3u"))||(av_match_ext(file, "m3u8"))) 
+		if((av_match_ext(file, "m3u"))||(av_match_ext(file, "m3u8")))
 		{
 			return 50;
 		}

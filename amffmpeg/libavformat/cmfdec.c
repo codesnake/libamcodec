@@ -67,7 +67,7 @@ static int cmf_h264_add_header(unsigned char *buf, int size,  AVPacket *pkt)
         pkt->size = size;
         return 0;
     }
-    
+
     if (size < 10) {
         return -1;
     }
@@ -122,7 +122,7 @@ static void cmf_flush_packet_queue(AVFormatContext *s)
     AVPacketList *pktl;
     for (;;) {
         pktl = s->packet_buffer;
-        if (!pktl) { 
+        if (!pktl) {
             break;
         }
         s->packet_buffer = pktl->next;
@@ -164,9 +164,9 @@ static int cmf_parser_next_slice(AVFormatContext *s, int *index, int first)
     if (ret < 0) {
         av_log(s, AV_LOG_INFO, "av_probe_input_buffer failed %s---%d [%d]\n",__FUNCTION__,__LINE__,ret);
 		if (bs->sctx) {
-        	avformat_free_context(bs->sctx);
+	avformat_free_context(bs->sctx);
 			bs->sctx=NULL;
-    	}
+	}
 		return ret;
     }
     bs->sctx->pb = newvpb->pb;
@@ -174,9 +174,9 @@ static int cmf_parser_next_slice(AVFormatContext *s, int *index, int first)
     if (ret < 0) {
         av_log(s, AV_LOG_INFO, "cmf_parser_next_slice:avformat_open_input failed \n");
 		if (bs->sctx) {
-        	avformat_free_context(bs->sctx);
+	avformat_free_context(bs->sctx);
 			bs->sctx=NULL;
-    	}
+	}
         goto fail;
     }
     if (!memcmp(bs->sctx->iformat->name,"flv",3)) {
@@ -321,7 +321,7 @@ static int cmf_read_packet(AVFormatContext *s, AVPacket *mpkt)
     int ret;
     struct cmfvpb *ci ;
     AVStream *st_parent;
-   
+
 retry_read:
     ci = cmf->cmfvpb;
     /*
@@ -339,7 +339,7 @@ retry_read:
                 cmf->is_cached = 0;
                 ret = 0;
            }else{
-    	        ret = av_read_frame(cmf->sctx, &cmf->pkt);
+	        ret = av_read_frame(cmf->sctx, &cmf->pkt);
            }
            if(ret >= 0 && s->streams[cmf->pkt.stream_index]->codec->codec_type == CODEC_TYPE_VIDEO && cmf->next_mp4_flag == 1) {
                 const char * p = cmf->pkt.data;
@@ -386,7 +386,7 @@ retry_read:
     if (ret < 0) {
         av_log(NULL,AV_LOG_INFO,"----------->cmf_read_packet ret=%d", ret);
 		if(cmf->sctx){
-       		cmf_flush_packet_queue(cmf->sctx);
+		cmf_flush_packet_queue(cmf->sctx);
 		}
         cmf_reset_packet(&cmf->pkt);
         url_lpreset(&ci->vlpcontext);
@@ -407,7 +407,7 @@ retry_read:
         ret = cmf_parser_next_slice(s, &(cmf->parsering_index), 0);
         if (ret>=0) {
             av_log(s, AV_LOG_INFO, " goto reread, ret=%d\n", ret);
-            goto retry_read;    
+            goto retry_read;
         }else{
 	    av_log(s, AV_LOG_INFO, "cmf_parser_next_slice failed..., ret=%d\n", ret);
 	    return ret;
@@ -453,7 +453,7 @@ int cmf_read_seek(AVFormatContext *s, int stream_index, int64_t sample_time, int
     av_log(NULL, AV_LOG_INFO, "cmf read_seek:TOTALINFO  index[%lld] total_num [%lld] total_duration [%lld] \n",ci->cur_index,ci->total_num, ci->total_duration);
     av_log(NULL, AV_LOG_INFO, "cmf read_seek:SIZEINFO    index[%lld] start_offset [0x%llx] end_offset [0x%llx] slice_size[0x%llx] \n", ci->cur_index, ci->start_offset, ci->end_offset, ci->size);
     av_log(NULL, AV_LOG_INFO, "cmf read_seek:TIMEINFO    index[%lld] start_time [%lld]ms end_time [%lld]ms curslice_duration[%lld]ms \n", ci->cur_index, ci->start_time, ci->end_time, ci->curslice_duration);
-    
+
      if(stream_index < 0){
         stream_index= av_find_default_stream_index(s);
         if(stream_index < 0)
@@ -461,14 +461,14 @@ int cmf_read_seek(AVFormatContext *s, int stream_index, int64_t sample_time, int
     }
 
     st= s->streams[stream_index];
-    
+
     seektimestamp=av_rescale_rnd(sample_time,st->time_base.num*1000,st->time_base.den,AV_ROUND_ZERO);//pts->ms
-    
+
     av_log(s, AV_LOG_INFO, "cmf read_seek: checkin pts [%lld] seektimestamp[%lld]ms streamindex [%d]\n",sample_time,seektimestamp,stream_index);
     if (!memcmp(cmf->sctx->iformat->name,"mpegts",6)) {
         flags = AVSEEK_CMF_TS_TIME;
     }
-              
+
     if ((seektimestamp >= ci->start_time)&&(seektimestamp <= ci->end_time )){
         //in cur slice;
         av_log(s, AV_LOG_INFO, "cmf read_seek:IN CUR SLICE realtime = [%lld]ms  start-end [%lld-%lld] calctoend[%lld]ms\n",seektimestamp,ci->start_time,ci->end_time,ci->end_time-seektimestamp);
@@ -498,14 +498,14 @@ int cmf_read_seek(AVFormatContext *s, int stream_index, int64_t sample_time, int
         }
         cmf->is_seeked = 1;
         cmfvpb_getinfo(ci,AVCMD_SLICE_INDEX,0,&ci->cur_index);
-        cmfvpb_getinfo(ci, AVCMD_SLICE_START_OFFSET, 0, &ci->start_offset); 
+        cmfvpb_getinfo(ci, AVCMD_SLICE_START_OFFSET, 0, &ci->start_offset);
         //cmfvpb_getinfo(ci, AVCMD_SLICE_SIZE, 0 , &ci->size);
         cmfvpb_getinfo(ci, AVCMD_SLICE_STARTTIME, 0 , &ci->start_time);
         cmfvpb_getinfo(ci, AVCMD_SLICE_ENDTIME, 0 , &ci->end_time);
 
         //ci->end_offset = ci->start_offset + ci->size;
         ci->curslice_duration=ci->end_time-ci->start_time;
-        
+
         cmf->parsering_index = ci->cur_index;
         remain_seektime = seektimestamp - ci->start_time;
         cmf_flush_packet_queue(cmf->sctx);
@@ -554,7 +554,7 @@ int cmf_read_close(AVFormatContext *s)
     struct cmf *bs = s->priv_data;
     if (bs && bs->sctx) {
         avformat_free_context(bs->sctx);
-    }	
+    }
      cmfvpb_pb_free(bs->cmfvpb);
     return 0;
 }

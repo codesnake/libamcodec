@@ -52,7 +52,7 @@
 // chunk type contains 2 fields: Frame and PacketID.
 // Frame is 0x24 or 0xA4(rarely), different PacketID indicates different packet type.
 
-static const char* mmsh_FirstRequest =   
+static const char* mmsh_FirstRequest =
 	"Accept: */*\r\n"
 	USERAGENT
 	"Host: %s:%d\r\n"
@@ -61,8 +61,8 @@ static const char* mmsh_FirstRequest =
 	CLIENTGUID
 	"Connection: Close\r\n\r\n";
 
-static const char* mmsh_SeekableRequest =    
- 	"Accept: */*\r\n"
+static const char* mmsh_SeekableRequest =
+	"Accept: */*\r\n"
 	USERAGENT
 	"Host: %s:%d\r\n"
 	"Pragma: no-cache,rate=1.000000,request-context=%u,max-duration=%u\r\n"
@@ -73,7 +73,7 @@ static const char* mmsh_SeekableRequest =
 	"Pragma: no-cache,rate=1.000000,stream-time=%u\r\n"
 	"Connection: Close\r\n\r\n";
 
-static const char* mmsh_LiveRequest =   
+static const char* mmsh_LiveRequest =
 	"Accept: */*\r\n"
 	USERAGENT
 	"Host: %s:%d\r\n"
@@ -148,7 +148,7 @@ static ChunkType get_chunk_header(MMSHContext *mmsh, int *len)
         ext_header_len = 8;
         break;
     case CHUNK_TYPE_METADATA:
-	 ext_header_len = 8;	
+	 ext_header_len = 8;
 	 break;
     default:
         av_log(NULL, AV_LOG_ERROR, "Strange chunk type %d\n", chunk_type);
@@ -278,39 +278,39 @@ static int mmsh_open_internal(URLContext *h, const char *uri, int flags, int tim
     char *stream_selection = NULL;
     char headers[1024];
     MMSHContext *mmsh;
-    MMSContext *mms;	
+    MMSContext *mms;
     StreamType stype = MMSH_SEEKABLE;
-    mmsh = h->priv_data = av_mallocz(sizeof(MMSHContext));     
-   
-	
+    mmsh = h->priv_data = av_mallocz(sizeof(MMSHContext));
+
+
     if (!h->priv_data)
         return AVERROR(ENOMEM);
 
     mmsh->request_seq = h->is_streamed = 1;
-		
+
     mms = &mmsh->mms;
-	
+
     if(!strncmp(uri,"mmsh:shttp://",strlen("mmsh:shttp://")))/*protocol swtich,add the mmsh on the header*/
-        av_strlcpy(mmsh->location, uri+6, sizeof(mmsh->location));//del the mmsh first   
-    else		
+        av_strlcpy(mmsh->location, uri+6, sizeof(mmsh->location));//del the mmsh first
+    else
 	 av_strlcpy(mmsh->location, uri, sizeof(mmsh->location));
-	 
-    
-   
+
+
+
     av_url_split(NULL, 0, NULL, 0,
-        host, sizeof(host), &port, path, sizeof(path), mmsh->location);   
+        host, sizeof(host), &port, path, sizeof(path), mmsh->location);
     if (port<0)
         port = 80; // default mmsh protocol port
     ff_url_join(httpname, sizeof(httpname), "http", NULL, host, port, "%s", path);
 
     if (ffurl_alloc(&mms->mms_hd, httpname, AVIO_FLAG_READ) < 0) {
         return AVERROR(EIO);
-    }  
+    }
     snprintf(headers, sizeof(headers),
              mmsh_FirstRequest,
              host, port, mmsh->request_seq++);
     ff_http_set_headers(mms->mms_hd, headers);
-		   
+
     err = ffurl_connect(mms->mms_hd);
     if (err) {
         goto fail;
@@ -321,11 +321,11 @@ static int mmsh_open_internal(URLContext *h, const char *uri, int flags, int tim
         av_log(NULL, AV_LOG_ERROR, "Get http header data failed!\n");
         goto fail;
     }
-    
+
     if(mms->mms_hd->prot){
         int iflag = ff_http_get_broadcast_flag(mms->mms_hd);
-        
-     
+
+
         if(iflag>0){
             av_log(NULL,AV_LOG_INFO,"Get a broadcast stream flag\n");
             stype = MMSH_LIVE;
@@ -333,11 +333,11 @@ static int mmsh_open_internal(URLContext *h, const char *uri, int flags, int tim
             av_log(NULL,AV_LOG_INFO,"Get a seekable stream flag\n");
             stype = MMSH_SEEKABLE;
         }
-        
+
         // close the socket and then reopen it for sending the second play request.
         ffurl_close(mms->mms_hd);
     }
-    //fix me? just need probe data,for judge live and vod.	
+    //fix me? just need probe data,for judge live and vod.
     memset(headers, 0, sizeof(headers));
     if ((err = ffurl_alloc(&mms->mms_hd, httpname, AVIO_FLAG_READ)) < 0) {
         goto fail;
@@ -431,16 +431,16 @@ static int mmsh_read(URLContext *h, uint8_t *buf, int size)
     int res = 0;
     MMSHContext *mmsh = h->priv_data;
     MMSContext *mms   = &mmsh->mms;
-    int retry=10;	
+    int retry=10;
     do {
         if (mms->asf_header_read_size < mms->asf_header_size) {
             // copy asf header into buffer
             res = ff_mms_read_header(mms, buf, size);
         } else {
             if (!mms->remaining_in_len && (res = handle_chunk_type(mmsh))){
-              	if(retry--<0)/*for loop play,we will get CHUNK_TYPE_END on read.*/
+	if(retry--<0)/*for loop play,we will get CHUNK_TYPE_END on read.*/
 				return res;
-			continue;	
+			continue;
             }
             res = ff_mms_read_data(mms, buf, size);
         }
@@ -453,16 +453,16 @@ int is_mmsh_file(AVIOContext *pb,const char *name)
 	char line[1024+1];
 	int ret;
 	int linecnt=0;
-	if(!pb) return 0;	
+	if(!pb) return 0;
 	do
-	{	
-		ret=ff_get_assic_line(pb,line,1024);		
+	{
+		ret=ff_get_assic_line(pb,line,1024);
 		if(ret==0){
 			if(url_feof(pb) || url_ferror(pb))
 				return 0;
 			}else if(ret<0)
 				break;
-		if(ret<5) continue;      	
+		if(ret<5) continue;
 		if(!strncmp(line,"[Reference]",strlen("[Reference]"))){
 			score+=50;
 			continue;
@@ -487,7 +487,7 @@ static int64_t mmsh_read_seek(URLContext *h, int stream_index,
 	MMSHContext *mmsh = h->priv_data;
 	MMSContext *mms   = &mmsh->mms;
 	int ret;
-	
+
 	//av_log(NULL,AV_LOG_DEBUG,"%s======= %d,%lld,%d,%d\n", __FUNCTION__,__LINE__,timestamp,flags,stream_index);
 	ret= mmsh_open_internal(h, mmsh->location, 0, FFMAX(timestamp, 0), 0);
 
@@ -510,7 +510,7 @@ static int64_t mmsh_seek(URLContext *h, int64_t pos, int whence)
 	//av_log(NULL,AV_LOG_DEBUG, "%s======= %d,%lld,%d\n", __FUNCTION__,__LINE__,pos,whence);
 	MMSHContext *mmsh = h->priv_data;
 	MMSContext *mms   = &mmsh->mms;
-	
+
 	if (whence == AVSEEK_SIZE&&(mms->flags&0x02>0)&&(mms->flags&0x01==0)) {
 		av_log(NULL,AV_LOG_DEBUG,"[%s]:Get stream size: %lld\n",mms->file_size);
 		return mms->file_size;
@@ -525,5 +525,5 @@ URLProtocol ff_mmsh_protocol = {
     .url_read  = mmsh_read,
     .url_seek  = mmsh_seek,
     .url_close = mmsh_close,
-    .url_read_seek  = mmsh_read_seek,  
+    .url_read_seek  = mmsh_read_seek,
 };

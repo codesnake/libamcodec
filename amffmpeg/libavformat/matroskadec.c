@@ -587,7 +587,7 @@ static int ebml_read_num(MatroskaDemuxContext *matroska, AVIOContext *pb,
     /* The first byte tells us the length in bytes - avio_r8() can normally
      * return 0, but since that's not a valid first ebmlID byte, we can
      * use it safely here to catch EOS. */
-   
+
     if (!(total = avio_r8(pb))) {
         /* we might encounter EOS here */
         if (!url_feof(pb)) {
@@ -785,8 +785,8 @@ static int ebml_parse_id(MatroskaDemuxContext *matroska, EbmlSyntax *syntax,
 	}
 
     if ((matroska->media_offset == MAX_OFFSET)
-        && ((MATROSKA_ID_CLUSTER == id) 
-        || (MATROSKA_ID_ATTACHMENTS == id) 
+        && ((MATROSKA_ID_CLUSTER == id)
+        || (MATROSKA_ID_ATTACHMENTS == id)
         || (MATROSKA_ID_CHAPTERS == id))) {
         matroska->media_offset = url_ftell(matroska->ctx->pb) - 4;
     }
@@ -795,7 +795,7 @@ static int ebml_parse_id(MatroskaDemuxContext *matroska, EbmlSyntax *syntax,
     /*if (matroska->in_read_header && (MATROSKA_ID_TRACKS == id) && (url_ftell(matroska->ctx->pb) > matroska->media_offset)) {
 		av_log(matroska->ctx, AV_LOG_ERROR, "Track exceed media offset %llx > %llx\n", url_ftell(matroska->ctx->pb), matroska->media_offset);
 		return -1;
-    }*/    
+    }*/
 
     //add by X.H. mkv file have only one EBML_ID_HEADER
     pos = avio_tell(pb);
@@ -904,9 +904,9 @@ static int ebml_parse_elem(MatroskaDemuxContext *matroska,
 		offset_next=pos+length;
 		if (matroska->num_levels > 0) {
 		    MatroskaLevel *level = &matroska->levels[matroska->num_levels - 1];
-		    if ((offset_next>level->start)&&((offset_next - level->start) > level->length)&&(level->start+level->length>pos)) { 
+		    if ((offset_next>level->start)&&((offset_next - level->start) > level->length)&&(level->start+level->length>pos)) {
 		        av_log(matroska->ctx, AV_LOG_ERROR, "Invalid EBML data length, exceed top master size\n");
-		        return avio_skip(pb,level->start+level->length-pos)<0 ? AVERROR(EIO) : 0;			  	
+		        return avio_skip(pb,level->start+level->length-pos)<0 ? AVERROR(EIO) : 0;
 		   }
 		}
 		filesize = avio_size(pb);
@@ -1320,7 +1320,7 @@ static int matroska_read_header(AVFormatContext *s, AVFormatParameters *ap)
 
     matroska->ctx = s;
     matroska->media_offset = MAX_OFFSET;
-    
+
     /* First read the EBML header. */
     if (ebml_parse(matroska, ebml_syntax, &ebml)
         || ebml.version > EBML_VERSION       || ebml.max_size > sizeof(uint64_t)
@@ -1716,15 +1716,15 @@ static int matroska_read_header(AVFormatContext *s, AVFormatParameters *ap)
                                    pos[j].pos + matroska->segment_start,
                                    index[i].time/index_scale, 0, 0,
                                    AVINDEX_KEYFRAME);
-            	} 
+	}
         }
     }
 
-	if (index_list->nb_elem < 2){		
-		s->support_seek = 0;	
+	if (index_list->nb_elem < 2){
+		s->support_seek = 0;
 		av_log(matroska->ctx, AV_LOG_INFO, "index nb_elem less than 2, set unsupport seek! nb_elem:%d seekable:%d\n", index_list->nb_elem, matroska->ctx->pb->seekable);
 	}
-	else		
+	else
 		s->support_seek = 1;
 
 	if(matroska->ctx->pb->seekable == 1 && index_list->nb_elem == 0)
@@ -1804,7 +1804,7 @@ static int matroska_parse_block(MatroskaDemuxContext *matroska, uint8_t *data,
     if (size <= 3 || !track || !track->stream) {
         av_log(matroska->ctx, AV_LOG_INFO,
                "Invalid stream %"PRIu64" or size %u\n", num, size);
-       return res; 
+       return res;
     }
     st = track->stream;
     if (st->discard >= AVDISCARD_ALL)
@@ -2064,7 +2064,7 @@ static int matroska_read_packet(AVFormatContext *s, AVPacket *pkt)
 {
     MatroskaDemuxContext *matroska = s->priv_data;
 
-    while (matroska_deliver_packet(matroska, pkt)) {	
+    while (matroska_deliver_packet(matroska, pkt)) {
         if (matroska->done){
 			av_log(s, AV_LOG_WARNING, "AVERROR_EOF\n");
 			return AVERROR_EOF;

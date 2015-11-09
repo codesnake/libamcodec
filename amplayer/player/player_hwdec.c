@@ -190,9 +190,9 @@ void adts_add_header(play_para_t *para)
         pkt->hdr->size = 0;
         return ; /*have added before */
     }
-	
+
 //Some aac es stream already has adts header,need check the first ADTS_HEADER_SIZE bytes
-    while (pkt->data&&pkt->data_size>=ADTS_HEADER_SIZE) {      
+    while (pkt->data&&pkt->data_size>=ADTS_HEADER_SIZE) {
         adts_header = MALLOC(ADTS_HEADER_SIZE);
         if (adts_header) {
             memset(adts_header,0,ADTS_HEADER_SIZE);
@@ -202,7 +202,7 @@ void adts_add_header(play_para_t *para)
         if(((adts_header[0]<<4)|(adts_header[1]&0xF0)>>4)!=0xFFF)//sync code
                 break;
         if((( (*(adts_header+ 3)&0x2)<<11)|( (*(adts_header + 4)&0xFF)<<3)|( (*(adts_header + 5)&0xE0)>>5))!=pkt->data_size)//frame length
-                break;	
+                break;
         //log_info(" AAC es has adts header,don't add again\n");
         pkt->hdr->size = 0;
         return;
@@ -211,7 +211,7 @@ void adts_add_header(play_para_t *para)
         av_free(adts_header);
         adts_header=NULL;
     }
-	
+
     if (para->astream_info.extradata) {
         buf[3] = (buf[3] & 0xfc) | (size >> 11);
         buf[4] = (size >> 3) & 0xff;
@@ -536,17 +536,17 @@ static int avi_write_header(play_para_t *para)
     int index = para->vstream_info.video_index;
     am_packet_t *pkt = para->p_pkt;
     AVCodecContext *avcodec;
-    
+
     if (-1 == index) {
         return PLAYER_ERROR_PARAM;
     }
 
     pStream = para->pFormatCtx->streams[index];
     avcodec = pStream->codec;
-    
+
     AVIStream *avi_stream = pStream->priv_data;
     int seq_size = avi_stream->sequence_head_size;
-    if (seq_size > 0) 
+    if (seq_size > 0)
         ret = avi_add_seqheader(pStream, pkt);
     else if(avcodec->extradata_size > 4)
         ret = m4s2_dx50_mp4v_add_header(avcodec->extradata, avcodec->extradata_size, pkt);
@@ -842,7 +842,7 @@ static int generate_vorbis_header(unsigned char *extradata, unsigned extradata_s
 
 static void vorbis_insert_syncheader(char **hdrdata, int *size,char**vorbis_headers,int *vorbis_header_sizes)
 {
-  
+
     char *pdata = (char *)MALLOC(vorbis_header_sizes[0]+vorbis_header_sizes[1]+vorbis_header_sizes[2]+24);
     int i;
     if (pdata==NULL) {

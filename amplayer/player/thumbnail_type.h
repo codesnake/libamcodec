@@ -19,7 +19,7 @@ typedef struct stream{
     AVFormatContext *pFormatCtx;
     AVCodecContext  *pCodecCtx;
     AVCodec         *pCodec;
-    AVFrame         *pFrameYUV; 
+    AVFrame         *pFrameYUV;
     AVFrame         *pFrameRGB;
 }stream_t;
 

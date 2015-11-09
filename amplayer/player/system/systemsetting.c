@@ -55,7 +55,7 @@ int PlayerGetVFilterFormat(play_para_t*am_p)
 	char value[1024];
 	int filter_fmt = 0;
 	unsigned int codec_id;
-	
+
 	if (video_index != -1) {
 		AVStream *pStream;
 		AVCodecContext  *pCodecCtx;
@@ -75,33 +75,33 @@ int PlayerGetVFilterFormat(play_para_t*am_p)
 			filter_fmt |= FILTER_VFMT_H264;
 		}
 	}
-	
+
     if (GetSystemSettingString("media.amplayer.disable-vcodecs", value, NULL) > 0) {
 		log_print("[%s:%d]disable_vdec=%s\n", __FUNCTION__, __LINE__, value);
 		if (strstr(value,"MPEG12") != NULL || strstr(value,"mpeg12") != NULL) {
 			filter_fmt |= FILTER_VFMT_MPEG12;
-		} 
+		}
 		if (strstr(value,"MPEG4") != NULL || strstr(value,"mpeg4") != NULL) {
 			filter_fmt |= FILTER_VFMT_MPEG4;
-		} 
+		}
 		if (strstr(value,"H264") != NULL || strstr(value,"h264") != NULL) {
 			filter_fmt |= FILTER_VFMT_H264;
-		} 
+		}
 		if (strstr(value,"MJPEG") != NULL || strstr(value,"mjpeg") != NULL) {
 			filter_fmt |= FILTER_VFMT_MJPEG;
-		} 
+		}
 		if (strstr(value,"REAL") != NULL || strstr(value,"real") != NULL) {
 			filter_fmt |= FILTER_VFMT_REAL;
-		} 
+		}
 		if (strstr(value,"JPEG") != NULL || strstr(value,"jpeg") != NULL) {
 			filter_fmt |= FILTER_VFMT_JPEG;
-		} 
+		}
 		if (strstr(value,"VC1") != NULL || strstr(value,"vc1") != NULL) {
 			filter_fmt |= FILTER_VFMT_VC1;
-		} 
+		}
 		if (strstr(value,"AVS") != NULL || strstr(value,"avs") != NULL) {
 			filter_fmt |= FILTER_VFMT_AVS;
-		} 
+		}
 		if (strstr(value,"SW") != NULL || strstr(value,"sw") != NULL) {
 			filter_fmt |= FILTER_VFMT_SW;
 		}
@@ -151,7 +151,7 @@ int PlayerGetVFilterFormat(play_para_t*am_p)
 int PlayerGetAFilterFormat(const char *prop)
 {
 	char value[1024];
-	int filter_fmt = 0;	
+	int filter_fmt = 0;
 #ifndef 	USE_ARM_AUDIO_DEC
     /* check the dts/ac3 firmware status */
     if(access("/system/etc/firmware/audiodsp_codec_ddp_dcv.bin",F_OK)){
@@ -171,75 +171,75 @@ int PlayerGetAFilterFormat(const char *prop)
     if(access("/system/lib/libstagefright_soft_dtshd.so",F_OK) ){
 		filter_fmt  |= FILTER_AFMT_DTS;
     }
-#endif	
+#endif
     if (GetSystemSettingString(prop, value, NULL) > 0) {
 		log_print("[%s:%d]disable_adec=%s\n", __FUNCTION__, __LINE__, value);
 		if (strstr(value,"mpeg") != NULL || strstr(value,"MPEG") != NULL) {
 			filter_fmt |= FILTER_AFMT_MPEG;
-		} 
+		}
 		if (strstr(value,"pcms16l") != NULL || strstr(value,"PCMS16L") != NULL) {
 			filter_fmt |= FILTER_AFMT_PCMS16L;
-		} 
+		}
 		if (strstr(value,"aac") != NULL || strstr(value,"AAC") != NULL) {
 			filter_fmt |= FILTER_AFMT_AAC;
-		} 
+		}
 		if (strstr(value,"ac3") != NULL || strstr(value,"AC#") != NULL) {
 			filter_fmt |= FILTER_AFMT_AC3;
-		}		
+		}
 		if (strstr(value,"alaw") != NULL || strstr(value,"ALAW") != NULL) {
 			filter_fmt |= FILTER_AFMT_ALAW;
-		} 
+		}
 		if (strstr(value,"mulaw") != NULL || strstr(value,"MULAW") != NULL) {
 			filter_fmt |= FILTER_AFMT_MULAW;
-		} 
+		}
 		if (strstr(value,"dts") != NULL || strstr(value,"DTS") != NULL) {
 			filter_fmt |= FILTER_AFMT_DTS;
-		} 
+		}
 		if (strstr(value,"pcms16b") != NULL || strstr(value,"PCMS16B") != NULL) {
 			filter_fmt |= FILTER_AFMT_PCMS16B;
-		} 
+		}
 		if (strstr(value,"flac") != NULL || strstr(value,"FLAC") != NULL) {
 			filter_fmt |= FILTER_AFMT_FLAC;
 		}
 		if (strstr(value,"cook") != NULL || strstr(value,"COOK") != NULL) {
 			filter_fmt |= FILTER_AFMT_COOK;
-		} 
+		}
 		if (strstr(value,"pcmu8") != NULL || strstr(value,"PCMU8") != NULL) {
 			filter_fmt |= FILTER_AFMT_PCMU8;
-		} 
+		}
 		if (strstr(value,"adpcm") != NULL || strstr(value,"ADPCM") != NULL) {
 			filter_fmt |= FILTER_AFMT_ADPCM;
-		} 
+		}
 		if (strstr(value,"amr") != NULL || strstr(value,"AMR") != NULL) {
 			filter_fmt |= FILTER_AFMT_AMR;
-		} 
+		}
 		if (strstr(value,"raac") != NULL || strstr(value,"RAAC") != NULL) {
 			filter_fmt |= FILTER_AFMT_RAAC;
 		}
 		if (strstr(value,"wma") != NULL || strstr(value,"WMA") != NULL) {
 			filter_fmt |= FILTER_AFMT_WMA;
-		} 
+		}
 		if (strstr(value,"wmapro") != NULL || strstr(value,"WMAPRO") != NULL) {
 			filter_fmt |= FILTER_AFMT_WMAPRO;
-		} 
+		}
 		if (strstr(value,"pcmblueray") != NULL || strstr(value,"PCMBLUERAY") != NULL) {
 			filter_fmt |= FILTER_AFMT_PCMBLU;
-		} 
+		}
 		if (strstr(value,"alac") != NULL || strstr(value,"ALAC") != NULL) {
 			filter_fmt |= FILTER_AFMT_ALAC;
-		} 
+		}
 		if (strstr(value,"vorbis") != NULL || strstr(value,"VORBIS") != NULL) {
 			filter_fmt |= FILTER_AFMT_VORBIS;
 		}
 		if (strstr(value,"aac_latm") != NULL || strstr(value,"AAC_LATM") != NULL) {
 			filter_fmt |= FILTER_AFMT_AAC_LATM;
-		} 
+		}
 		if (strstr(value,"ape") != NULL || strstr(value,"APE") != NULL) {
 			filter_fmt |= FILTER_AFMT_APE;
-		} 		
+		}
 		if (strstr(value,"eac3") != NULL || strstr(value,"EAC3") != NULL) {
 			filter_fmt |= FILTER_AFMT_EAC3;
-		} 		
+		}
     }
 	log_print("[%s:%d]filter_afmt=%x\n", __FUNCTION__, __LINE__, filter_fmt);
     return filter_fmt;

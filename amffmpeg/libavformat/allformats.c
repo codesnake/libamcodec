@@ -44,7 +44,7 @@ do nothing,just keep this function for use on top shared lib.
 */
 static int ffmpeg_api_functions_keeper(void)
 {
- 	static int inited=0;
+	static int inited=0;
 	ptslist_mgr_t *mgr;
 	int64_t pts;
 	int margin=-1;
@@ -73,7 +73,7 @@ void av_register_all(void)
     ///ff_cmf_demuxer
     extern AVInputFormat ff_cmf_demuxer;
     av_register_input_format(&ff_cmf_demuxer);
-	
+
     /* (de)muxers */
     REGISTER_MUXER    (A64, a64);
     REGISTER_DEMUXER  (AAC, aac);
@@ -284,8 +284,8 @@ void av_register_all(void)
     REGISTER_PROTOCOL (RTP, rtp);
     REGISTER_PROTOCOL (TCP, tcp);
     REGISTER_PROTOCOL (UDP, udp);
-	extern URLProtocol ff_nsc_protocol; 
-	ffurl_register_protocol(&ff_nsc_protocol, sizeof(ff_nsc_protocol)); 
+	extern URLProtocol ff_nsc_protocol;
+	ffurl_register_protocol(&ff_nsc_protocol, sizeof(ff_nsc_protocol));
 extern int register_list_demux_all(void);
 	register_list_demux_all();
 

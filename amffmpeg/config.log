@@ -81,7 +81,7 @@ CMDLINE_APPEND='
     extra_cflags
 '
 CMDLINE_SELECT='
-    
+
     altivec
     amd3dnow
     amd3dnowext
@@ -101,8 +101,8 @@ CMDLINE_SELECT='
     vfpv3
     vis
 
-    
-    
+
+
     bsfs
     decoders
     demuxers
@@ -191,7 +191,7 @@ CMDLINE_SELECT='
     x11grab
     zlib
 
-    
+
     pthreads
     w32threads
 
@@ -206,7 +206,7 @@ CMDLINE_SELECT='
     yasm
 '
 CMDLINE_SET='
-    
+
     bindir
     datadir
     incdir
@@ -262,7 +262,7 @@ CONFIG_EXTRA='
     lgplv3
 '
 CONFIG_LIST='
-    
+
     bsfs
     decoders
     demuxers
@@ -968,7 +968,7 @@ buffersink_filter
 nullsink_filter'
 FULLNAME='$(NAME)$(BUILDSUF)'
 HAVE_LIST='
-    
+
     altivec
     amd3dnow
     amd3dnowext
@@ -988,11 +988,11 @@ HAVE_LIST='
     vfpv3
     vis
 
-    
+
     bigendian
     fast_unaligned
 
-    
+
     pthreads
     w32threads
 
@@ -1110,7 +1110,7 @@ vc1_dxva2_hwaccel
 vc1_vaapi_hwaccel
 wmv3_dxva2_hwaccel
 wmv3_vaapi_hwaccel'
-IFS=' 	
+IFS='
 '
 INDEV_LIST='alsa_indev
 bktr_indev
@@ -4076,7 +4076,7 @@ arm-none-linux-gnueabi-gcc -Wl,--as-needed -o /tmp/ffconf.FTTIfDpO /tmp/ffconf.X
 check_type sys/types.h sys/socket.h socklen_t
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <sys/types.h>
     3	#include <sys/socket.h>
     4	socklen_t v;
@@ -4085,7 +4085,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type netdb.h struct addrinfo
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <netdb.h>
     3	struct addrinfo v;
 END /tmp/ffconf.t8GLzA5g.c
@@ -4093,7 +4093,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type netinet/in.h struct ipv6_mreq -D_DARWIN_C_SOURCE
 check_cc -D_DARWIN_C_SOURCE
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <netinet/in.h>
     3	struct ipv6_mreq v;
 END /tmp/ffconf.t8GLzA5g.c
@@ -4101,7 +4101,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type netinet/in.h struct sockaddr_in6
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <netinet/in.h>
     3	struct sockaddr_in6 v;
 END /tmp/ffconf.t8GLzA5g.c
@@ -4109,7 +4109,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type sys/types.h sys/socket.h struct sockaddr_storage
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <sys/types.h>
     3	#include <sys/socket.h>
     4	struct sockaddr_storage v;
@@ -4118,7 +4118,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type sys/types.h sys/socket.h struct sockaddr sa_len
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <sys/types.h>
     3	#include <sys/socket.h>
     4	const void *p = &((struct sockaddr *)0)->sa_len;
@@ -4204,7 +4204,7 @@ arm-none-linux-gnueabi-gcc -Wl,--as-needed -o /tmp/ffconf.FTTIfDpO /tmp/ffconf.X
 check_type sys/time.h sys/resource.h struct rusage ru_maxrss
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <sys/time.h>
     3	#include <sys/resource.h>
     4	const void *p = &((struct rusage *)0)->ru_maxrss;
@@ -4493,7 +4493,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type dxva2api.h DXVA_PictureParameters wDecodedPictureIndex
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <dxva2api.h>
     3	const void *p = &((DXVA_PictureParameters *)0)->wDecodedPictureIndex;
 END /tmp/ffconf.t8GLzA5g.c
@@ -4763,7 +4763,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type dshow.h IBaseFilter
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <dshow.h>
     3	IBaseFilter v;
 END /tmp/ffconf.t8GLzA5g.c
@@ -4813,7 +4813,7 @@ arm-none-linux-gnueabi-gcc -D_ISOC99_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_
 check_type sys/soundcard.h audio_buf_info bytes
 check_cc
 BEGIN /tmp/ffconf.t8GLzA5g.c
-    1	
+    1
     2	#include <sys/soundcard.h>
     3	const void *p = &((audio_buf_info *)0)->bytes;
 END /tmp/ffconf.t8GLzA5g.c

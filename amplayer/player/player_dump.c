@@ -4,7 +4,7 @@
 int player_dump_playinfo(int pid, int fd)
 {
    log_print("player_dump_playinfo pid=%d fd=%d\n", pid, fd);
-   play_para_t *player_para;    
+   play_para_t *player_para;
    #define SIZE     256
    char buffer[SIZE];
    if(fd < 0){
@@ -16,13 +16,13 @@ int player_dump_playinfo(int pid, int fd)
         log_error("player_dump_playinfo error: can't find match pid[%d] player\n", pid);
         return PLAYER_NOT_VALID_PID;
     }
-    snprintf(buffer, SIZE, "  cur_state:%s  last_state:%s\n", player_value2str("status", 
+    snprintf(buffer, SIZE, "  cur_state:%s  last_state:%s\n", player_value2str("status",
         player_para->state.status), player_value2str("status", player_para->state.last_sta));
     write(fd, buffer, strlen(buffer));
 
-    snprintf(buffer, SIZE, "  cur_time:%d s (%lld ms) last_time:%d s fulltime:%d s (%lld ms) buffed_time: %d s\n", 
-        player_para->state.current_time, player_para->state.current_ms, 
-        player_para->state.last_time, player_para->state.full_time, 
+    snprintf(buffer, SIZE, "  cur_time:%d s (%lld ms) last_time:%d s fulltime:%d s (%lld ms) buffed_time: %d s\n",
+        player_para->state.current_time, player_para->state.current_ms,
+        player_para->state.last_time, player_para->state.full_time,
         player_para->state.full_time_ms, player_para->state.bufed_time);
     write(fd, buffer, strlen(buffer));
     player_close_pid_data(pid);
@@ -32,7 +32,7 @@ int player_dump_playinfo(int pid, int fd)
 int player_dump_bufferinfo(int pid, int fd)
 {
    log_print("player_dump_bufferinfo pid=%d fd=%d\n", pid, fd);
-   play_para_t *player_para;    
+   play_para_t *player_para;
    decbuf_status_t adecbuf, vdecbuf;
    #define SIZE     256
    char buffer[SIZE];
@@ -62,7 +62,7 @@ int player_dump_tsyncinfo(int pid, int fd)
    #define SIZE     256
    char buffer[SIZE];
    log_print("player_dump_tsyncinfo pid=%d fd=%d\n", pid, fd);
-   play_para_t *player_para;    
+   play_para_t *player_para;
    if(fd < 0){
         log_error("[%s]Invalid handle fd\n", __FUNCTION__);
         return -1;

@@ -479,7 +479,7 @@ static int decode_audio_specific_config(AACContext *ac,
         return -1;
     }
     if (m4ac->sbr == 1 && m4ac->ps == -1)
-        m4ac->ps = 1;       
+        m4ac->ps = 1;
 
     skip_bits_long(&gb, i);
 
@@ -1663,7 +1663,7 @@ static int decode_extension_payload(AACContext *ac, GetBitContext *gb, int cnt,
             ac->m4ac.sbr = 1;
             ac->m4ac.ps = 1;
             output_configure(ac, ac->che_pos, ac->che_pos, ac->m4ac.chan_config, ac->output_configured);
-			/*	CHANGED by xh ,ignore changed channels for ps;	
+			/*	CHANGED by xh ,ignore changed channels for ps;
 			*/
 			ac->avctx->channels = 1;
             av_log(ac->avctx, AV_LOG_INFO, "[%d]SBR and PS, set channel to 1\n", __LINE__);
@@ -2101,7 +2101,7 @@ static int aac_decode_frame_int(AVCodecContext *avctx, void *data,
 				if (!avctx->extradata)
 					return AVERROR(ENOMEM);
 		}
-		
+
 		avctx->extradata_size = esize;
 		memcpy(avctx->extradata, gb->buffer, esize);
 		memset(avctx->extradata+esize, 0, FF_INPUT_BUFFER_PADDING_SIZE);
@@ -2199,9 +2199,9 @@ static int aac_decode_frame_int(AVCodecContext *avctx, void *data,
     multiplier = (ac->m4ac.sbr == 1) ? ac->m4ac.ext_sample_rate > ac->m4ac.sample_rate : 0;
     samples <<= multiplier;
     if (ac->output_configured < OC_LOCKED) {
-        /*modify by X.H. for dsp not support sbr, so sample_rate needn't*2 
+        /*modify by X.H. for dsp not support sbr, so sample_rate needn't*2
         */
-        #if 0     
+        #if 0
         avctx->sample_rate = ac->m4ac.sample_rate << multiplier;
         #else
         avctx->sample_rate = ac->m4ac.sample_rate;
@@ -2243,20 +2243,20 @@ static int aac_decode_frame(AVCodecContext *avctx, void *data,
     int buf_consumed;
     int buf_offset;
     int err;
-	uint8_t tbuf[4]; 
+	uint8_t tbuf[4];
     init_get_bits(&gb, buf, buf_size * 8);
 	//---------------------------
 	{
-	 
-	  tbuf[0]=buf[0]; 
+
+	  tbuf[0]=buf[0];
 	  tbuf[1]=buf[1];
 	  tbuf[2]=buf[2];
 	  tbuf[3]=buf[3];
       //av_log(NULL, AV_LOG_INFO,"step into aac_decode_frame() [%s_%d]\n",__FUNCTION__,__LINE__);
 	  //av_log(NULL, AV_LOG_INFO,"first fout bytes:%s\n",tbuf);
 	  if(tbuf[0]=='A' && tbuf[1]=='D' && tbuf[2]=='I' && tbuf[2]=='F' ){
-	  	 av_log(NULL, AV_LOG_INFO,"the filetype is <ADIF> [%s_%d]\n",__FUNCTION__,__LINE__);
-	  	 adif_ftype_flag=1;
+		 av_log(NULL, AV_LOG_INFO,"the filetype is <ADIF> [%s_%d]\n",__FUNCTION__,__LINE__);
+		 adif_ftype_flag=1;
 	     return AVERROR_INVALIDDATA;
 	  }
 	  if(adif_ftype_flag==1)

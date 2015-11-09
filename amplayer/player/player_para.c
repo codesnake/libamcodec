@@ -108,7 +108,7 @@ static int check_codec_parameters_ex(AVCodecContext *enc,int fastmode)
 	if(!fastmode){
 		switch(enc->codec_type) {
 		case AVMEDIA_TYPE_AUDIO:
-                 
+
 		    val = enc->sample_rate && enc->channels && enc->sample_fmt != AV_SAMPLE_FMT_NONE;
 		    if(!enc->frame_size &&
 		       (enc->codec_id == CODEC_ID_VORBIS ||
@@ -129,7 +129,7 @@ static int check_codec_parameters_ex(AVCodecContext *enc,int fastmode)
 		}
 	}else{
 		switch(enc->codec_type) {
-		case AVMEDIA_TYPE_AUDIO:		    
+		case AVMEDIA_TYPE_AUDIO:
 		    if(fastmode == 2){//maybe ts audio need set fastmode=2
 		       val =1;
 		    }else{
@@ -311,7 +311,7 @@ static void get_av_codec_type(play_para_t *p_para)
                       p_para->astream_info.audio_format, p_para->astream_info.audio_channel);
             p_para->astream_info.has_audio = 0;
         }
-		
+
 		//----------------------------------
 		//more than 6 ch was not support
 		 if ((p_para->astream_info.audio_channel > 6) &&
@@ -320,7 +320,7 @@ static void get_av_codec_type(play_para_t *p_para)
                       p_para->astream_info.audio_format, p_para->astream_info.audio_channel);
             p_para->astream_info.has_audio = 0;
         }
-		 
+
 		//more than 48000 was not support
 		if ((p_para->astream_info.audio_samplerate > 48000) &&
             (IS_AUDIO_NOT_SUPPORT_EXCEED_FS48k(p_para->astream_info.audio_format))) {
@@ -333,28 +333,28 @@ static void get_av_codec_type(play_para_t *p_para)
 		pCodecCtx->bits_per_coded_sample != 16) {
 		log_print(" ape audio only support 16 bit  bps \n");
 		p_para->astream_info.has_audio = 0;
-	}		
+	}
 		//---------------------------------
-		
+
         if (p_para->astream_info.audio_format == AFORMAT_AAC || p_para->astream_info.audio_format == AFORMAT_AAC_LATM) {
 			pCodecCtx->profile = FF_PROFILE_UNKNOWN;
             AVCodecContext  *pCodecCtx = p_para->pFormatCtx->streams[audio_index]->codec;
             uint8_t *ppp = pCodecCtx->extradata;
-			
+
             if (ppp != NULL) {
 				char profile;
 				if ((ppp[0] == 0xFF)&&((ppp[1] & 0xF0) == 0xF0)){
 					profile = (ppp[2]>>6)+1;
 				}
 				else
-                	profile = (*ppp) >> 3;
+	profile = (*ppp) >> 3;
                 log_print(" aac profile = %d  ********* { MAIN, LC, SSR } \n", profile);
 
                 if (profile == 1) {
                     pCodecCtx->profile = FF_PROFILE_AAC_MAIN;
 					log_print("AAC MAIN only  support by arm audio decoder,will do the auto switch to arm decoder\n");
-					
-#if 0					
+
+#if 0
                     /*add main profile support if choose arm audio decoder*/
                     char value[PROPERTY_VALUE_MAX];
                     int ret = property_get("media.arm.audio.decoder", value, NULL);
@@ -364,7 +364,7 @@ static void get_av_codec_type(play_para_t *p_para)
                         p_para->astream_info.has_audio = 0;
                         log_print("AAC MAIN not support yet!!\n");
                     }
-#endif					
+#endif
                 }
                 //else
                 //  p_para->astream_info.has_audio = 0;
@@ -516,7 +516,7 @@ static void get_stream_info(play_para_t *p_para)
     int astream_id[ASTREAM_MAX_NUM] = {0};
     int new_flag = 1;
     int unsupported_video = 0;
-	
+
     p_para->first_index = pFormat->first_index;
 
     /* caculate the stream numbers */
@@ -536,7 +536,7 @@ static void get_stream_info(play_para_t *p_para)
             log_print("[%s:%d]stream %d no_program:%d, stream_valid:%d, \n", __FUNCTION__, __LINE__, i, pStream->no_program, pStream->stream_valid);
             continue;
         }
-        
+
         pCodec = pStream->codec;
         if (pCodec->codec_type == CODEC_TYPE_VIDEO) {
             p_para->vstream_num ++;
@@ -561,12 +561,12 @@ static void get_stream_info(play_para_t *p_para)
                     if (strcmp(pFormat->iformat->name, "mpegts") == 0 && pStream->encrypt) {
                         //mpegts encrypt
                         log_print("pid=%d crytion\n", pStream->id);
-                    } else { 
+                    } else {
                        if(!strcmp(pFormat->iformat->name, "mpegts") &&!check_codec_parameters_ex(pStream->codec,1)){
-                       //Maybe all vcodec without codec parameter but at least choose one stream,save it.Need double check at last.		 
+                       //Maybe all vcodec without codec parameter but at least choose one stream,save it.Need double check at last.
 		        if(vcodec_noparameter_idx==-1)
 			   vcodec_noparameter_idx=i;
-                           log_print("video pid=%d has not codec parameter\n", pStream->id); 
+                           log_print("video pid=%d has not codec parameter\n", pStream->id);
 		    }
                        else
                           temp_vidx = i;
@@ -603,14 +603,14 @@ static void get_stream_info(play_para_t *p_para)
 	    //not support blueray stream,one PID has two audio track(truehd+ac3)
 	    if(strcmp(pFormat->iformat->name, "mpegts") == 0){
 	       if(pCodec->codec_id==CODEC_ID_TRUEHD){
-		  temppid=pStream->id;	
+		  temppid=pStream->id;
 		  log_print("temppidstream: %s:%d\n",pFormat->iformat->name,temppid);
 	       }else if(pCodec->codec_id==CODEC_ID_AC3&&pStream->id==temppid){
 		  audio_format = AFORMAT_UNSUPPORT;
 		  log_print("unsupport truehd and AC-3 with the same pid\n");
-	      }  
-	    } 
-				           
+	      }
+	    }
+
 
             if (p_para->file_type == RM_FILE) {
                 if ((temp_aidx == -1)
@@ -621,7 +621,7 @@ static void get_stream_info(play_para_t *p_para)
                 if (strcmp(pFormat->iformat->name, "mpegts") == 0 && pStream->encrypt) {
                     //mpegts encrypt
                     log_print("pid=%d crytion\n", pStream->id);
-                } else { 
+                } else {
                     if(!strcmp(pFormat->iformat->name, "mpegts") &&!check_codec_parameters_ex(pStream->codec,1)){
                        //Maybe all acodec without codec parameter but at least choose one stream,save it.Need double check at last.
                           if(acodec_noparameter_idx==-1)
@@ -629,7 +629,7 @@ static void get_stream_info(play_para_t *p_para)
                           log_print("audio pid=%d has not codec parameter\n", pStream->id);}
                     else
                           temp_aidx = i;
-                    
+
                 }
             }
 			char prop_value[PROPERTY_VALUE_MAX];
@@ -660,7 +660,7 @@ static void get_stream_info(play_para_t *p_para)
         temp_vidx=vcodec_noparameter_idx;
     if(!strcmp(pFormat->iformat->name, "mpegts") &&p_para->astream_num>=1&&temp_aidx==-1&&acodec_noparameter_idx!=-1)
         temp_aidx=acodec_noparameter_idx;
-	
+
     if (p_para->vstream_num >= 1) {
         p_para->vstream_info.has_video = 1;
     } else {
@@ -796,8 +796,8 @@ static int set_decode_para(play_para_t*am_p)
     log_print("[%s:%d]has_video=%d vformat=%d has_audio=%d aformat=%d", __FUNCTION__, __LINE__, \
               am_p->vstream_info.has_video, am_p->vstream_info.video_format, \
               am_p->astream_info.has_audio, am_p->astream_info.audio_format);
-	
-	filter_vfmt = PlayerGetVFilterFormat(am_p);	
+
+	filter_vfmt = PlayerGetVFilterFormat(am_p);
 
     if (((1 << am_p->vstream_info.video_format) & filter_vfmt) != 0) {
         log_error("Can't support video codec! filter_vfmt=%x vfmt=%x  (1<<vfmt)=%x\n", \
@@ -805,7 +805,7 @@ static int set_decode_para(play_para_t*am_p)
         if(VFORMAT_H264MVC==am_p->vstream_info.video_format){
             am_p->vstream_info.video_format=VFORMAT_H264;/*if kernel not support mvc,just playing as 264 now.*/
             if ((am_p->vstream_info.video_width > 1920) ||
-           	(am_p->vstream_info.video_height > 1088)) {
+	(am_p->vstream_info.video_height > 1088)) {
                 if (am_p->vdec_profile.h264_4k2k_para.exist) {
                     am_p->vstream_info.video_format = VFORMAT_H264_4K2K;
                     log_print("H.264 4K2K video format applied.");
@@ -824,7 +824,7 @@ static int set_decode_para(play_para_t*am_p)
     }
 #if 0
 	/*
-	* in the get_stream_info function,an enabled audio format would be selected according to the 
+	* in the get_stream_info function,an enabled audio format would be selected according to the
 	* media.amplayer.disable-vcodecs property
 	*/
     filter_afmt = PlayerGetAFilterFormat();
@@ -1163,8 +1163,8 @@ int player_dec_reset(play_para_t *p_para)
         p_para->astream_info.check_first_pts = 0;
     }
 	log_print("player dec reset p_para->playctrl_info.time_point=%f\n",p_para->playctrl_info.time_point);
-    if((p_para->playctrl_info.time_point>=0) && (p_para->state.full_time > 0)){	
-    	 ret = time_search(p_para,-1);
+    if((p_para->playctrl_info.time_point>=0) && (p_para->state.full_time > 0)){
+	 ret = time_search(p_para,-1);
     }else{
         if(p_para->pFormatCtx && p_para->pFormatCtx->pb && p_para->stream_type == STREAM_RM){
             int errorretry = 100;
@@ -1183,7 +1183,7 @@ int player_dec_reset(play_para_t *p_para)
                 if(pkt.pts>0 && pkt.pos >0){
                     log_print("read a good frame  t=%lld.....\n",pkt.pts);
                     AVStream *st= p_para->pFormatCtx->streams[pkt.stream_index];
-                    int64_t t=av_rescale(pkt.pts, AV_TIME_BASE*st->time_base.num,(int64_t)st->time_base.den);  
+                    int64_t t=av_rescale(pkt.pts, AV_TIME_BASE*st->time_base.num,(int64_t)st->time_base.den);
                     if (st->start_time != (int64_t)AV_NOPTS_VALUE) {
                         t -= st->start_time;
                     }
@@ -1195,8 +1195,8 @@ int player_dec_reset(play_para_t *p_para)
                 av_free_packet(&pkt);
             }
         }
-    	if(p_para->playctrl_info.reset_drop_buffered_data && /*drop data for less delay*/
-			p_para->stream_type == STREAM_TS && 
+	if(p_para->playctrl_info.reset_drop_buffered_data && /*drop data for less delay*/
+			p_para->stream_type == STREAM_TS &&
 			p_para->pFormatCtx->pb){
 			#define S_TOPBUF_LEN (188*10*8)
 			#define S_ONCE_READ_L (188*8)
@@ -1212,9 +1212,9 @@ int player_dec_reset(play_para_t *p_para)
 					totaldroped+=ret;
 			}
 			log_print("reset total droped data len=%d\n",totaldroped);
-    	}
+	}
 		p_para->playctrl_info.reset_drop_buffered_data=0;
-        ret = PLAYER_SUCCESS;/*do reset only*/	
+        ret = PLAYER_SUCCESS;/*do reset only*/
     }
     if (ret != PLAYER_SUCCESS) {
         log_error("[player_dec_reset]time search failed !ret = -%x\n", -ret);
@@ -1309,7 +1309,7 @@ static void subtitle_para_init(play_para_t *player)
             set_subtitle_subtype(3);
         } else if (player->sstream_info.sub_type == CODEC_ID_DVB_SUBTITLE) {
             set_subtitle_subtype(5);
-    	} else {
+	} else {
             set_subtitle_subtype(4);
         }
     } else {
@@ -1382,7 +1382,7 @@ int player_dec_init(play_para_t *p_para)
     int wvenable = 0;
     AVStream *st;
 	int64_t streamtype=-1;
-	
+
     ret = ffmpeg_parse_file(p_para);
     if (ret != FFMPEG_SUCCESS) {
         log_print("[player_dec_init]ffmpeg_parse_file failed(%s)*****ret=%x!\n", p_para->file_name, ret);
@@ -1394,15 +1394,15 @@ int player_dec_init(play_para_t *p_para)
 
     if(memcmp(p_para->pFormatCtx->iformat->name,"mpegts",6)==0){
 	   if( p_para->pFormatCtx->pb && p_para->pFormatCtx->pb->is_slowmedia &&  //is network...
-	   	am_getconfig_bool("libplayer.netts.softdemux") ){
-	   	log_print("configned network tsstreaming used soft demux,used soft demux now.\n");
-	   	file_type=STREAM_FILE;
+		am_getconfig_bool("libplayer.netts.softdemux") ){
+		log_print("configned network tsstreaming used soft demux,used soft demux now.\n");
+		file_type=STREAM_FILE;
 		stream_type=STREAM_ES;
 		ret = PLAYER_SUCCESS;
 	   }else if(am_getconfig_bool("libplayer.livets.softdemux")){
-	   		avio_getinfo(p_para->pFormatCtx->pb,AVCMD_HLS_STREAMTYPE,0,&streamtype);
+			avio_getinfo(p_para->pFormatCtx->pb,AVCMD_HLS_STREAMTYPE,0,&streamtype);
 			log_print("livingstream [%d]\n",streamtype);
-		 	if( p_para->pFormatCtx->pb && p_para->pFormatCtx->pb->is_slowmedia &&  //is network...
+			if( p_para->pFormatCtx->pb && p_para->pFormatCtx->pb->is_slowmedia &&  //is network...
 				(streamtype==0)){
 			   log_print("livingstream configned network tsstreaming used soft demux,used soft demux now.\n");
 			   file_type=STREAM_FILE;
@@ -1410,8 +1410,8 @@ int player_dec_init(play_para_t *p_para)
 			   ret = PLAYER_SUCCESS;
 			}
 	   }else if(am_getconfig_bool("libplayer.ts.softdemux")){
-	   	log_print("configned all ts streaming used soft demux,used soft demux now.\n");
-	   	file_type=STREAM_FILE;
+		log_print("configned all ts streaming used soft demux,used soft demux now.\n");
+		file_type=STREAM_FILE;
 		stream_type=STREAM_ES;
 		ret = PLAYER_SUCCESS;
 	   }else if(p_para->start_param->is_ts_soft_demux){
@@ -1421,7 +1421,7 @@ int player_dec_init(play_para_t *p_para)
             ret = PLAYER_SUCCESS;
 	   }
     }
-   
+
 
     if (ret != PLAYER_SUCCESS) {
         set_player_state(p_para, PLAYER_ERROR);
@@ -1588,16 +1588,16 @@ int player_decoder_init(play_para_t *p_para)
 {
     int ret;
     const stream_decoder_t *decoder = NULL;
-	
+
 /*
-	   Web live playback need small threshold for discontinuity judgement. Web live threshold:1 
+	   Web live playback need small threshold for discontinuity judgement. Web live threshold:1
 */
-#if FF_API_OLD_AVIO 
+#if FF_API_OLD_AVIO
     if((p_para->pFormatCtx)&&(p_para->pFormatCtx->pb)&& (p_para->pFormatCtx->pb->local_playback==1)){
-        set_sysfs_int("/sys/class/tsync/av_threshold_min",90000*8); 
+        set_sysfs_int("/sys/class/tsync/av_threshold_min",90000*8);
     }
     else{
-        set_sysfs_int("/sys/class/tsync/av_threshold_min",90000*3); 
+        set_sysfs_int("/sys/class/tsync/av_threshold_min",90000*3);
     }
 #endif
 
@@ -1679,10 +1679,10 @@ int player_decoder_init(play_para_t *p_para)
 		}
 		if (p_para->acodec){
 			log_print("DRMdemux setdrmmodev acodec\n");
-			codec_set_drmmode(p_para->acodec);	
+			codec_set_drmmode(p_para->acodec);
 		}
 	}
- 
+
     return PLAYER_SUCCESS;
 failed:
     return ret;

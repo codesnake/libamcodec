@@ -3,7 +3,7 @@
 astyle --style=linux --indent=spaces=4 --brackets=linux --indent-col1-comments --pad-oper --pad-header \
        --unpad-paren --add-brackets --convert-tabs --mode=c --lineend=linux $@ >/tmp/astyle.log
 
-#Deal with the log of astyle 
+#Deal with the log of astyle
 sed -i -e 's;formatted  ;;g' /tmp/astyle.log;
 sed -i -e 's;unchanged\* ;;g' /tmp/astyle.log;
 
@@ -17,7 +17,7 @@ DIR=`dirname $line`
 rm -rf /tmp/astyle.log
 
 #Check if the patch file existed
-if [ -e ${DIR}/linux_style.patch ]; then 
+if [ -e ${DIR}/linux_style.patch ]; then
 	rm -rf ${DIR}/linux_style.patch
 fi
 

@@ -8,5 +8,5 @@ Description: FFmpeg codec library
 Version: 53.7.0
 Requires: libavutil = 51.9.1
 Conflicts:
-Libs: ${libdir}/libavcodec.a -ldl -lm -pthread 
+Libs: ${libdir}/libavcodec.a -ldl -lm -pthread
 Cflags: -I${includedir}

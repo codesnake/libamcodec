@@ -31,7 +31,7 @@ struct rdata
 struct ratesdata
 {
 	int 	    rdata_index;
-	int 	    rdata_num;	
+	int 	    rdata_num;
 	int64_t total_bytes;
 	int 	    latest_m_duration_us;
 	int 	    latest_m_bytes;
@@ -69,7 +69,7 @@ int bandwidth_measure_add(void *band,int bytes,int delay_us)
 	//av_log(NULL, AV_LOG_INFO, "bandwidth_measure_add %d,%d,rdata_index=%d",bytes,delay_us,rates->rdata_index);
 	rates->latest_m_bytes-=rdata->bytes;
 	rates->latest_m_duration_us-=rdata->delay_us;
-	
+
 	rates->latest_m_bytes+=bytes;
 	rates->latest_m_duration_us+=delay_us;
 	//av_log(NULL, AV_LOG_INFO, "rates->latest_m_bytes=%d,rates->latest_m_duration_us=%d",rates->latest_m_bytes,rates->latest_m_duration_us);
@@ -78,7 +78,7 @@ int bandwidth_measure_add(void *band,int bytes,int delay_us)
 
 	rdata=&rates->data[LAST_F_INDEX(rates->rdata_index,rates->rdata_num,rates->rdata_f_num)];
 	//av_log(NULL, AV_LOG_INFO, "bandwidth_measure_add LAST_F_INDEX=%d",LAST_F_INDEX(rates->rdata_index,rates->rdata_num,rates->rdata_f_num));
-	
+
 	rates->latest_f_bytes-=rdata->bytes;
 	rates->latest_f_duration_us-=rdata->delay_us;
 	//av_log(NULL, AV_LOG_INFO, "rates->latest_f_bytes=%d,rates->latest_f_duration_us=%d",rates->latest_f_bytes,rates->latest_f_duration_us);
@@ -104,9 +104,9 @@ int bandwidth_measure_finish_read(void *band,int bytes)
     }
     if(bytes>=0)
     {
-    	int64_t delay=av_gettime()-rates->last_start_read_time_us;
-    	if(delay>0)
-    		bandwidth_measure_add(band,bytes,delay);
+	int64_t delay=av_gettime()-rates->last_start_read_time_us;
+	if(delay>0)
+		bandwidth_measure_add(band,bytes,delay);
     }
     return 0;
 }
@@ -114,7 +114,7 @@ int bandwidth_measure_get_bandwidth(void  *band,int *fast_band,int *mid_band,int
 {
 	struct ratesdata *rates=(struct ratesdata *)band;
 	int64_t time_us;
-	
+
 	time_us=rates->latest_f_duration_us;
 	if(time_us>0 && rates->latest_f_bytes>0)
 		*fast_band=(int64_t)rates->latest_f_bytes*8*1000*1000/time_us;/*bits per seconds*/

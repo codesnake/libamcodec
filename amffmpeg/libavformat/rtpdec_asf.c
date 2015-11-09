@@ -246,7 +246,7 @@ static int asfrtp_parse_packet(AVFormatContext *s, PayloadContext *asf,
         pb->eof_reached = 0;
         rt->asf_ctx->pb = pb;
         rt->asf_ctx->valid_offset=pb->pos;
-        rt->asf_ctx->data_offset=pb->pos-out_len;		
+        rt->asf_ctx->data_offset=pb->pos-out_len;
     }
 
     for (;;) {

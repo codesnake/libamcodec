@@ -117,10 +117,10 @@ static int pcm_bluray_parse_header(AVCodecContext *avctx,
                 avctx->channels, avctx->bits_per_coded_sample,
                 avctx->sample_rate, avctx->bit_rate);
     if(!avctx->extradata){
-	avctx->extradata = (char*)av_malloc(4);	
+	avctx->extradata = (char*)av_malloc(4);
     }
     else
-	avctx->extradata = (char*)av_realloc(avctx->extradata,4);	
+	avctx->extradata = (char*)av_realloc(avctx->extradata,4);
 
     if (!avctx->extradata) {
         av_log(avctx, AV_LOG_ERROR, "pcm_bluray_parse_header malloc failed\n");

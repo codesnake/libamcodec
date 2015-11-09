@@ -29,7 +29,7 @@ typedef struct{
 	int				nSampleRate;//采样率
 	aformat_t		aFmt;//音频格式
 	int				nExtraSize;
-	unsigned char*	pExtraData;	
+	unsigned char*	pExtraData;
 }AUDIO_PARA_T, *PAUDIO_PARA_T;
 class CTsPlayer{
 public:
@@ -70,7 +70,7 @@ public:
     float GetVolume();
 private:
 	AUDIO_PARA_T aPara;
-	VIDEO_PARA_T vPara;	
+	VIDEO_PARA_T vPara;
 	int player_pid;
 	codec_para_t codec;
 	codec_para_t *pcodec;

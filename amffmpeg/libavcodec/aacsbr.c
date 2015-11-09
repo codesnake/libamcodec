@@ -1060,7 +1060,7 @@ int ff_decode_sbr_extension(AACContext *ac, SpectralBandReplication *sbr,
 
 
 /*	CHANGED by zz ,ignore changed sample_rate for SBR;
-	
+
 */
     if (!sbr->sample_rate)
         sbr->sample_rate = ac->m4ac.sample_rate; // 2 * ac->m4ac.sample_rate; //TODO use the nominal sample rate for arbitrary sample rate support

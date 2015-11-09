@@ -191,7 +191,7 @@ int64_t avio_seek(AVIOContext *s, int64_t offset, int whence)
 
     if(!s)
         return AVERROR(EINVAL);
- 
+
     if(url_interrupt_cb())
 	return AVERROR_EXIT;
 
@@ -238,7 +238,7 @@ int64_t avio_seek(AVIOContext *s, int64_t offset, int whence)
 #endif /* CONFIG_MUXERS || CONFIG_NETWORK */
         if (!s->seek)
             return AVERROR(EPIPE);
-		
+
 	    if ((res = s->seek(s->opaque, offset, SEEK_SET)) < 0){
 			av_log(NULL, AV_LOG_ERROR, "[%s]low level seek failed %d\n", __FUNCTION__, res);
             return res;
@@ -270,7 +270,7 @@ int64_t url_ftell(AVIOContext *s)
 }
 #endif
 int url_start_user_seek(AVIOContext *s)
-{	
+{
 	if(!s)
 		return -1;
 	s->seekflags|=LESS_READ_SEEK;
@@ -288,7 +288,7 @@ int url_finished_user_seek(AVIOContext *s)
 	return 0;
 }
 int url_set_more_data_seek(AVIOContext *s)
-{	
+{
 	if(!s)
 		return -1;
 	s->seekflags|=MORE_READ_SEEK;
@@ -336,7 +336,7 @@ int url_feof(AVIOContext *s)
    if(s->eof_reached){
        /*if end level eof,make sure the buffer have no data.*/
        return (s->buf_ptr >= s->buf_end);
-   }	
+   }
     return s->eof_reached;
 }
 
@@ -390,11 +390,11 @@ int64_t url_fseektotime(AVIOContext *s,int totime_s,int flags)
               if(flags == AVSEEK_CMF_TS_TIME) {
                     if((offset1=s->exseek(s->opaque, totime_s, flags))>=0) {
                             if (!s->write_flag)
-    				    s->buf_end = s->buffer;
-    			        s->buf_ptr = s->buffer;
-    			        s->pos = 0;/*I think it is the first,pos now*/
-    			        s->eof_reached=0;/*clear eof error*/
-    			        return offset1;
+				    s->buf_end = s->buffer;
+			        s->buf_ptr = s->buffer;
+			        s->pos = 0;/*I think it is the first,pos now*/
+			        s->eof_reached=0;/*clear eof error*/
+			        return offset1;
                     }
               }else if((offset1=s->exseek(s->opaque, totime_s, AVSEEK_TO_TIME))>=0){
 			if (!s->write_flag)
@@ -733,7 +733,7 @@ static void fill_buffer(AVIOContext *s)
         /* do not modify buffer if EOF reached so that a seek back can
            be done without rereading data */
         if(len==0)
-        	s->eof_reached = 1;
+	s->eof_reached = 1;
         if(len<0 && len !=AVERROR(EAGAIN))
             s->error= len;
     } else {
@@ -775,8 +775,8 @@ int avio_r8(AVIOContext *s)
 		fill_buffer(s);//low level retry..10S
 		if(url_interrupt_cb())
 			break;
-			retry--;   
-	}	 
+			retry--;
+	}
 	if (s->buf_ptr < s->buf_end)
 		return *s->buf_ptr++;
 
@@ -793,8 +793,8 @@ int url_fgetc(AVIOContext *s)
 		fill_buffer(s);
 		if(url_interrupt_cb())
 			break;
-			retry--;   
-	}	 
+			retry--;
+	}
 	if (s->buf_ptr < s->buf_end)
 		return *s->buf_ptr++;
 
@@ -822,7 +822,7 @@ int avio_read(AVIOContext *s, unsigned char *buf, int size)
                     /* do not modify buffer if EOF reached so that a seek back can
                     be done without rereading data */
                     if(len==0)
-			        	s->eof_reached = 1;
+				s->eof_reached = 1;
 			        if(len<0 && len !=AVERROR(EAGAIN))
 			            s->error= len;
 					if(len == AVERROR(EAGAIN) && retry_num-->0)
@@ -1042,7 +1042,7 @@ uint64_t ffio_read_varlen(AVIOContext *bc){
 int ffio_fdopen_resetlpbuf(AVIOContext *s,int lpsize)
 {
 	URLContext *h=s->opaque;
-	int ret=0;	
+	int ret=0;
 	int64_t old_pos=s->pos;
 	if(h->lpbuf)
 		url_lpfree(h);
@@ -1076,12 +1076,12 @@ int ffio_fdopen(AVIOContext **s, URLContext *h)
 		ret=am_getconfig_float("libplayer.ffmpeg.lpbufsizemin",&value);
 		if(ret==0 && value>=1024){
 			lpbuffer_size=(int)value;
-		}	
+		}
     }else{
-    		ret=am_getconfig_float("libplayer.ffmpeg.lpbufsizemax",&value);
+		ret=am_getconfig_float("libplayer.ffmpeg.lpbufsizemax",&value);
 		if(ret==0 && value>=1024*10){
 			lpbuffer_size=(int)value;
-		}	
+		}
     }
    av_log(NULL, AV_LOG_INFO, "getloopbuf size=%x\n",lpbuffer_size);
     max_packet_size = h->max_packet_size;
@@ -1102,8 +1102,8 @@ int ffio_fdopen(AVIOContext **s, URLContext *h)
         return AVERROR(ENOMEM);
     }
 	av_log(NULL, AV_LOG_INFO, "ffio_fdopen (h->is_slowmedia=%d,flags=%x\n",h->is_slowmedia,h->flags);
-	 if((h->is_slowmedia) && 
-		!(h->flags & URL_NO_LP_BUFFER)	&&		/*no lp buffer*/	
+	 if((h->is_slowmedia) &&
+		!(h->flags & URL_NO_LP_BUFFER)	&&		/*no lp buffer*/
 		!(h->flags & URL_WRONLY)  && /*no write support*/
 		!url_lpopen(h,lpbuffer_size)){
 		av_log(NULL, AV_LOG_INFO, "ffio_fdopen Register lpbuf");
@@ -1126,7 +1126,7 @@ int ffio_fdopen(AVIOContext **s, URLContext *h)
 	    }
 	}
 #if FF_API_OLD_AVIO
-    	(*s)->is_streamed = h->is_streamed;
+	(*s)->is_streamed = h->is_streamed;
 	(*s)->is_slowmedia = h->is_slowmedia;
 	(*s)->fastdetectedinfo = h->fastdetectedinfo;
 #endif
@@ -1134,25 +1134,25 @@ int ffio_fdopen(AVIOContext **s, URLContext *h)
        (*s)->url_setcmd = h->prot->url_setcmd;
 	(*s)->url_getinfo = h->prot->url_getinfo;
 	(*s)->reallocation=h->location;
-	
-	
-	if (h->prot&&h->prot->name &&(!strncmp( h->prot->name, "cmf", 3) 
+
+
+	if (h->prot&&h->prot->name &&(!strncmp( h->prot->name, "cmf", 3)
 	|| !strncmp( h->prot->name, "list", 4)
 	|| !strncmp( h->prot->name, "vhls", 4)
 	|| (h->priv_flags&FLAGS_ISCMF))) {
 		(*s)->iscmf=1;
-	}	
+	}
     if(h&&(h->priv_flags&FLAGS_LOCALMEDIA)){
           (*s)->local_playback=1;
           av_log(NULL, AV_LOG_INFO, "ffio_fdopen (*s)->local_playback=%d\n",(*s)->local_playback);
-    }	
+    }
     (*s)->seekable = h->is_streamed ? 0 : AVIO_SEEKABLE_NORMAL;
     (*s)->max_packet_size = max_packet_size;
     if(h->prot) {
         (*s)->read_pause = (int (*)(void *, int))h->prot->url_read_pause;
         (*s)->read_seek  = (int64_t (*)(void *, int, int64_t, int))h->prot->url_read_seek;
-	  if(NULL==(*s)->exseek ){	
-	 	(*s)->exseek  = (int64_t (*)(void *, int, int64_t, int))h->prot->url_exseek;
+	  if(NULL==(*s)->exseek ){
+		(*s)->exseek  = (int64_t (*)(void *, int, int64_t, int))h->prot->url_exseek;
 	  }
     }
     return 0;
@@ -1198,7 +1198,7 @@ int ffio_rewind_with_probe_data(AVIOContext *s, unsigned char *buf, int buf_size
     int buffer_size;
     int overlap, new_size, alloc_size;
     int ret;
-	
+
     if (s->write_flag)
         return AVERROR(EINVAL);
 
@@ -1267,22 +1267,22 @@ int avio_open_h(AVIOContext **s, const char *filename, int flags,const char * he
         return err;
     }
     if (av_strstart(filename, "rtp:", NULL))
-        h->priv_flags = 1 ; 
+        h->priv_flags = 1 ;
     return 0;
 }
 
-int avio_reset(AVIOContext *s,int flags){ 
+int avio_reset(AVIOContext *s,int flags){
     int ret = -1;
     ret = url_resetbuf(s, flags);
     s->buf_ptr = s->buffer;
     s->pos = 0;/*I think it is the first,pos now*/
     s->eof_reached=0;/*clear eof error*/
     s->error = 0;
-    URLContext *h = s->opaque;	
-    if(h && h->lpbuf)	
+    URLContext *h = s->opaque;
+    if(h && h->lpbuf)
     {
         url_lpreset(h);
-    }	
+    }
     return  ret;
 }
 int avio_close(AVIOContext *s)
@@ -1298,7 +1298,7 @@ int avio_close(AVIOContext *s)
         av_free(s);
         s = NULL;
     }
-    if(h && h->lpbuf)	
+    if(h && h->lpbuf)
     {
         url_lpfree(h);
     }

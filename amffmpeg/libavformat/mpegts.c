@@ -50,7 +50,7 @@
 #define MAX_VPTSJUMPNUM 0x03
 #define MAX_APTSJUMPNUM 0x03
 #define MAX_STOREPSTNUM 0x2000
-#define MAX_SEG_DURATION 0x7530 //30s 
+#define MAX_SEG_DURATION 0x7530 //30s
 
 
 #define DIFF_PTS_MIN  (int)4000//ms
@@ -138,7 +138,7 @@ struct MpegTSContext {
     int64_t last_pos;
 
 	int64_t first_pcrscr;
-//*************************************************/	
+//*************************************************/
 	/*
 	soft demux qq/pplive living ts; segment duration is 5-10s;
 
@@ -154,7 +154,7 @@ struct MpegTSContext {
 	unsigned int vpts_jump_count;
 	unsigned int store_pts_count;
 	unsigned int segment_duration;//ms
-//*************************************************/	
+//*************************************************/
 
     /******************************************/
     /* private mpegts data */
@@ -223,7 +223,7 @@ typedef struct PESContext {
     uint32_t track_index;
     uint64_t input_CTR;
     uint8_t header[MAX_PES_HEADER_SIZE];
-    
+
     uint8_t *buffer;
 } PESContext;
 
@@ -680,7 +680,7 @@ static int mpegts_set_stream_info(AVStream *st, PESContext *pes,
                 sub_st->need_parsing = AVSTREAM_PARSE_FULL;
                 sub_pes->sub_st = pes->sub_st = sub_st;
             }
-        } 
+        }
         else {
             if (st->codec->codec_id != CODEC_ID_NONE) {
                 /* wrong case, don't have to probe */
@@ -714,7 +714,7 @@ static int get_nal_size(uint8_t* buf, int size)
 {
     int nal_size;
     for(nal_size = 0; nal_size < size - 4; nal_size++) {
-        if(*(buf + nal_size) == 0 && *(buf + nal_size + 1) == 0 && 
+        if(*(buf + nal_size) == 0 && *(buf + nal_size + 1) == 0 &&
            *(buf + nal_size + 2) == 0 && *(buf + nal_size + 3) == 1) {
             return nal_size;
         }
@@ -728,7 +728,7 @@ static void new_pes_packet(PESContext *pes, AVPacket *pkt)
 #ifdef PES_DUMP
     {
         static FILE* fd1 = NULL;
-        
+
         if(fd1 == NULL) {
             fd1 = fopen("/temp/data1.dat", "w+");
         }
@@ -737,7 +737,7 @@ static void new_pes_packet(PESContext *pes, AVPacket *pkt)
         }
         if(fd1!=NULL) {
             fwrite(pes->buffer, pes->data_index, 1, fd1);
-        }  
+        }
     }
 #endif
     if(pes->has_private_data == 1) {
@@ -787,9 +787,9 @@ static void new_pes_packet(PESContext *pes, AVPacket *pkt)
             }
             if(fd2!=NULL) {
                 fwrite(pes->buffer, pes->data_index, 1, fd2);
-            }  
+            }
         }
-#endif        
+#endif
     }
     pkt->destruct = av_destruct_packet;
     pkt->data = pes->buffer;
@@ -956,13 +956,13 @@ static int mpegts_push_data(MpegTSFilter *filter,
                     if(pes_ext & 0x8) {
                         //uint8_t private_data[16];
                         //memcpy(private_data, r, 16);
-                     
+
                         pes->track_index =  (uint32_t)(r[1] &0xfe) << 29 |
                                             (uint32_t)r[2] << 22 |
                                             (uint32_t)(r[3] &0xfe) << 14 |
                                             (uint32_t)r[4] << 7 |
                                             (uint32_t)(r[5]&0xfe) >> 1;
-                                            
+
                         pes->input_CTR =    (uint64_t)(r[7] &0xfe) << 59 |
                                             (uint64_t)r[8] << 52 |
                                             (uint64_t)(r[9] &0xfe) << 44 |
@@ -975,7 +975,7 @@ static int mpegts_push_data(MpegTSFilter *filter,
                         pes->has_private_data = 1;
 
                     }
-                    
+
                     /* Skip PES private data, program packet sequence counter and P-STD buffer */
                     skip = (pes_ext >> 4) & 0xb;
                     skip += skip & 0x9;
@@ -1481,7 +1481,7 @@ static int recalcpts_resetinfo(MpegTSContext *ts)
 }
 /*
 cachhttp.c will add a packet size of 188byte before every segment ,int the head we will
-add some info 
+add some info
 0-4 byte                      4-8                                     8- 188;
 0x47,0x00,0x1f,0xff       segment duration         "amlogictsdiscontinue"
 in the function wil get it and check it;
@@ -1495,7 +1495,7 @@ static int recalcpts_checkheadergetinfo(MpegTSContext *ts, const uint8_t *packet
 	int taglen = strlen(RECALC_DISPTS_TAG);
 	char* gettag[30];
 	if ((*packet == 0x47) && (*(packet + 1)== 0x00) && (*(packet + 2)== 0x1f) && (*(packet + 3)== 0xff)){
-			memcpy(&tmp_duration,(packet + 4),4); 
+			memcpy(&tmp_duration,(packet + 4),4);
 			ts->segment_duration = tmp_duration;
 			memcpy(gettag,(packet + 8),taglen);
 			if(!strncmp(gettag, RECALC_DISPTS_TAG,taglen)){
@@ -1548,7 +1548,7 @@ static int recalcpts_startwhetherornot(AVFormatContext *s,AVPacket *pkt)
 	if (ts->pownon_recalcpts != 1){
 		return 0x01;
 	}
-	
+
 	if (ts->start_calcpts==1){
 		return 0;
 	}
@@ -1565,24 +1565,24 @@ static int recalcpts_startwhetherornot(AVFormatContext *s,AVPacket *pkt)
 	AVStream *st = s->streams[pkt->stream_index];
 	ts->store_pts_count++;
 	if ((ts->pts_nb[pkt->stream_index]>2)&&(st->codec->codec_type == AVMEDIA_TYPE_VIDEO)){
-		vjump_val = pkt->pts-ts->pts[pkt->stream_index]; 
-		vjump_ms = ((abs(pkt->dts-ts->dts[pkt->stream_index])*1000)/90000);	
+		vjump_val = pkt->pts-ts->pts[pkt->stream_index];
+		vjump_ms = ((abs(pkt->dts-ts->dts[pkt->stream_index])*1000)/90000);
 		if ((vjump_val< 0) && (vjump_ms <= (ts->segment_duration*2))&&(vjump_ms>DIFF_PTS_MIN)&&(ts->segment_duration < MAX_SEG_DURATION )){
 			ts->vpts_jump_count++;
 		}
 		ts_print(AV_LOG_ERROR,"vjump_val[%lld] pts:cur-old[%lld,%lld] duration[%u]ms vjump_ms[%u]ms vjumpcou[%d]\n",\
-		vjump_val,pkt->pts,ts->pts[pkt->stream_index],ts->segment_duration,vjump_ms,ts->vpts_jump_count);	
+		vjump_val,pkt->pts,ts->pts[pkt->stream_index],ts->segment_duration,vjump_ms,ts->vpts_jump_count);
 	}
 	if ((ts->pts_nb[pkt->stream_index]>2)&&(st->codec->codec_type == AVMEDIA_TYPE_AUDIO)){
 		ajump_val = pkt->dts-ts->dts[pkt->stream_index];
-		ajump_ms = ((abs(pkt->dts-ts->dts[pkt->stream_index])*1000)/90000);	
+		ajump_ms = ((abs(pkt->dts-ts->dts[pkt->stream_index])*1000)/90000);
 		if ((ajump_val < 0)&&(ajump_ms <= (ts->segment_duration*2))&&(ajump_ms>DIFF_PTS_MIN)&&(ts->segment_duration < MAX_SEG_DURATION )){
 			ts->apts_jump_count++;
 		}
 		ts_print(AV_LOG_INFO,"ajump_val[%lld] pts:cur-old[%lld,%lld] duration[%u]ms ajump_ms[%u]ms  ajumpcou[%d]\n",\
-		ajump_val,pkt->pts,ts->pts[pkt->stream_index],ts->segment_duration,ajump_ms,ts->apts_jump_count);	
+		ajump_val,pkt->pts,ts->pts[pkt->stream_index],ts->segment_duration,ajump_ms,ts->apts_jump_count);
 	}
-	ts->pts[pkt->stream_index] = pkt->pts; 
+	ts->pts[pkt->stream_index] = pkt->pts;
 	ts->dts[pkt->stream_index] = pkt->dts;
 	ts->pts_nb[pkt->stream_index]++;
 
@@ -1590,7 +1590,7 @@ static int recalcpts_startwhetherornot(AVFormatContext *s,AVPacket *pkt)
 		ts_print(AV_LOG_INFO,"start_calcpts\n");
 		ts->start_calcpts=1;
 	}
-		
+
 	if (ts->store_pts_count > MAX_STOREPSTNUM ){
 		ts->vpts_jump_count=0;
 		ts->apts_jump_count=0;
@@ -1633,7 +1633,7 @@ static int handle_packet(MpegTSContext *ts, const uint8_t *packet)
     ts->current_pid = pid;
     tss->encrypt=0;
     /* continuity check (currently not used) */
-    if(packet[3] & 0xC0){		
+    if(packet[3] & 0xC0){
 	     tss->encrypt=1;
 	     av_log(NULL, AV_LOG_WARNING, "encrypt pid=0x%x\n",tss->pid);
     }
@@ -1882,13 +1882,13 @@ static void check_ac3_dts(AVFormatContext * s)
                                 ret = read_packet(s, packet, ts->raw_packet_size);
                                 if (ret != 0)
                                         return ret;
-                                if(   (c_pid != (AV_RB16(packet + 1) & 0x1fff)) && (1 != (packet[1] & 0x40)) ) //pid equal and must have pes/es header 
+                                if(   (c_pid != (AV_RB16(packet + 1) & 0x1fff)) && (1 != (packet[1] & 0x40)) ) //pid equal and must have pes/es header
                                         continue;
                                 //seek to the pes header
                                 for(pes_header_pos=0;pes_header_pos<ts->raw_packet_size-3;pes_header_pos++)
                                 {
                                         if(packet[pes_header_pos]==0x00&&packet[pes_header_pos+1]==0x00&&packet[pes_header_pos+2]==0x01)
-                				break;
+				break;
                                 }
                                 if(pes_header_pos==ts->raw_packet_size-3)
                                         continue;
@@ -1921,7 +1921,7 @@ static int mpegts_read_header(AVFormatContext *s,
     int len;
     int64_t pos;
 
- 	
+
     recalcpts_resetinfo(ts);
 	ts->first_pcrscr=AV_NOPTS_VALUE;
 
@@ -1978,7 +1978,7 @@ reget_packet_size:
         if(pb->fastdetectedinfo||pb->is_slowmedia)
 		handle_packets(ts, 256*1024 / ts->raw_packet_size);
 	else
-        	handle_packets(ts, s->probesize / ts->raw_packet_size);
+	handle_packets(ts, s->probesize / ts->raw_packet_size);
         /* if could not find service, enable auto_guess */
 
         ts->auto_guess = 1;
@@ -2109,9 +2109,9 @@ static int mpegts_read_packet_inside(AVFormatContext *s,
     ret = handle_packets(ts, 0);
     if (ret < 0) {
         /* flush pes data left */
-        for (i = 0; i < NB_PID_MAX; i++) {		
+        for (i = 0; i < NB_PID_MAX; i++) {
 	    for (j=0;j<s->nb_streams;j++){
-	 	 if(ts->pids[i] &&s->streams[j]->id==ts->pids[i]->pid&&ts->pids[i]->encrypt==1){
+		 if(ts->pids[i] &&s->streams[j]->id==ts->pids[i]->pid&&ts->pids[i]->encrypt==1){
 		      s->streams[j]->encrypt=1;
 		      av_log(NULL, AV_LOG_ERROR, "mpegts find encrypt stream pid %d\n",s->streams[j]->id);
 		  }
@@ -2142,7 +2142,7 @@ static int mpegts_read_packet(AVFormatContext *s,
 	if (ret == 0){
 		recalcpts_startwhetherornot(s,pkt);
 		recalcpts_pts(s,pkt);
-	}			
+	}
 
 	return ret;
 }
@@ -2173,7 +2173,7 @@ static int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
     if (find_next) {
         for(;;) {
             if (avio_seek(s->pb, pos, SEEK_SET) < 0)
-    			return AV_NOPTS_VALUE;
+			return AV_NOPTS_VALUE;
             if (avio_read(s->pb, buf, TS_PACKET_SIZE) != TS_PACKET_SIZE)
                 return AV_NOPTS_VALUE;
             if ((pcr_pid < 0 || (AV_RB16(buf + 1) & 0x1fff) == pcr_pid) &&
@@ -2191,7 +2191,7 @@ static int64_t mpegts_get_pcr(AVFormatContext *s, int stream_index,
             if (pos < 0)
                 return AV_NOPTS_VALUE;
             if (avio_seek(s->pb, pos, SEEK_SET) < 0)
-    			return AV_NOPTS_VALUE;
+			return AV_NOPTS_VALUE;
             if (avio_read(s->pb, buf, TS_PACKET_SIZE) != TS_PACKET_SIZE)
                 return AV_NOPTS_VALUE;
             if ((pcr_pid < 0 || (AV_RB16(buf + 1) & 0x1fff) == pcr_pid) &&
@@ -2297,7 +2297,7 @@ static int read_seek(AVFormatContext *s, int stream_index, int64_t target_ts, in
     int64_t pos;
 	int ret;
 
-	{/*some stream pcrscr start time is not same as pts 
+	{/*some stream pcrscr start time is not same as pts
 	  we need del the diffs;otherwise,we don't seek to the need time;
 	*/
 		if(ts->first_pcrscr==AV_NOPTS_VALUE){/*get the first pcrscr*/
@@ -2319,12 +2319,12 @@ static int read_seek(AVFormatContext *s, int stream_index, int64_t target_ts, in
 			av_log(NULL,AV_LOG_INFO,"pcr_starttimediff=%lld target_ts=%lld\n",pcr_starttimediff,target_ts);
 
 		}
-		
+
 	}
 
 
 	ret = av_seek_frame_binary(s, stream_index, target_ts, flags);
-    if(ret < 0){		
+    if(ret < 0){
         return ret;
     }
 

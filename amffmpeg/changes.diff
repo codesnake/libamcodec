@@ -32,7 +32,7 @@ index 0000000..d9955cf
 +
 +ifneq ($(ALL_S_FILES),)
 +ALL_S_OBJS := $(patsubst %.S,%.o,$(ALL_S_FILES))
-+C_OBJS := $(filter-out $(ALL_S_OBJS),$(OBJS)) 
++C_OBJS := $(filter-out $(ALL_S_OBJS),$(OBJS))
 +S_OBJS := $(filter $(ALL_S_OBJS),$(OBJS))
 +else
 +C_OBJS := $(OBJS)
@@ -68,7 +68,7 @@ index 0000000..680edac
 +#define CC_VERSION __VERSION__
 +#define restrict restrict
 +#define EXTERN_PREFIX ""
-+#define EXTERN_ASM 
++#define EXTERN_ASM
 +#define SLIBSUF ".so"
 +
 +
@@ -171,7 +171,7 @@ index 0000000..680edac
 +#define HAVE_LZO1X_999_COMPRESS 0
 +#define HAVE_MACHINE_IOCTL_BT848_H 0
 +#define HAVE_MACHINE_IOCTL_METEOR_H 0
-+#undef  HAVE_MALLOC_H 
++#undef  HAVE_MALLOC_H
 +#define HAVE_MALLOC_H 1
 +#define HAVE_MAPVIEWOFFILE 0
 +#define HAVE_MEMALIGN 1
@@ -1188,7 +1188,7 @@ index 0000000..06fbf04
 +    extra_cflags
 +'
 +CMDLINE_SELECT='
-+    
++
 +    altivec
 +    amd3dnow
 +    amd3dnowext
@@ -1208,8 +1208,8 @@ index 0000000..06fbf04
 +    vfpv3
 +    vis
 +
-+    
-+    
++
++
 +    bsfs
 +    decoders
 +    demuxers
@@ -1298,7 +1298,7 @@ index 0000000..06fbf04
 +    x11grab
 +    zlib
 +
-+    
++
 +    pthreads
 +    w32threads
 +
@@ -1313,7 +1313,7 @@ index 0000000..06fbf04
 +    yasm
 +'
 +CMDLINE_SET='
-+    
++
 +    bindir
 +    datadir
 +    incdir
@@ -1369,7 +1369,7 @@ index 0000000..06fbf04
 +    lgplv3
 +'
 +CONFIG_LIST='
-+    
++
 +    bsfs
 +    decoders
 +    demuxers
@@ -2075,7 +2075,7 @@ index 0000000..06fbf04
 +nullsink_filter'
 +FULLNAME='$(NAME)$(BUILDSUF)'
 +HAVE_LIST='
-+    
++
 +    altivec
 +    amd3dnow
 +    amd3dnowext
@@ -2095,11 +2095,11 @@ index 0000000..06fbf04
 +    vfpv3
 +    vis
 +
-+    
++
 +    bigendian
 +    fast_unaligned
 +
-+    
++
 +    pthreads
 +    w32threads
 +
@@ -2217,7 +2217,7 @@ index 0000000..06fbf04
 +vc1_vaapi_hwaccel
 +wmv3_dxva2_hwaccel
 +wmv3_vaapi_hwaccel'
-+IFS=' 	
++IFS='
 +'
 +INDEV_LIST='alsa_indev
 +bktr_indev
@@ -5183,7 +5183,7 @@ index 0000000..06fbf04
 +check_type sys/types.h sys/socket.h socklen_t
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <sys/types.h>
 +    3	#include <sys/socket.h>
 +    4	socklen_t v;
@@ -5192,7 +5192,7 @@ index 0000000..06fbf04
 +check_type netdb.h struct addrinfo
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <netdb.h>
 +    3	struct addrinfo v;
 +END /tmp/ffconf.t8GLzA5g.c
@@ -5200,7 +5200,7 @@ index 0000000..06fbf04
 +check_type netinet/in.h struct ipv6_mreq -D_DARWIN_C_SOURCE
 +check_cc -D_DARWIN_C_SOURCE
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <netinet/in.h>
 +    3	struct ipv6_mreq v;
 +END /tmp/ffconf.t8GLzA5g.c
@@ -5208,7 +5208,7 @@ index 0000000..06fbf04
 +check_type netinet/in.h struct sockaddr_in6
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <netinet/in.h>
 +    3	struct sockaddr_in6 v;
 +END /tmp/ffconf.t8GLzA5g.c
@@ -5216,7 +5216,7 @@ index 0000000..06fbf04
 +check_type sys/types.h sys/socket.h struct sockaddr_storage
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <sys/types.h>
 +    3	#include <sys/socket.h>
 +    4	struct sockaddr_storage v;
@@ -5225,7 +5225,7 @@ index 0000000..06fbf04
 +check_type sys/types.h sys/socket.h struct sockaddr sa_len
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <sys/types.h>
 +    3	#include <sys/socket.h>
 +    4	const void *p = &((struct sockaddr *)0)->sa_len;
@@ -5311,7 +5311,7 @@ index 0000000..06fbf04
 +check_type sys/time.h sys/resource.h struct rusage ru_maxrss
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <sys/time.h>
 +    3	#include <sys/resource.h>
 +    4	const void *p = &((struct rusage *)0)->ru_maxrss;
@@ -5600,7 +5600,7 @@ index 0000000..06fbf04
 +check_type dxva2api.h DXVA_PictureParameters wDecodedPictureIndex
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <dxva2api.h>
 +    3	const void *p = &((DXVA_PictureParameters *)0)->wDecodedPictureIndex;
 +END /tmp/ffconf.t8GLzA5g.c
@@ -5870,7 +5870,7 @@ index 0000000..06fbf04
 +check_type dshow.h IBaseFilter
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <dshow.h>
 +    3	IBaseFilter v;
 +END /tmp/ffconf.t8GLzA5g.c
@@ -5920,7 +5920,7 @@ index 0000000..06fbf04
 +check_type sys/soundcard.h audio_buf_info bytes
 +check_cc
 +BEGIN /tmp/ffconf.t8GLzA5g.c
-+    1	
++    1
 +    2	#include <sys/soundcard.h>
 +    3	const void *p = &((audio_buf_info *)0)->bytes;
 +END /tmp/ffconf.t8GLzA5g.c
@@ -6232,7 +6232,7 @@ index 0000000..a3008ed
 +SDL_LIBS=
 +SDL_CFLAGS=
 +LIB_INSTALL_EXTRA_CMD=$$(RANLIB) "$(LIBDIR)/$(LIBNAME)"
-+EXTRALIBS=-ldl -lm -pthread 
++EXTRALIBS=-ldl -lm -pthread
 +INSTALL=install
 +LIBTARGET=
 +SLIBNAME=$(SLIBPREF)$(FULLNAME)$(SLIBSUF)
@@ -7280,11 +7280,11 @@ index 0000000..a3008ed
 +CONFIG_OSS_OUTDEV=yes
 +!CONFIG_SDL_OUTDEV=yes
 +!CONFIG_SNDIO_OUTDEV=yes
-+ACODEC_TESTS=ac3_fixed adpcm_ima_qt adpcm_ima_wav adpcm_ms adpcm_swf adpcm_yam alac aref flac g726 mp2 pcm wmav1 wmav2 
-+VCODEC_TESTS=asv1 asv2 dnxhd_1080i dnxhd_720p dnxhd_720p_rd dv dv50 error ffv1 flashsv2 flv h261 h263 h263p huffyuv jpegls ljpeg mjpeg mpeg mpeg1b mpeg2 mpeg2thread mpeg4 mpeg4adv mpeg4nr mpeg4thread msmpeg4 msmpeg4v2 msvideo1 qtrle qtrlegray rc rgb roq rv10 rv20 snow snowll svq1 vref wmv1 wmv2 yuv 
-+LAVF_TESTS=aiff alaw asf au avi bmp dv_fmt ffm flv_fmt gif gxf jpg mkv mmf mov mpg mulaw mxf nut ogg pbmpipe pcx pgm pgmpipe pixfmt ppm ppmpipe rm sgi swf tga tiff ts voc voc_s16 wav yuv4mpeg 
-+LAVFI_TESTS=crop crop_scale crop_scale_vflip crop_vflip null pixdesc_le pixfmts_copy_le pixfmts_crop_le pixfmts_hflip_le pixfmts_null_le pixfmts_pad_le pixfmts_scale_le pixfmts_vflip_le scale200 scale500 vflip vflip_crop vflip_vflip 
-+SEEK_TESTS=seek_ac3_rm seek_adpcm_ima_wav seek_adpcm_ms_wav seek_adpcm_qt_aiff seek_adpcm_swf_flv seek_adpcm_yam_wav seek_alac_m4a seek_asv1_avi seek_asv2_avi seek_dnxhd_1080i_mov seek_dnxhd_720p_dnxhd seek_dnxhd_720p_rd_dnxhd seek_dv411_dv seek_dv50_dv seek_dv_dv seek_error_mpeg4_adv_avi seek_ffv1_avi seek_flac_flac seek_flashsv_flv seek_flv_flv seek_g726_wav seek_h261_avi seek_h263_avi seek_h263p_avi seek_huffyuv_avi seek_image_bmp seek_image_jpg seek_image_pcx seek_image_pgm seek_image_ppm seek_image_sgi seek_image_tga seek_image_tiff seek_jpegls_avi seek_lavf_aif seek_lavf_al seek_lavf_asf seek_lavf_au seek_lavf_avi seek_lavf_dv seek_lavf_ffm seek_lavf_flv seek_lavf_gif seek_lavf_gxf seek_lavf_mkv seek_lavf_mmf seek_lavf_mov seek_lavf_mpg seek_lavf_mxf seek_lavf_mxf_d10 seek_lavf_nut seek_lavf_ogg seek_lavf_rm seek_lavf_swf seek_lavf_ts seek_lavf_ul seek_lavf_voc seek_lavf_wav seek_lavf_y4m seek_ljpeg_avi seek_mjpeg_avi seek_mp2_mp2 seek_mpeg1_mpg seek_mpeg1b_mpg seek_mpeg2_422_mpg seek_mpeg2_mpg seek_mpeg2i_mpg seek_mpeg2ivlc_qprd_mpg seek_mpeg2reuse_mpg seek_mpeg2thread_mpg seek_mpeg2threadivlc_mpg seek_mpeg4_adap_avi seek_mpeg4_adv_avi seek_mpeg4_nr_avi seek_mpeg4_qprd_avi seek_mpeg4_rc_avi seek_mpeg4_thread_avi seek_msmpeg4_avi seek_msmpeg4v2_avi seek_odivx_mp4 seek_pbmpipe_pbm seek_pcm_alaw_wav seek_pcm_f32be_au seek_pcm_f32le_wav seek_pcm_f64be_au seek_pcm_f64le_wav seek_pcm_mulaw_wav seek_pcm_s16be_mkv seek_pcm_s16be_mov seek_pcm_s16le_mkv seek_pcm_s16le_wav seek_pcm_s24be_mov seek_pcm_s24daud_302 seek_pcm_s24le_wav seek_pcm_s32be_mov seek_pcm_s32le_wav seek_pcm_s8_mov seek_pcm_u8_wav seek_pcm_zork_wav seek_pgmpipe_pgm seek_ppmpipe_ppm seek_rgb_avi seek_roqav_roq seek_rv10_rm seek_rv20_rm seek_snow53_avi seek_snow_avi seek_svq1_mov seek_wmav1_asf seek_wmav2_asf seek_wmv1_avi seek_wmv2_avi seek_yuv_avi 
++ACODEC_TESTS=ac3_fixed adpcm_ima_qt adpcm_ima_wav adpcm_ms adpcm_swf adpcm_yam alac aref flac g726 mp2 pcm wmav1 wmav2
++VCODEC_TESTS=asv1 asv2 dnxhd_1080i dnxhd_720p dnxhd_720p_rd dv dv50 error ffv1 flashsv2 flv h261 h263 h263p huffyuv jpegls ljpeg mjpeg mpeg mpeg1b mpeg2 mpeg2thread mpeg4 mpeg4adv mpeg4nr mpeg4thread msmpeg4 msmpeg4v2 msvideo1 qtrle qtrlegray rc rgb roq rv10 rv20 snow snowll svq1 vref wmv1 wmv2 yuv
++LAVF_TESTS=aiff alaw asf au avi bmp dv_fmt ffm flv_fmt gif gxf jpg mkv mmf mov mpg mulaw mxf nut ogg pbmpipe pcx pgm pgmpipe pixfmt ppm ppmpipe rm sgi swf tga tiff ts voc voc_s16 wav yuv4mpeg
++LAVFI_TESTS=crop crop_scale crop_scale_vflip crop_vflip null pixdesc_le pixfmts_copy_le pixfmts_crop_le pixfmts_hflip_le pixfmts_null_le pixfmts_pad_le pixfmts_scale_le pixfmts_vflip_le scale200 scale500 vflip vflip_crop vflip_vflip
++SEEK_TESTS=seek_ac3_rm seek_adpcm_ima_wav seek_adpcm_ms_wav seek_adpcm_qt_aiff seek_adpcm_swf_flv seek_adpcm_yam_wav seek_alac_m4a seek_asv1_avi seek_asv2_avi seek_dnxhd_1080i_mov seek_dnxhd_720p_dnxhd seek_dnxhd_720p_rd_dnxhd seek_dv411_dv seek_dv50_dv seek_dv_dv seek_error_mpeg4_adv_avi seek_ffv1_avi seek_flac_flac seek_flashsv_flv seek_flv_flv seek_g726_wav seek_h261_avi seek_h263_avi seek_h263p_avi seek_huffyuv_avi seek_image_bmp seek_image_jpg seek_image_pcx seek_image_pgm seek_image_ppm seek_image_sgi seek_image_tga seek_image_tiff seek_jpegls_avi seek_lavf_aif seek_lavf_al seek_lavf_asf seek_lavf_au seek_lavf_avi seek_lavf_dv seek_lavf_ffm seek_lavf_flv seek_lavf_gif seek_lavf_gxf seek_lavf_mkv seek_lavf_mmf seek_lavf_mov seek_lavf_mpg seek_lavf_mxf seek_lavf_mxf_d10 seek_lavf_nut seek_lavf_ogg seek_lavf_rm seek_lavf_swf seek_lavf_ts seek_lavf_ul seek_lavf_voc seek_lavf_wav seek_lavf_y4m seek_ljpeg_avi seek_mjpeg_avi seek_mp2_mp2 seek_mpeg1_mpg seek_mpeg1b_mpg seek_mpeg2_422_mpg seek_mpeg2_mpg seek_mpeg2i_mpg seek_mpeg2ivlc_qprd_mpg seek_mpeg2reuse_mpg seek_mpeg2thread_mpg seek_mpeg2threadivlc_mpg seek_mpeg4_adap_avi seek_mpeg4_adv_avi seek_mpeg4_nr_avi seek_mpeg4_qprd_avi seek_mpeg4_rc_avi seek_mpeg4_thread_avi seek_msmpeg4_avi seek_msmpeg4v2_avi seek_odivx_mp4 seek_pbmpipe_pbm seek_pcm_alaw_wav seek_pcm_f32be_au seek_pcm_f32le_wav seek_pcm_f64be_au seek_pcm_f64le_wav seek_pcm_mulaw_wav seek_pcm_s16be_mkv seek_pcm_s16be_mov seek_pcm_s16le_mkv seek_pcm_s16le_wav seek_pcm_s24be_mov seek_pcm_s24daud_302 seek_pcm_s24le_wav seek_pcm_s32be_mov seek_pcm_s32le_wav seek_pcm_s8_mov seek_pcm_u8_wav seek_pcm_zork_wav seek_pgmpipe_pgm seek_ppmpipe_ppm seek_rgb_avi seek_roqav_roq seek_rv10_rm seek_rv20_rm seek_snow53_avi seek_snow_avi seek_svq1_mov seek_wmav1_asf seek_wmav2_asf seek_wmv1_avi seek_wmv2_avi seek_yuv_avi
 +endif # FFMPEG_CONFIG_MAK
 diff --git a/amffmpeg/libavcodec/Android.mk b/amffmpeg/libavcodec/Android.mk
 new file mode 100755
@@ -7330,22 +7330,22 @@ index b6103af..7f81e8d 100644
 @@ -1,4 +1,4 @@
 -include $(SUBDIR)../config.mak
 +####include $(SUBDIR)../config.mak
- 
+
  NAME = avcodec
  FFLIBS = avutil
 @@ -691,9 +691,11 @@ HOSTPROGS = aac_tablegen aacps_tablegen cbrt_tablegen cos_tablegen      \
- 
+
  DIRS = alpha arm bfin mlib ppc ps2 sh4 sparc x86
- 
+
 +include $(LOCAL_PATH)/$(ARCH)/Makefile
 +
  CLEANFILES = *_tables.c *_tables.h *_tablegen$(HOSTEXESUF)
- 
+
 -include $(SUBDIR)../subdir.mak
 +###include $(SUBDIR)../subdir.mak
- 
+
  $(SUBDIR)dct-test$(EXESUF): $(SUBDIR)dctref.o
- 
+
 diff --git a/amffmpeg/libavcodec/aacps.c b/amffmpeg/libavcodec/aacps.c
 index fc124d1..df30994 100644
 --- a/amffmpeg/libavcodec/aacps.c
@@ -7353,7 +7353,7 @@ index fc124d1..df30994 100644
 @@ -28,6 +28,7 @@
  #include "aacps_tablegen.h"
  #include "aacpsdata.c"
- 
+
 +
  #define PS_BASELINE 0  //< Operate in Baseline PS mode
                         //< Baseline implies 10 or 20 stereo bands,
@@ -7372,14 +7372,14 @@ index 82092b3..e0ecf70
 +#define log2f(x) (x)
  #define ENVELOPE_ADJUSTMENT_OFFSET 2
  #define NOISE_FLOOR_OFFSET 6.0f
- 
+
 @@ -1058,10 +1058,14 @@ int ff_decode_sbr_extension(AACContext *ac, SpectralBandReplication *sbr,
- 
+
      sbr->reset = 0;
- 
+
 +
 +/*	CHANGED by zz ,ignore changed sample_rate for SBR;
-+	
++
 +*/
      if (!sbr->sample_rate)
 -        sbr->sample_rate = 2 * ac->m4ac.sample_rate; //TODO use the nominal sample rate for arbitrary sample rate support
@@ -7387,7 +7387,7 @@ index 82092b3..e0ecf70
      if (!ac->m4ac.ext_sample_rate)
 -        ac->m4ac.ext_sample_rate = 2 * ac->m4ac.sample_rate;
 +        ac->m4ac.ext_sample_rate =ac->m4ac.sample_rate;// 2 * ac->m4ac.sample_rate;
- 
+
      if (crc) {
          skip_bits(gb, 10); // bs_sbr_crc_bits; TODO - implement CRC check
 diff --git a/amffmpeg/libavcodec/avcodec.h b/amffmpeg/libavcodec/avcodec.h
@@ -7405,7 +7405,7 @@ index 90c389b..963fae0 100644
 @@ -206,6 +207,9 @@ enum CodecID {
      CODEC_ID_DFA,
      CODEC_ID_8SVX_RAW,
- 
+
 +    /* H264 MVC type */
 +    CODEC_ID_H264MVC,
 +
@@ -7423,7 +7423,7 @@ index a0a4a1d..afebd88 100644
 -#include "mathops.h"
  #include "libavutil/avassert.h"
 +#define log2(x) (x)
- 
+
  #define MAX_PLANES 4
  #define CONTEXT_SIZE 32
 diff --git a/amffmpeg/libavcodec/h264.c b/amffmpeg/libavcodec/h264.c
@@ -7439,16 +7439,16 @@ index 5170a55..49ea349
 -    const int is_h264 = !CONFIG_SVQ3_DECODER || simple || s->codec_id == CODEC_ID_H264;
 +    const int is_h264 = !CONFIG_SVQ3_DECODER || simple || s->codec_id == CODEC_ID_H264  || s->codec_id == CODEC_ID_H264MVC;
      void (*idct_add)(uint8_t *dst, DCTELEM *block, int stride);
- 
+
      dest_y  = s->current_picture.data[0] + ((mb_x << pixel_shift) + mb_y * s->linesize  ) * 16;
 @@ -3384,7 +3384,7 @@ static int decode_slice(struct AVCodecContext *avctx, void *arg){
- 
+
      s->mb_skip_run= -1;
- 
+
 -    h->is_complex = FRAME_MBAFF || s->picture_structure != PICT_FRAME || s->codec_id != CODEC_ID_H264 ||
 +    h->is_complex = FRAME_MBAFF || s->picture_structure != PICT_FRAME || s->codec_id != CODEC_ID_H264 || s->codec_id != CODEC_ID_H264MVC ||
                      (CONFIG_GRAY && (s->flags&CODEC_FLAG_GRAY));
- 
+
      if( h->pps.cabac ) {
 @@ -3820,6 +3820,12 @@ static int decode_nal_units(H264Context *h, const uint8_t *buf, int buf_size){
          case NAL_SPS_EXT:
@@ -7459,7 +7459,7 @@ index 5170a55..49ea349
 +		case NAL_20:
 +			av_log(avctx, AV_LOG_ERROR, "NAL type: %d for MVC\n", h->nal_unit_type);
 +			avctx->codec_id == CODEC_ID_H264MVC;
-+			break;			
++			break;
          default:
              av_log(avctx, AV_LOG_DEBUG, "Unknown NAL code: %d (%d bits)\n", hx->nal_unit_type, bit_length);
          }
@@ -7477,7 +7477,7 @@ index 7bad91b..d07f0ee 100644
 +    NAL_AUXILIARY_SLICE=19,
 +    NAL_20=20
  };
- 
+
  /**
 diff --git a/amffmpeg/libavcodec/libavcodec-uninstalled.pc b/amffmpeg/libavcodec/libavcodec-uninstalled.pc
 new file mode 100644
@@ -7495,7 +7495,7 @@ index 0000000..c32d772
 +Version: 53.7.0
 +Requires: libavutil = 51.9.1
 +Conflicts:
-+Libs: ${libdir}/libavcodec.a -ldl -lm -pthread 
++Libs: ${libdir}/libavcodec.a -ldl -lm -pthread
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavcodec/libavcodec.pc b/amffmpeg/libavcodec/libavcodec.pc
 new file mode 100644
@@ -7512,10 +7512,10 @@ index 0000000..fdca3ab
 +Description: FFmpeg codec library
 +Version: 53.7.0
 +Requires: libavutil = 51.9.1
-+Requires.private: 
++Requires.private:
 +Conflicts:
 +Libs: -L${libdir} -lavcodec -ldl -lm -pthread
-+Libs.private: 
++Libs.private:
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavcodec/srtdec.c b/amffmpeg/libavcodec/srtdec.c
 index aa73f4c..c4ed545 100644
@@ -7555,7 +7555,7 @@ index 0000000..1895f67
 +Version: 53.1.1
 +Requires: libavformat = 53.4.0
 +Conflicts:
-+Libs: ${libdir}/libavdevice.a -ldl -lm -pthread 
++Libs: ${libdir}/libavdevice.a -ldl -lm -pthread
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavdevice/libavdevice.pc b/amffmpeg/libavdevice/libavdevice.pc
 new file mode 100644
@@ -7572,10 +7572,10 @@ index 0000000..2925054
 +Description: FFmpeg device handling library
 +Version: 53.1.1
 +Requires: libavformat = 53.4.0
-+Requires.private: 
++Requires.private:
 +Conflicts:
 +Libs: -L${libdir} -lavdevice -ldl -lm -pthread
-+Libs.private: 
++Libs.private:
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavfilter/libavfilter-uninstalled.pc b/amffmpeg/libavfilter/libavfilter-uninstalled.pc
 new file mode 100644
@@ -7591,9 +7591,9 @@ index 0000000..44e4993
 +Name: libavfilter
 +Description: FFmpeg video filtering library
 +Version: 2.23.0
-+Requires: 
++Requires:
 +Conflicts:
-+Libs: ${libdir}/libavfilter.a -ldl -lm -pthread 
++Libs: ${libdir}/libavfilter.a -ldl -lm -pthread
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavfilter/libavfilter.pc b/amffmpeg/libavfilter/libavfilter.pc
 new file mode 100644
@@ -7609,11 +7609,11 @@ index 0000000..7092c5a
 +Name: libavfilter
 +Description: FFmpeg video filtering library
 +Version: 2.23.0
-+Requires: 
-+Requires.private: 
++Requires:
++Requires.private:
 +Conflicts:
 +Libs: -L${libdir} -lavfilter -ldl -lm -pthread
-+Libs.private: 
++Libs.private:
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavformat/Android.mk b/amffmpeg/libavformat/Android.mk
 new file mode 100755
@@ -7658,11 +7658,11 @@ index e5ec44b..377fbe8
 @@ -1,4 +1,4 @@
 -include $(SUBDIR)../config.mak
 +###include $(SUBDIR)../config.mak
- 
+
  NAME = avformat
  FFLIBS = avcodec avutil
 @@ -18,7 +18,7 @@ OBJS = allformats.o         \
- 
+
  # muxers/demuxers
  OBJS-$(CONFIG_A64_MUXER)                 += a64.o
 -OBJS-$(CONFIG_AAC_DEMUXER)               += aacdec.o rawdec.o
@@ -7671,12 +7671,12 @@ index e5ec44b..377fbe8
  OBJS-$(CONFIG_AC3_MUXER)                 += rawenc.o
  OBJS-$(CONFIG_ADTS_MUXER)                += adtsenc.o
 @@ -339,7 +339,10 @@ OBJS-$(CONFIG_UDP_PROTOCOL)              += udp.o
- 
+
  # libavdevice dependencies
  OBJS-$(CONFIG_JACK_INDEV)                += timefilter.o
 -
  TESTPROGS = timefilter
- 
+
 -include $(SUBDIR)../subdir.mak
 +OBJS                += file_list.o m3u.o
 +
@@ -7695,16 +7695,16 @@ index 4ac2cad..4d021cf
  #include "id3v1.h"
 +#include "id3v2.h"
 +#include "adif.h"
- 
- 
+
+
  static int adts_aac_probe(AVProbeData *p)
 @@ -35,6 +37,7 @@ static int adts_aac_probe(AVProbeData *p)
      uint8_t *buf;
      uint8_t *end = buf0 + p->buf_size - 7;
- 
+
 +
      buf = buf0;
- 
+
      for(; buf < end; buf= buf2+1) {
 @@ -64,7 +67,8 @@ static int adts_aac_read_header(AVFormatContext *s,
                                  AVFormatParameters *ap)
@@ -7718,7 +7718,7 @@ index 4ac2cad..4d021cf
          return AVERROR(ENOMEM);
 @@ -74,10 +78,24 @@ static int adts_aac_read_header(AVFormatContext *s,
      st->need_parsing = AVSTREAM_PARSE_FULL;
- 
+
      ff_id3v1_read(s);
 -
 -    //LCM of all possible ADTS sample rates
@@ -7739,12 +7739,12 @@ index 4ac2cad..4d021cf
 +			st->need_parsing = AVSTREAM_PARSE_NONE;
 +			st->codec->codec_id = CODEC_ID_AAC;
 +		}
-+    }  
++    }
 +    //end of add
-+    
++
      return 0;
  }
- 
+
 diff --git a/amffmpeg/libavformat/adif.c b/amffmpeg/libavformat/adif.c
 new file mode 100755
 index 0000000..f332780
@@ -7760,7 +7760,7 @@ index 0000000..f332780
 + *
 + * Description: decode one PCE
 + *
-+ * Inputs:      BitStreamInfo struct pointing to start of PCE (14496-3, table 4.4.2) 
++ * Inputs:      BitStreamInfo struct pointing to start of PCE (14496-3, table 4.4.2)
 + *
 + * Outputs:     filled-in ProgConfigElement struct
 + *              updated BitStreamInfo struct
@@ -7921,10 +7921,10 @@ index 0000000..f332780
 +}
 +
 +int adif_header_parse(AVStream *st,ByteIOContext *pb)
-+{ 
++{
 +	GetBitContext gbc;
-+	ADIFHeader hADIF;	
-+	ADIFHeader *fhADIF = &hADIF;	
++	ADIFHeader hADIF;
++	ADIFHeader *fhADIF = &hADIF;
 +	int ch,sr_index,i;
 +	ProgConfigElement pce[MAX_NUM_PCE_ADIF];
 +	const int aac_sample_rates[16] = {
@@ -7959,9 +7959,9 @@ index 0000000..f332780
 +
 +	//	/* check validity of header */
 +	if (ch < 0 || sr_index < 0 || sr_index >= NUM_SAMPLE_RATES){
-+		
++
 +		return -1;
-+	}	
++	}
 +	st->codec->bit_rate = 	fhADIF->bitRate;
 +	st->codec->channels = ch;
 +	st->codec->sample_rate = aac_sample_rates[sr_index];
@@ -8075,7 +8075,7 @@ index db00964..23fa82e
 +
  /**********************************/
  /* decoding */
- 
+
 @@ -296,6 +300,7 @@ static int asf_read_stream_properties(AVFormatContext *s, int64_t size)
          } else {
              st->need_parsing = AVSTREAM_PARSE_FULL;
@@ -8095,19 +8095,19 @@ index db00964..23fa82e
 @@ -413,7 +419,7 @@ static int asf_read_ext_stream_properties(AVFormatContext *s, int64_t size)
      if (stream_num < 128)
          asf->streams[stream_num].stream_language_index = stream_languageid_index;
- 
+
 -    avio_rl64(pb); // avg frametime in 100ns units
 +    avg_frame_time[stream_num] = avio_rl64(pb); // avg frametime in 100ns units
      stream_ct = avio_rl16(pb); //stream-name-count
      payload_ext_ct = avio_rl16(pb); //payload-extension-system-count
- 
+
 @@ -658,6 +664,8 @@ static int asf_read_header(AVFormatContext *s, AVFormatParameters *ap)
      asf->data_offset = avio_tell(pb);
      asf->packet_size_left = 0;
- 
+
 +	s->video_avg_frame_time = avg_frame_time[video_stream_num];
 +	s->audio_avg_frame_time = avg_frame_time[audio_stream_num];
- 
+
      for(i=0; i<128; i++){
          int stream_num= asf->asfid2avid[i];
 @@ -727,6 +735,8 @@ static int ff_asf_get_packet(AVFormatContext *s, AVIOContext *pb)
@@ -8117,7 +8117,7 @@ index db00964..23fa82e
 +		if(url_interrupt_cb())
 +			break;
      }
- 
+
      if (c != 0x82) {
 @@ -738,6 +748,8 @@ static int ff_asf_get_packet(AVFormatContext *s, AVIOContext *pb)
           */
@@ -8146,12 +8146,12 @@ index 1734649..ff09cb6
 @@ -42,6 +42,8 @@ const char *avformat_license(void);
  #include "libavcodec/avcodec.h"
  #include "libavutil/dict.h"
- 
+
 +#include "divxdrm.h"
 +
  #include "avio.h"
  #include "libavformat/version.h"
- 
+
 @@ -634,6 +636,13 @@ typedef struct AVStream {
       * NOT PART OF PUBLIC API
       */
@@ -8162,14 +8162,14 @@ index 1734649..ff09cb6
 +     */
 +     unsigned int stream_offset;
 +     int no_extra_offset;
-+     float special_fps;  // for some special stream	
++     float special_fps;  // for some special stream
  } AVStream;
- 
+
  #define AV_PROGRAM_RUNNING 1
 @@ -667,6 +676,8 @@ typedef struct AVChapter {
      AVDictionary *metadata;
  } AVChapter;
- 
+
 +#define MAX_STREAMS 30
 +
  /**
@@ -8180,7 +8180,7 @@ index 1734649..ff09cb6
       */
      struct AVPacketList *packet_buffer;
 -
-+	
++
      /**
       * Decoding: position of the first frame of the component, in
       * AV_TIME_BASE fractional seconds. NEVER set this value directly:
@@ -8199,16 +8199,16 @@ index 1734649..ff09cb6
 +    int valid_offset_done;
 +
 +    /* added by Z.C for avi or some other files seekable */
-+    int seekable;	
++    int seekable;
 +
 +	uint64_t video_avg_frame_time, audio_avg_frame_time;
 +
 +	//--***********************************************
 +    /* added by C.S for divx drm certification:drm information */
 +    drm_t       drm;
-+//--***********************************************  
++//--***********************************************
  } AVFormatContext;
- 
+
  typedef struct AVPacketList {
 @@ -1084,6 +1114,12 @@ attribute_deprecated int av_open_input_file(AVFormatContext **ic_ptr, const char
                         AVInputFormat *fmt,
@@ -8221,16 +8221,16 @@ index 1734649..ff09cb6
 +                       const char *headers);
 +
  #endif
- 
+
  /**
 @@ -1106,6 +1142,7 @@ attribute_deprecated int av_open_input_file(AVFormatContext **ic_ptr, const char
   * @note If you want to use custom IO, preallocate the format context and set its pb field.
   */
  int avformat_open_input(AVFormatContext **ps, const char *filename, AVInputFormat *fmt, AVDictionary **options);
 +int avformat_open_input_header(AVFormatContext **ps, const char *filename, AVInputFormat *fmt, AVDictionary **options,const char * headers);
- 
+
  int av_demuxer_open(AVFormatContext *ic, AVFormatParameters *ap);
- 
+
 diff --git a/amffmpeg/libavformat/avidec.c b/amffmpeg/libavformat/avidec.c
 old mode 100644
 new mode 100755
@@ -8239,28 +8239,28 @@ index 80620da..9c495a5
 +++ b/amffmpeg/libavformat/avidec.c
 @@ -55,6 +55,9 @@ typedef struct AVIStream {
      uint8_t *sub_buffer;
- 
+
      int64_t seek_pos;
 +    int sequence_head_size;
 +    unsigned int sequence_head_offset;
 +    char *sequence_head;
  } AVIStream;
- 
+
  typedef struct {
 @@ -97,6 +100,8 @@ static const char avi_headers[][8] = {
      { 0 }
  };
- 
+
 +#define VALID_VIDEO_4CC(a) (((a)==0x6264)||((a)==0x6364)||((a)==0x6464))
-+      
++
  static int avi_load_index(AVFormatContext *s);
  static int guess_ni_flag(AVFormatContext *s);
- 
+
 @@ -230,6 +235,12 @@ static int read_braindead_odml_indx(AVFormatContext *s, int frame_num){
          }
      }
      avi->index_loaded=1;
-+	
++
 +	//add by X.H.
 +	//av_log(NULL, AV_LOG_INFO, "[%s:%d]nb_frames=%x nb_index_entries=%d\n",__FUNCTION__, __LINE__, st->nb_frames, st->nb_index_entries);
 +	if((st->nb_frames>>3) < st->nb_index_entries){
@@ -8268,27 +8268,27 @@ index 80620da..9c495a5
 +	}
      return 0;
  }
- 
+
 @@ -906,7 +917,10 @@ static int avi_read_packet(AVFormatContext *s, AVPacket *pkt)
              }
          }
          if(!best_st)
 -            return -1;
-+        {                      
++        {
 +            //return -1;
-+            return AVERROR_EOF; 
++            return AVERROR_EOF;
 +        }
- 
+
          best_ast = best_st->priv_data;
          best_ts = av_rescale_q(best_ts, (AVRational){FFMAX(1, best_ast->sample_size), AV_TIME_BASE}, best_st->time_base);
 @@ -1045,6 +1059,10 @@ resync:
      for(i=sync=avio_tell(pb); !url_feof(pb); i++) {
          int j;
- 
+
 +        // if exceed valid data, return EOF
 +        if (s->valid_offset_done && (i >= s->valid_offset))
 +            return AVERROR_EOF;
-+        
++
          for(j=0; j<7; j++)
              d[j]= d[j+1];
          d[7]= avio_r8(pb);
@@ -8297,7 +8297,7 @@ index 80620da..9c495a5
      unsigned int index, tag, flags, pos, len;
      unsigned last_pos= -1;
 +    int first_key_frame = 1;
- 
+
      nb_index_entries = size / 16;
      if (nb_index_entries <= 0)
 @@ -1204,6 +1223,12 @@ static int avi_read_idx1(AVFormatContext *s, int size)
@@ -8309,24 +8309,24 @@ index 80620da..9c495a5
 +            first_key_frame = 0;
 +            ast->sequence_head_offset = pos;
 +        }
-+        
++
          last_pos= pos;
      }
      return 0;
 @@ -1240,6 +1265,56 @@ static int guess_ni_flag(AVFormatContext *s){
      return last_start > first_end;
  }
- 
+
 +static int avi_save_sequence_head(AVFormatContext *s, AVIStream *avi_stream)
 +{
 +    unsigned int pos = avi_stream->sequence_head_offset;
 +    unsigned char *first_key_chunk = NULL;
 +    int i, sequence_head_pos = -1;
-+    
++
 +    first_key_chunk = av_malloc(2048);
 +    if (first_key_chunk == NULL)
 +        return -1;
-+    
++
 +    avio_seek(s->pb, pos, SEEK_SET);
 +    avio_read(s->pb, first_key_chunk, 2048);
 +
@@ -8342,7 +8342,7 @@ index 80620da..9c495a5
 +                sequence_head_pos = i;
 +            }
 +        }
-+        else 
++        else
 +        {
 +            if ((first_key_chunk[i]==0x00)
 +                && (first_key_chunk[i+1]==0x00)
@@ -8376,7 +8376,7 @@ index 80620da..9c495a5
      int ret = -1;
 +    unsigned int i;
 +    AVIStream *avi_stream = NULL;
- 
+
 +    s->seekable = 0;
      if (avio_seek(pb, avi->movi_end, SEEK_SET) < 0)
          goto the_end; // maybe truncated file
@@ -8393,12 +8393,12 @@ index 80620da..9c495a5
          }
      }
   the_end:
-+    for (i=0; i<s->nb_streams; i++) {        
-+        avi_stream = (AVIStream *)s->streams[i]->priv_data;        
++    for (i=0; i<s->nb_streams; i++) {
++        avi_stream = (AVIStream *)s->streams[i]->priv_data;
 +        if (avi_stream->sequence_head_offset) {
 +            av_log(NULL, AV_LOG_INFO, "[%s]stream %d sequence head 0x%x\n", __FUNCTION__, i, avi_stream->sequence_head_offset);
 +            avi_save_sequence_head(s, avi_stream);
-+        }    
++        }
 +    }
      avio_seek(pb, pos, SEEK_SET);
      return ret;
@@ -8412,7 +8412,7 @@ index b2926c0..19aee83
 @@ -83,6 +83,10 @@ int ffurl_register_protocol(URLProtocol *protocol, int size)
      return 0;
  }
- 
+
 +int av_register_protocol(URLProtocol *protocol){
 +	return ffurl_register_protocol(protocol,sizeof(*protocol));
 +}
@@ -8441,7 +8441,7 @@ index b2926c0..19aee83
 +}
 +
 +
- 
+
  static inline int retry_transfer_wrapper(URLContext *h, unsigned char *buf, int size, int size_min,
                                           int (*transfer_func)(URLContext *h, unsigned char *buf, int size))
 @@ -277,6 +298,7 @@ static inline int retry_transfer_wrapper(URLContext *h, unsigned char *buf, int
@@ -8468,11 +8468,11 @@ index bf1ea30..3b0b7af
 +++ b/amffmpeg/libavformat/avio.h
 @@ -33,6 +33,7 @@
  #include "libavformat/version.h"
- 
- 
+
+
 +
  #define AVIO_SEEKABLE_NORMAL 0x0001 /**< Seeking works like for a local file */
- 
+
  /**
 @@ -66,6 +67,7 @@ typedef struct {
      int write_flag;         /**< true if open for writing */
@@ -8496,7 +8496,7 @@ index bf1ea30..3b0b7af
 +	int enabled_lp_buffer;
 +	int support_time_seek;
  } AVIOContext;
- 
+
  /* unbuffered I/O */
 @@ -100,15 +107,21 @@ typedef struct {
   * sizeof(URLContext) must not be used outside libav*.
@@ -8518,7 +8518,7 @@ index bf1ea30..3b0b7af
 +	int support_time_seek;
 +	char *location;
  } URLContext;
- 
+
  #define URL_PROTOCOL_FLAG_NESTED_SCHEME 1 /*< The protocol name can be the first part of a nested protocol scheme */
 @@ -121,8 +134,9 @@ typedef struct URLProtocol {
      const char *name;
@@ -8555,7 +8555,7 @@ index bf1ea30..3b0b7af
 +
 +
  int64_t avio_seek(AVIOContext *s, int64_t offset, int whence);
- 
+
  /**
 @@ -570,6 +596,15 @@ int avio_open(AVIOContext **s, const char *url, int flags);
   *
@@ -8569,14 +8569,14 @@ index bf1ea30..3b0b7af
 + *
 + * @return 0 on success, an AVERROR < 0 on error.
 + */
-+ 
++
  int avio_close(AVIOContext *s);
- 
+
  /**
 @@ -632,4 +667,21 @@ int     avio_pause(AVIOContext *h, int pause);
  int64_t avio_seek_time(AVIOContext *h, int stream_index,
                         int64_t timestamp, int flags);
- 
+
 +static inline int url_support_time_seek(AVIOContext *s)
 +{
 +    return s->support_time_seek;
@@ -8604,10 +8604,10 @@ index aad0240..9aac7e0
 @@ -28,6 +28,7 @@
  #include "url.h"
  #include <stdarg.h>
- 
+
 +
  #define IO_BUFFER_SIZE 32768
- 
+
  /**
 @@ -293,6 +294,59 @@ int url_ferror(AVIOContext *s)
      return s->error;
@@ -8666,13 +8666,13 @@ index aad0240..9aac7e0
 +
 +
 +
- 
+
  void avio_wl32(AVIOContext *s, unsigned int val)
  {
 @@ -349,6 +403,9 @@ PUT(32, unsigned int)
  PUT(64, uint64_t)
  #undef PUT
- 
+
 +
 +
 +
@@ -8701,8 +8701,8 @@ index aad0240..9aac7e0
 -        return AVERROR(EIO);
 -    }
 +	av_log(NULL, AV_LOG_INFO, "ffio_fdopen (h->is_slowmedia=%d,flags=%x\n",h->is_slowmedia,h->flags);
-+	 if((h->is_slowmedia) && 
-+		!(h->flags & URL_NO_LP_BUFFER)	&&		/*no lp buffer*/	
++	 if((h->is_slowmedia) &&
++		!(h->flags & URL_NO_LP_BUFFER)	&&		/*no lp buffer*/
 +		!(h->flags & URL_WRONLY)  && /*no write support*/
 +		!url_lpopen(h,lpbuffer_size)){
 +		av_log(NULL, AV_LOG_INFO, "ffio_fdopen Register lpbuf");
@@ -8714,7 +8714,7 @@ index aad0240..9aac7e0
 +	        return AVERROR(EIO);
 +	    }
 +		(*s)->exseek=url_lpexseek;
-+	
++
 +	}else{
 +	    if (ffio_init_context(*s, buffer, buffer_size,
 +	                      h->flags & AVIO_FLAG_WRITE, h,
@@ -8754,7 +8754,7 @@ index aad0240..9aac7e0
 +    return 0;
 +}
 +
- 
+
  int avio_close(AVIOContext *s)
  {
      URLContext *h = s->opaque;
@@ -8762,13 +8762,13 @@ index aad0240..9aac7e0
 +	if(s->filename) av_free(s->filename);
      av_free(s->buffer);
      av_free(s);
-+	if(h && h->lpbuf)	
++	if(h && h->lpbuf)
 +	{
 +		url_lpfree(h);
 +	}
      return ffurl_close(h);
  }
- 
+
 diff --git a/amffmpeg/libavformat/aviolpbuf.c b/amffmpeg/libavformat/aviolpbuf.c
 new file mode 100755
 index 0000000..3defa40
@@ -8810,8 +8810,8 @@ index 0000000..3defa40
 +#include "aviolpbuf.h"
 +
 +/*
-+										Pos		
-+buffer    rp                         wp                   buffer_end 
++										Pos
++buffer    rp                         wp                   buffer_end
 +|           |                           |                           |
 +================================
 +|                                                                     |
@@ -8898,14 +8898,14 @@ index 0000000..3defa40
 +	int rlen=0;
 +	int ssread;
 +	int cache_read_len=0;
-+	
-+	
++
++
 +	if(!s || !s->lpbuf)
 +		return AVERROR(EINVAL);
 +
 +	lp=s->lpbuf;
 +	lp_lock(&lp->mutex);
-+	
++
 +	if(lp->wp>=lp->rp)
 +	{
 +		if(lp->rp!=lp->buffer)
@@ -8936,12 +8936,12 @@ index 0000000..3defa40
 +			if(ret!=lp->pos){
 +				rlen=-1;/*error*/
 +				goto release;
-+			}	
-+		}	
++			}
++		}
 +		rlen=s->prot->url_read(s,lp->wp,ssread);
 +		lp_bprint(AV_LOG_INFO,"filled buffer from remote=%d\n",rlen);
-+		
-+	}	
++
++	}
 +	if(rlen>0)
 +	{
 +		if(lp->cache_enable&& cache_read_len<=0)/*not read from cache itself*/
@@ -8951,7 +8951,7 @@ index 0000000..3defa40
 +		lp->wp+=rlen;
 +		if(lp->wp>=lp->buffer_end)
 +			lp->wp=lp->buffer;
-+		
++
 +	}
 +release:
 +	lp_unlock(&lp->mutex);
@@ -9071,7 +9071,7 @@ index 0000000..3defa40
 +	else
 +		valid_data_can_seek_forward=lp->buffer_size-(lp->rp-lp->wp);
 +	pos_on_read = lp->pos-valid_data_can_seek_forward;
-+ 	
++
 +	if(whence == SEEK_CUR)
 +	{
 +		offset1 = pos_on_read;
@@ -9084,7 +9084,7 @@ index 0000000..3defa40
 +	}
 +	valid_data_can_seek_back=FFMIN(lp->valid_data_size-valid_data_can_seek_forward,
 +						lp->buffer_size-valid_data_can_seek_forward-64);
-+	if(valid_data_can_seek_back<0) 
++	if(valid_data_can_seek_back<0)
 +		valid_data_can_seek_back=0;
 +	offset1 = offset - pos_on_read;/*seek forword or back*/
 +	lp_sprint( AV_LOG_INFO, "url_lpseek:pos_on_read=%lld,can seek forwart=%d,can seek bacd=%d,offset1=%lld\n",
@@ -9101,9 +9101,9 @@ index 0000000..3defa40
 +		lp->rp+=(int)offset1;
 +		if(lp->rp<lp->buffer)
 +			lp->rp+=lp->buffer_size;
-+		
-+	}else if(offset1>0 && (s->is_streamed || s->is_slowmedia) && 
-+			(offset1<lp->buffer_size-lp->block_read_size) && 
++
++	}else if(offset1>0 && (s->is_streamed || s->is_slowmedia) &&
++			(offset1<lp->buffer_size-lp->block_read_size) &&
 +			(lp->file_size<=0 || (lp->file_size>0 && offset1<lp->file_size/2)))/*if offset1>filesize/2,thendo first seek end,don't buffer*/
 +	{/*seek to buffer end,but buffer is not full,do read seek*/
 +		int read_offset,ret;
@@ -9121,7 +9121,7 @@ index 0000000..3defa40
 +				offset=ret;/*get error,exit now*/
 +				break;
 +			}
-+		}
++		}
 +		lp_lock(&lp->mutex);
 +	}else
 +	{/*not support in buffer seek,do low level seek now*/
@@ -9174,7 +9174,7 @@ index 0000000..3defa40
 +				lp->rp=lp->buffer;
 +				lp->wp=lp->buffer;
 +				lp->valid_data_size=0;
-+				lp->pos=0; 
++				lp->pos=0;
 +				goto seek_end;
 +			}
 +	 	}
@@ -9204,13 +9204,13 @@ index 0000000..3defa40
 +
 +	valid_data_can_seek_back=FFMIN(lp->valid_data_size-valid_data_can_seek_forward,
 +						lp->buffer_size-valid_data_can_seek_forward-64);
-+	if(valid_data_can_seek_back<0) 
++	if(valid_data_can_seek_back<0)
 +		valid_data_can_seek_back=0;
 +	lp_unlock(&lp->mutex);
 +
-+	if(forward_data)	
++	if(forward_data)
 +		*forward_data=valid_data_can_seek_forward;
-+	if(back_data)	
++	if(back_data)
 +		*back_data=valid_data_can_seek_back;
 +	return (valid_data_can_seek_back+valid_data_can_seek_forward);
 +}
@@ -9243,14 +9243,14 @@ index 0000000..3defa40
 +	int datalen;
 +	url_lpbuf_t *lp;
 +	int ret=0;
-+	
++
 +	if(!s || !s->lpbuf)
 +		return AVERROR(EINVAL);
 +
-+	
++
 +	lp=s->lpbuf;
 +	if(size <=0)
-+		size=lp->block_read_size; 
++		size=lp->block_read_size;
 +	datalen= url_lp_getbuffering_size(s,&forward_data,&back_data);
 +	lp_bprint( AV_LOG_INFO, "url_lp buffering:datalen=%d,forward_datad=%d,back_data=%d,lp->buffer_size=%d,size=%d\n",
 +		datalen,forward_data,back_data,lp->buffer_size,size);
@@ -9298,7 +9298,7 @@ index 0000000..dcdde9b
 +#define lp_unlock(x)   	pthread_mutex_unlock(x)
 +
 +
-+typedef struct  url_lpbuf{
++typedef struct  url_lpbuf{
 +	unsigned char *buffer;
 +	unsigned char *buffer_end;
 +	int buffer_size;
@@ -9317,7 +9317,7 @@ index 0000000..dcdde9b
 +
 +int url_lpopen(URLContext *s,int size);
 +int url_lpfillbuffer(URLContext *s,int size);
-+int64_t url_lpexseek(URLContext *s, int64_t offset, int whence); 
++int64_t url_lpexseek(URLContext *s, int64_t offset, int whence);
 +int url_lpread(URLContext *s,unsigned char * buf,int size);
 +int64_t url_lpseek(URLContext *s, int64_t offset, int whence);
 +int url_lpfree(URLContext *s);
@@ -9660,7 +9660,7 @@ index 0000000..cb50232
 +    uint8_t protectedAudioCryptoSize;
 +    uint8_t frameKeyCount;
 +    uint16_t drmSubMode;
-+    drmGuardExt_t guardExt;    
++    drmGuardExt_t guardExt;
 +} drmTargetHeader_t;
 +
 +typedef struct drmTransactionInfoHeaderStruct_t
@@ -9716,7 +9716,7 @@ index 0000000..cb50232
 +      uint8_t randomPad2;
 +#endif
 +      uint8_t userId[OWNER_USER_ID_BYTES];
-+#if DRM_OTHER_SECURE_PLATFORM == 0    
++#if DRM_OTHER_SECURE_PLATFORM == 0
 +      uint8_t randomPad3;
 +#endif
 +} drmOwnerSlot_t;
@@ -9760,7 +9760,7 @@ index 0000000..cb50232
 +{
 +      uint8_t userIdGuard[OWNER_GUARD_DMEM_BYTES];
 +      uint8_t modelId[MODEL_ID_BYTES];
-+      uint8_t flag;//only 2 bits are used here 
++      uint8_t flag;//only 2 bits are used here
 +} drmRegistrationRequest_t;
 +
 +/*NOTE: too many magic numbers, fixme*/
@@ -9787,10 +9787,10 @@ index 0000000..cb50232
 +      unsigned   drm_rental_value;                      /* still can play count */
 +      drmHeader_t *drm_header;                              /* const key informations */
 +      char      drm_reg_code[11];                 /* registrationCodeString*/
-+      
++
 +} drm_t;
 +
-+typedef enum drmErrorCodes 
++typedef enum drmErrorCodes
 +{
 +      DRM_SUCCESS = 0,
 +      DRM_NOT_AUTHORIZED,
@@ -9884,7 +9884,7 @@ index 0000000..d5bd3a0
 +	struct list_item*prev;
 +	list=&mgt->item_list;
 +	prev=NULL;
-+	 while (*list != NULL) 
++	 while (*list != NULL)
 +	 {
 +	 	prev=*list;
 +	 	list = &(*list)->next;
@@ -9908,12 +9908,12 @@ index 0000000..d5bd3a0
 +	else {
 +		tmp=item->prev;
 +		tmp->next=item->next;
-+		if(item->next) 
++		if(item->next)
 +			item->next->prev=tmp;
 +	}
 +	mgt->item_num--;
 +	av_free(item);
-+	return 0;		
++	return 0;
 +}
 +
 +/*=======================================================================================*/
@@ -9927,8 +9927,8 @@ index 0000000..d5bd3a0
 +	{
 +		ret=url_fopen(&lio,filename,AVIO_FLAG_READ);
 +		if(ret!=0)
-+		{ 
-+		return AVERROR(EIO); 
++		{
++		return AVERROR(EIO);
 +		}
 +	}
 +	else{
@@ -9954,7 +9954,7 @@ index 0000000..d5bd3a0
 +	ret=url_fopen(&bio,filename,flags);
 +	if(ret!=0)
 +		{
-+			return AVERROR(EIO); 
++			return AVERROR(EIO);
 +		}
 +	mgt->location=bio->reallocation;
 +	demux=probe_demux(bio,filename);
@@ -10001,7 +10001,7 @@ index 0000000..d5bd3a0
 +	if(mgt->full_time>0 && mgt->have_list_end)
 +		h->support_time_seek=1;
 +	h->priv_data = mgt;
-+	
++
 +	url_fclose(bio);
 +	return 0;
 +}
@@ -10015,7 +10015,7 @@ index 0000000..d5bd3a0
 +	if(mgt->current_item==NULL || mgt->current_item->next==NULL){
 +			/*new refresh this mgtlist now*/
 +			ByteIOContext *bio;
-+			
++
 +			int ret;
 +			if((ret=list_open_internet(&bio,mgt,mgt->filename,mgt->flags| URL_MINI_BUFFER | URL_NO_LP_BUFFER))!=0)
 +			{
@@ -10027,7 +10027,7 @@ index 0000000..d5bd3a0
 +				next=mgt->current_item->next;
 +				for(;next!=NULL;next=next->next){
 +					if(next->file && strcmp(current->file,next->file)==0){
-+						/*found the same item,switch to the next*/	
++						/*found the same item,switch to the next*/
 +						current=next;
 +						break;
 +					}
@@ -10053,14 +10053,14 @@ index 0000000..d5bd3a0
 +}
 +
 +static int list_read(URLContext *h, unsigned char *buf, int size)
-+{   
++{
 +	struct list_mgt *mgt = h->priv_data;
 +    int len=AVERROR(EIO);
 +	struct list_item *item=mgt->current_item;
-+	
-+retry:	
-+	if (url_interrupt_cb())       
-+            return AVERROR(EINTR); 
++
++retry:
++	if (url_interrupt_cb())
++            return AVERROR(EINTR);
 +	//av_log(NULL, AV_LOG_INFO, "list_read start buf=%x,size=%d\n",buf,size);
 +	if(!mgt->cur_uio )
 +	{
@@ -10119,7 +10119,7 @@ index 0000000..d5bd3a0
 +			//1 TODO:need to notify uper level stream is changed
 +			goto retry;
 +		}
-+		else{	
++		else{
 +			goto retry;
 +		}
 +	}
@@ -10128,7 +10128,7 @@ index 0000000..d5bd3a0
 +}
 +
 +static int list_write(URLContext *h, unsigned char *buf, int size)
-+{    
++{
 +	unused(h);
 +	unused(buf);
 +	unused(size);
@@ -10157,7 +10157,7 @@ index 0000000..d5bd3a0
 +		//av_log(NULL, AV_LOG_INFO, "list current buffed_time=%lld\n",buffed_time);
 +		return buffed_time;
 +	}
-+	
++
 +	av_log(NULL, AV_LOG_INFO, "list_seek pos=%lld,whence=%x\n",pos,whence);
 +	if (whence == AVSEEK_SIZE)
 +        return mgt->file_size;
@@ -10168,14 +10168,14 @@ index 0000000..d5bd3a0
 +		else
 +			return -1;
 +	}
-+	
++
 +	if(whence == AVSEEK_TO_TIME && pos>=0 && pos<mgt->full_time)
 +	{
 +		av_log(NULL, AV_LOG_INFO, "list_seek to Time =%lld,whence=%x\n",pos,whence);
 +		for(item=mgt->item_list;item;item=item->next)
 +		{
 +			if(item->start_time<=pos && pos <item->start_time+item->duration)
-+			{	
++			{
 +				if(mgt->cur_uio)
 +					url_fclose(mgt->cur_uio);
 +				mgt->cur_uio=NULL;
@@ -10183,7 +10183,7 @@ index 0000000..d5bd3a0
 +				av_log(NULL, AV_LOG_INFO, "list_seek to item->file =%s\n",item->file);
 +				return item->start_time;/*pos=0;*/
 +			}
-+		}
++		}
 +	}
 +	av_log(NULL, AV_LOG_INFO, "list_seek failed\n");
 +	return -1;
@@ -10201,14 +10201,14 @@ index 0000000..d5bd3a0
 +		item1=item;
 +		item=item->next;
 +		av_free(item1);
-+	
++
 +		}
 +	av_free(mgt);
 +	unused(h);
 +	return 0;
 +}
-+static int list_get_handle(URLContext *h)	
-+{    
++static int list_get_handle(URLContext *h)
++{
 +return (intptr_t) h->priv_data;
 +}
 +
@@ -10219,7 +10219,7 @@ index 0000000..d5bd3a0
 +    list_write,
 +    list_seek,
 +    list_close,
-+    .url_exseek=list_seek,/*same as seek is ok*/ 
++    .url_exseek=list_seek,/*same as seek is ok*/
 +    .url_get_file_handle = list_get_handle,
 +};
 +
@@ -10230,12 +10230,12 @@ index 0000000..d5bd3a0
 +int register_list_demux_all(void)
 +{
 +	static int registered_all=0;
-+	if(registered_all)	
++	if(registered_all)
 +		return;
 +	registered_all++;
 +	extern struct list_demux m3u_demux;
-+	av_register_protocol(&file_list_protocol); 
-+	register_list_demux(&m3u_demux); 
++	av_register_protocol(&file_list_protocol);
++	register_list_demux(&m3u_demux);
 +	return 0;
 +}
 +
@@ -10246,7 +10246,7 @@ index 0000000..367adbb
 +++ b/amffmpeg/libavformat/file_list.h
 @@ -0,0 +1,91 @@
 +/*
-+ * File list 
++ * File list
 + * Copyright (C) 2009 Justin Ruggles
 + *
 + * This file is part of FFmpeg.
@@ -10296,7 +10296,7 @@ index 0000000..367adbb
 +typedef struct list_item
 +{
 +	const char *file;
-+	int 	   flags;	  
++	int 	   flags;
 +	int 		start_time;
 +	int 		duration;
 +	struct list_item * prev;
@@ -10346,7 +10346,7 @@ index 4fb562f..5bd70dc
                  vcodec->bit_rate = num_val * 1024.0;
              else if(!strcmp(key, "audiodatarate") && acodec && 0 <= (int)(num_val * 1024.0))
                  acodec->bit_rate = num_val * 1024.0;
-+            else if(!strcmp(key, "framerate")) 
++            else if(!strcmp(key, "framerate"))
 +                vstream->special_fps = (float)num_val;
          } else if (amf_type == AMF_DATA_TYPE_STRING)
              av_dict_set(&s->metadata, key, str_val, 0);
@@ -10360,7 +10360,7 @@ index 95ba456..7445e3f
 @@ -34,6 +34,9 @@
  /* XXX: POST protocol is not completely implemented because ffmpeg uses
     only a subset of it. */
- 
+
 +
 +#define IPAD_IDENT	"AppleCoreMedia/1.0.0.8C148 (iPad; U; CPU OS 4_2_1 like Mac OS X; zh_cn)"
 +
@@ -10373,7 +10373,7 @@ index 95ba456..7445e3f
      int willclose;          /**< Set if the server correctly handles Connection: close and will close the connection after feeding us the content. */
 +	int is_seek;
  } HTTPContext;
- 
+
  #define OFFSET(x) offsetof(HTTPContext, x)
 @@ -63,6 +67,13 @@ static const AVClass httpcontext_class = {
      .option         = options,
@@ -10386,19 +10386,19 @@ index 95ba456..7445e3f
 +    .version        = LIBAVUTIL_VERSION_INT,
 +};
 +
- 
+
  static int http_connect(URLContext *h, const char *path, const char *hoststr,
                          const char *auth, int *new_location);
 @@ -128,8 +139,10 @@ static int http_open_cnx(URLContext *h)
- 
+
      ff_url_join(buf, sizeof(buf), "tcp", NULL, hostname, port, NULL);
      err = ffurl_open(&hd, buf, AVIO_FLAG_READ_WRITE);
 -    if (err < 0)
 +    if (err < 0){
 +		av_log(h, AV_LOG_INFO, "http_open_cnx:ffurl_open failed ,%d\n",err);
          goto fail;
-+    }	
- 
++    }
+
      s->hd = hd;
      cur_auth_type = s->auth_state.auth_type;
 @@ -146,9 +159,12 @@ static int http_open_cnx(URLContext *h)
@@ -10422,17 +10422,17 @@ index 95ba456..7445e3f
 +	av_log(h, AV_LOG_ERROR, "HTTP open Failed\n");
      return AVERROR(EIO);
  }
- 
+
 @@ -164,18 +181,36 @@ static int http_open(URLContext *h, const char *uri, int flags)
      HTTPContext *s = h->priv_data;
- 
+
      h->is_streamed = 1;
 -
-+	
++
      s->filesize = -1;
 +	s->is_seek=0;
      av_strlcpy(s->location, uri, sizeof(s->location));
- 
+
      return http_open_cnx(h);
  }
 +static int shttp_open(URLContext *h, const char *uri, int flags)
@@ -10474,7 +10474,7 @@ index 95ba456..7445e3f
 +
 +    }
 +
-+	
++
      if (!has_header(s->headers, "\r\nAccept: "))
          len += av_strlcpy(headers + len, "Accept: */*\r\n",
                            sizeof(headers) - len);
@@ -10485,19 +10485,19 @@ index 95ba456..7445e3f
      if (!has_header(s->headers, "\r\nConnection: "))
 @@ -336,8 +379,10 @@ static int http_connect(URLContext *h, const char *path, const char *hoststr,
               authstr ? authstr : "");
- 
+
      av_freep(&authstr);
 -    if (ffurl_write(s->hd, s->buffer, strlen(s->buffer)) < 0)
 +    if ((err=ffurl_write(s->hd, s->buffer, strlen(s->buffer)) )< 0){
 +		av_log(h, AV_LOG_INFO, "process_line:ffurl_write failed,%d\n",err);
          return AVERROR(EIO);
-+    }	
- 
++    }
+
      /* init input buffer */
      s->buf_ptr = s->buffer;
 @@ -361,8 +406,8 @@ static int http_connect(URLContext *h, const char *path, const char *hoststr,
              return AVERROR(EIO);
- 
+
          av_dlog(NULL, "header='%s'\n", line);
 -
          err = process_line(h, line, s->line_count, new_location);
@@ -10513,25 +10513,25 @@ index 95ba456..7445e3f
      if (s->chunksize >= 0) {
          if (!s->chunksize) {
              char line[32];
- 
+
              for(;;) {
                  do {
 -                    if (http_get_line(s, line, sizeof(line)) < 0)
 +                    if (http_get_line(s, line, sizeof(line)) < 0){
 +						av_log(h, AV_LOG_ERROR, "http_read failed\n");
                          return AVERROR(EIO);
-+                    }	
++                    }
                  } while (!*line);    /* skip CR LF from last chunk */
- 
+
                  s->chunksize = strtoll(line, NULL, 16);
- 
+
                  av_dlog(NULL, "Chunked encoding data size: %"PRId64"'\n", s->chunksize);
- 
+
 -                if (!s->chunksize)
 +                if (!s->chunksize){
 +					av_log(h, AV_LOG_ERROR, "http_read s->chunksize failed\n");
                      return 0;
-+                }	
++                }
                  break;
              }
          }
@@ -10555,7 +10555,7 @@ index 95ba456..7445e3f
 +	//av_log(h, AV_LOG_ERROR, "http_read %d\n",len);
      return len;
  }
- 
+
 @@ -486,7 +538,7 @@ static int64_t http_seek(URLContext *h, int64_t off, int whence)
      else if (whence == SEEK_END)
          off += s->filesize;
@@ -10595,12 +10595,12 @@ index e0d04db..1ea44a2 100644
 +++ b/amffmpeg/libavformat/internal.h
 @@ -76,7 +76,6 @@ void ff_interleave_add_packet(AVFormatContext *s, AVPacket *pkt,
                                int (*compare)(AVFormatContext *, AVPacket *, AVPacket *));
- 
+
  void ff_read_frame_flush(AVFormatContext *s);
 -
  #define NTP_OFFSET 2208988800ULL
  #define NTP_OFFSET_US (NTP_OFFSET * 1000000ULL)
- 
+
 diff --git a/amffmpeg/libavformat/libavformat-uninstalled.pc b/amffmpeg/libavformat/libavformat-uninstalled.pc
 new file mode 100644
 index 0000000..6f0c7ac
@@ -10617,7 +10617,7 @@ index 0000000..6f0c7ac
 +Version: 53.4.0
 +Requires: libavcodec = 53.7.0
 +Conflicts:
-+Libs: ${libdir}/libavformat.a -ldl -lm -pthread 
++Libs: ${libdir}/libavformat.a -ldl -lm -pthread
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavformat/libavformat.pc b/amffmpeg/libavformat/libavformat.pc
 new file mode 100644
@@ -10634,10 +10634,10 @@ index 0000000..3917ea4
 +Description: FFmpeg container format library
 +Version: 53.4.0
 +Requires: libavcodec = 53.7.0
-+Requires.private: 
++Requires.private:
 +Conflicts:
 +Libs: -L${libdir} -lavformat -ldl -lm -pthread
-+Libs.private: 
++Libs.private:
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavformat/m3u.c b/amffmpeg/libavformat/m3u.c
 new file mode 100755
@@ -10732,15 +10732,15 @@ index 0000000..b189adc
 +
 +static int m3u_parser_line(struct list_mgt *mgt,unsigned char *line,struct list_item*item)
 +{
-+	unsigned char *p=line; 
++	unsigned char *p=line;
 +	int enditem=0;
-+		
++
 +	p=line;
 +	while(*p==' ' && p!='\0' && p-line<1024) p++;
 +	if(*p!='#' && strlen(p)>0)
 +	{
 +
-+		item->file=p; 
++		item->file=p;
 +		enditem=1;
 +	}else if(is_TAG(p,EXT_X_ENDLIST)){
 +		item->flags=ENDLIST_FLAG;
@@ -10751,7 +10751,7 @@ index 0000000..b189adc
 +		if(duration>0){
 +			item->flags|=DURATION_FLAG;
 +			item->duration=duration;
-+			
++
 +		}
 +	}else if(is_TAG(p,EXT_X_ALLOW_CACHE)){
 +		item->flags|=ALLOW_CACHE_FLAG;
@@ -10763,10 +10763,10 @@ index 0000000..b189adc
 +
 +
 +static int m3u_format_parser(struct list_mgt *mgt,ByteIOContext *s)
-+{ 
++{
 +	unsigned  char line[1024];
 +	int ret;
-+	unsigned char *p; 
++	unsigned char *p;
 +	int getnum=0;
 +	struct list_item tmpitem;
 + 	char prefix[1024]="";
@@ -10774,8 +10774,8 @@ index 0000000..b189adc
 +	int prefix_len=0,prefixex_len=0;
 +	int start_time=mgt->full_time;
 +	char *oprefix=mgt->location!=NULL?mgt->location:mgt->filename;
-+	
-+	
++
++
 +	if(oprefix){
 +		char *tail,*tailex;
 +		if(is_NET_URL(oprefix))
@@ -10786,7 +10786,7 @@ index 0000000..b189adc
 +			tailex=strrchr(oprefix+9,'/');/*skip Http:// and shttp:*/
 +		else
 +			tailex=strrchr(oprefix,'/');
-+		
++
 +		if(tail!=NULL){
 +			prefix_len=tail-oprefix+1;/*left '/'..*/
 +			memcpy(prefix,oprefix,prefix_len);
@@ -10810,7 +10810,7 @@ index 0000000..b189adc
 +			int size_file=tmpitem.file?(strlen(tmpitem.file)+32):4;
 +			tmpitem.start_time=start_time;
 +			start_time+=tmpitem.duration;
-+			if(tmpitem.file && 
++			if(tmpitem.file &&
 +				(is_NET_URL(prefix)) && /*net protocal*/
 +				!(is_NET_URL(tmpitem.file)))/*if item is not net protocal*/
 +			{/*if m3u is http,item is not http,add prefix*/
@@ -10848,12 +10848,12 @@ index 0000000..b189adc
 +			{
 +				memset(&tmpitem,0,sizeof(tmpitem));
 +				getnum++;
-+			}
++			}
 +		}else{
 +			if(tmpitem.flags&ALLOW_CACHE_FLAG)
 +				mgt->flags|=ALLOW_CACHE_FLAG;
 +		}
-+		
++
 +	}
 +	mgt->file_size=-1;
 +	mgt->full_time=start_time;
@@ -10891,7 +10891,7 @@ index 0000000..b189adc
 +static int m3u_probe(ByteIOContext *s,const char *file)
 +{
 +	if(s)
-+	{
++	{
 +		char line[1024];
 +		if(m3u_format_get_line(s,line,1024)>0)
 +		{
@@ -10901,18 +10901,18 @@ index 0000000..b189adc
 +				av_log(NULL, AV_LOG_INFO, "get m3u flags!!\n");
 +				return 100;
 +			}
-+		}	
++		}
 +	}
 +	else
 +	{
-+		if((match_ext(file, "m3u"))||(match_ext(file, "m3u8"))) 
++		if((match_ext(file, "m3u"))||(match_ext(file, "m3u8")))
 +		{
 +			return 50;
 +		}
 +	}
 +	return 0;
 +}
-+ 
++
 + struct list_demux m3u_demux = {
 +	"m3u",
 +    m3u_probe,
@@ -10935,7 +10935,7 @@ index 6e951ba..64e48ef
 +    /* Record the position of media */
 +    uint64_t media_offset;
  } MatroskaDemuxContext;
- 
+
 +#define MAX_OFFSET 0xffffffffffffffff
 +
  typedef struct {
@@ -10947,8 +10947,8 @@ index 6e951ba..64e48ef
          av_log(matroska->ctx, AV_LOG_INFO, "Unknown entry 0x%X\n", id);
 +
 +    if ((matroska->media_offset == MAX_OFFSET)
-+        && ((MATROSKA_ID_CLUSTER == id) 
-+        || (MATROSKA_ID_ATTACHMENTS == id) 
++        && ((MATROSKA_ID_CLUSTER == id)
++        || (MATROSKA_ID_ATTACHMENTS == id)
 +        || (MATROSKA_ID_CHAPTERS == id))) {
 +        matroska->media_offset = url_ftell(matroska->ctx->pb) - 4;
 +    }
@@ -10956,24 +10956,24 @@ index 6e951ba..64e48ef
 +    if ((MATROSKA_ID_TRACKS == id) && (url_ftell(matroska->ctx->pb) > matroska->media_offset)) {
 +        return 0;
 +    }
-+    
++
      return ebml_parse_elem(matroska, &syntax[i], data);
  }
- 
+
 @@ -1235,7 +1252,8 @@ static int matroska_read_header(AVFormatContext *s, AVFormatParameters *ap)
      int i, j, k, res;
- 
+
      matroska->ctx = s;
 -
 +    matroska->media_offset = MAX_OFFSET;
-+    
++
      /* First read the EBML header. */
      if (ebml_parse(matroska, ebml_syntax, &ebml)
          || ebml.version > EBML_VERSION       || ebml.max_size > sizeof(uint64_t)
 @@ -1869,10 +1887,12 @@ static int matroska_parse_block(MatroskaDemuxContext *matroska, uint8_t *data,
                      pkt->flags = is_keyframe;
                  pkt->stream_index = st->index;
- 
+
 +                #if 0
                  if (track->ms_compat)
                      pkt->dts = timecode;
@@ -10998,7 +10998,7 @@ index 773760c..c8a1ee6
 +        //return -1;
 +        return 0;//*don't retrun -1,if only read end*/
      }
- 
+
      init_get_bits(&gb, buf, 8*num_bytes);
 @@ -1592,7 +1593,8 @@ static void mov_build_index(MOVContext *mov, AVStream *st)
                      distance = 0;
@@ -11011,7 +11011,7 @@ index 773760c..c8a1ee6
                      e->pos = current_offset;
                      e->timestamp = current_dts;
 @@ -1705,8 +1707,15 @@ static void mov_build_index(MOVContext *mov, AVStream *st)
- 
+
  static int mov_open_dref(AVIOContext **pb, const char *src, MOVDref *ref)
  {
 -    /* try relative path, we do not try the absolute because it can leak information about our
@@ -11071,14 +11071,14 @@ index 1bc4480..9f9a079
          type = AVMEDIA_TYPE_AUDIO;
          codec_id = m->sofdec > 0 ? CODEC_ID_ADPCM_ADX : CODEC_ID_MP2;
 +		if(codec_id == CODEC_ID_MP2)
-+		{	
++		{
 +			unsigned char buf[32];
 +			int i;
-+			unsigned long newhead;	
-+			
++			unsigned long newhead;
++
 +			avio_read(s->pb, buf, 32);
 +        	avio_seek(s->pb, -32, SEEK_CUR);
-+			
++
 +			for(i = 0; i < 32; i ++)
 +			{
 +				newhead = buf[0]<<24|buf[1]<<16|buf[2]<<8|buf[3];
@@ -11093,8 +11093,8 @@ index 1bc4480..9f9a079
 +						break;
 +					}
 +			    }
-+			}			
-+		}        
++			}
++		}
      } else if (startcode >= 0x80 && startcode <= 0x87) {
          type = AVMEDIA_TYPE_AUDIO;
          codec_id = CODEC_ID_AC3;
@@ -11142,7 +11142,7 @@ index 74c9ac9..a4eb1ed
 @@ -930,6 +930,11 @@ int ff_parse_mpeg2_descriptor(AVFormatContext *fc, AVStream *st, int stream_type
          stream_type == STREAM_TYPE_PRIVATE_DATA)
          mpegts_find_stream_type(st, desc_tag, DESC_types);
- 
+
 +	if ((st->codec->codec_id == CODEC_ID_H264) && (av_match_ext(fc->filename, "mvc"))) {
 +		av_log(NULL, AV_LOG_ERROR, "override codec_id to MVC\n");
 +		st->codec->codec_id = CODEC_ID_H264MVC;
@@ -11152,7 +11152,7 @@ index 74c9ac9..a4eb1ed
      case 0x1F: /* FMC descriptor */
          get16(pp, desc_end);
 @@ -1353,7 +1358,12 @@ static int mpegts_resync(AVFormatContext *s)
- 
+
      for(i = 0;i < MAX_RESYNC_SIZE; i++) {
          c = avio_r8(pb);
 -        if (url_feof(pb))
@@ -11170,7 +11170,7 @@ index 74c9ac9..a4eb1ed
      AVIOContext *pb = s->pb;
      int skip, len;
 +	int ret;
- 
+
      for(;;) {
          len = avio_read(pb, buf, TS_PACKET_SIZE);
 @@ -1379,8 +1390,13 @@ static int read_packet(AVFormatContext *s, uint8_t *buf, int raw_packet_size)
@@ -11194,7 +11194,7 @@ index 74c9ac9..a4eb1ed
      ts->stream = s;
      ts->auto_guess = 0;
 +    s->orig_packet_size = ts->raw_packet_size;
- 
+
      if (s->iformat == &ff_mpegts_demuxer) {
          /* normal demux */
 diff --git a/amffmpeg/libavformat/nutdec.c b/amffmpeg/libavformat/nutdec.c
@@ -11203,11 +11203,11 @@ index 7aecf73..7286963 100644
 +++ b/amffmpeg/libavformat/nutdec.c
 @@ -850,6 +850,7 @@ av_log(s, AV_LOG_DEBUG, "read_timestamp(X,%d,%"PRId64",%"PRId64")\n", stream_ind
      else if(stream_index == -2) return back_ptr;
- 
+
  assert(0);
 +	return -1;
  }
- 
+
  static int read_seek(AVFormatContext *s, int stream_index, int64_t pts, int flags){
 diff --git a/amffmpeg/libavformat/rtpdec_h264.c b/amffmpeg/libavformat/rtpdec_h264.c
 old mode 100644
@@ -11223,7 +11223,7 @@ index 730ed14..c7c3d9f
 +        uint8_t start_sequence[]= {0, 0, 0, 1 };
          codec->extradata_size= 0;
          codec->extradata= NULL;
- 
+
 @@ -159,6 +159,8 @@ static int sdp_parse_fmtp_config_h264(AVStream * stream,
                  }
              }
@@ -11239,7 +11239,7 @@ index 730ed14..c7c3d9f
      int result= 0;
 -    uint8_t start_sequence[]= {0, 0, 1};
 +    uint8_t start_sequence[]= {0, 0, 0, 1 };
- 
+
  #ifdef DEBUG
      assert(data);
 diff --git a/amffmpeg/libavformat/tcp.c b/amffmpeg/libavformat/tcp.c
@@ -11256,7 +11256,7 @@ index eb982d5..a6b6708
 +    int timeout = 500;
      char hostname[1024],proto[1024],path[1024];
      char portstr[10];
- 
+
 @@ -121,6 +121,9 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
                  break;
          }
@@ -11274,9 +11274,9 @@ index 7c18fb7..29b4da8
 --- a/amffmpeg/libavformat/udp.c
 +++ b/amffmpeg/libavformat/udp.c
 @@ -511,7 +511,7 @@ static int udp_open(URLContext *h, const char *uri, int flags)
- 
+
      s->udp_fd = udp_fd;
- 
+
 -#if HAVE_PTHREADS
 +#if 0 && HAVE_PTHREADS
      if (!is_output && s->circular_buffer_size) {
@@ -11311,10 +11311,10 @@ index 5ef6a21..241de47
 + * indicates that it is not possible to read more from the accessed
 + * resource (except if the value of the size argument is also zero).
 + */
-+ 
++
 +
  int ffurl_read(URLContext *h, unsigned char *buf, int size);
- 
+
  /**
 @@ -168,9 +180,12 @@ int ffurl_get_file_handle(URLContext *h);
   * @param size the size of the URLProtocol struct referenced
@@ -11322,11 +11322,11 @@ index 5ef6a21..241de47
  int ffurl_register_protocol(URLProtocol *protocol, int size);
 +int av_register_protocol(URLProtocol *protocol);
 +
- 
+
  /* udp.c */
  int ff_udp_set_remote_url(URLContext *h, const char *uri);
  int ff_udp_get_local_port(URLContext *h);
- 
+
 +
  #endif /* AVFORMAT_URL_H */
 diff --git a/amffmpeg/libavformat/utils.c b/amffmpeg/libavformat/utils.c
@@ -11370,7 +11370,7 @@ index cd90480..654a063
 +
 +
  #endif
- 
+
  /* open input file and probe the format if necessary */
 -static int init_input(AVFormatContext *s, const char *filename)
 +static int init_input(AVFormatContext *s, const char *filename,const char * headers)
@@ -11409,7 +11409,7 @@ index cd90480..654a063
          return 0;
      return av_probe_input_buffer(s->pb, &s->iformat, filename, s, 0, 0);
  }
- 
+
 -int avformat_open_input(AVFormatContext **ps, const char *filename, AVInputFormat *fmt, AVDictionary **options)
 +
 +int avformat_open_input_header(AVFormatContext **ps, const char *filename, AVInputFormat *fmt, AVDictionary **options,const char *headers)
@@ -11419,38 +11419,38 @@ index cd90480..654a063
 @@ -624,7 +663,7 @@ int avformat_open_input(AVFormatContext **ps, const char *filename, AVInputForma
      if ((ret = av_opt_set_dict(s, &tmp)) < 0)
          goto fail;
- 
+
 -    if ((ret = init_input(s, filename)) < 0)
 +    if ((ret = init_input(s, filename,headers)) < 0)
          goto fail;
- 
+
      /* check filename in case an image number is expected */
 @@ -681,6 +720,11 @@ fail:
      return ret;
  }
- 
+
 +int avformat_open_input(AVFormatContext **ps, const char *filename, AVInputFormat *fmt, AVDictionary **options)
 +{
 +    return avformat_open_input_header(ps,filename,fmt,options,NULL);
 +}
 +
  /*******************************************************/
- 
+
  static AVPacket *add_to_pktbuf(AVPacketList **packet_buffer, AVPacket *pkt,
 @@ -1944,6 +1988,326 @@ static void av_estimate_timings_from_bit_rate(AVFormatContext *ic)
- 
+
  #define DURATION_MAX_READ_SIZE 250000
  #define DURATION_MAX_RETRY 3
-+#define CHECK_FULL_ZERO_SIZE DURATION_MAX_READ_SIZE		
++#define CHECK_FULL_ZERO_SIZE DURATION_MAX_READ_SIZE
 +static int64_t seek_last_valid_pkt(AVFormatContext *ic)
-+{	
++{
 +	int64_t filesize,offset;
 +	int64_t start_offset,end_offset;
 +	int ret;
 +	unsigned char *buf1;
 +	unsigned char *buf2;
-+	
-+	buf1 = av_malloc(CHECK_FULL_ZERO_SIZE);	
++
++	buf1 = av_malloc(CHECK_FULL_ZERO_SIZE);
 +	if(!buf1)
 +		return -2;
 +	buf2 = av_malloc(CHECK_FULL_ZERO_SIZE);
@@ -11460,8 +11460,8 @@ index cd90480..654a063
 +		return -3;
 +	}
 +	memset(buf1,0,CHECK_FULL_ZERO_SIZE);
-+	memset(buf2,0,CHECK_FULL_ZERO_SIZE);	
-+	filesize = ic->file_size;	
++	memset(buf2,0,CHECK_FULL_ZERO_SIZE);
++	filesize = ic->file_size;
 +	start_offset = 0;
 +	end_offset = filesize;
 +	for(;;)
@@ -11474,10 +11474,10 @@ index cd90480..654a063
 +			av_log(NULL, AV_LOG_INFO, "[%s:%d]last block!offset=0x%llx\n",__FUNCTION__,__LINE__,start_offset);
 +			av_free(buf1);
 +			av_free(buf2);
-+			return start_offset;	
++			return start_offset;
 +		}
-+		
-+		offset = (start_offset + end_offset) >> 1;		
++
++		offset = (start_offset + end_offset) >> 1;
 +	   	//av_log(NULL, AV_LOG_INFO, "[%s:%d]offset=0x%llx\n",__FUNCTION__,__LINE__,offset);
 +		avio_seek(ic->pb, offset, SEEK_SET);
 +		do{
@@ -11487,8 +11487,8 @@ index cd90480..654a063
 +        {
 +        	av_log(NULL, AV_LOG_INFO, "[%s:%d]av_read_packet failed ret=%d\n",__FUNCTION__,__LINE__,ret);
 +        	break;
-+        }		
-+		
++        }
++
 +		if(memcmp(buf1,buf2,CHECK_FULL_ZERO_SIZE)==0)	//cmp,buf1=buf2=0
 +		{
 +        	//av_log(NULL, AV_LOG_INFO, "[%s:%d]first block buf1=0\n",__FUNCTION__,__LINE__);
@@ -11496,7 +11496,7 @@ index cd90480..654a063
 +			continue;
 +		}
 +		else	//buf1<>0
-+		{		
++		{
 +        	//av_log(NULL, AV_LOG_INFO, "[%s:%d]first block buf1<>0\n",__FUNCTION__,__LINE__);
 +			memset(buf1,0,CHECK_FULL_ZERO_SIZE);
 +			avio_seek(ic->pb, offset + CHECK_FULL_ZERO_SIZE, SEEK_SET);
@@ -11519,7 +11519,7 @@ index cd90480..654a063
 +	        	av_log(NULL, AV_LOG_INFO, "[%s:%d]find valid packet!offset=0x%llx\n",__FUNCTION__,__LINE__,offset);
 +				av_free(buf1);
 +				av_free(buf2);
-+				return offset;	
++				return offset;
 +			}
 +			else
 +			{
@@ -11527,8 +11527,8 @@ index cd90480..654a063
 +				start_offset = offset;
 +				continue;
 +			}
-+		}		
-+	}	
++		}
++	}
 +	av_free(buf1);
 +	av_free(buf2);
 +	return -1;
@@ -11539,25 +11539,25 @@ index cd90480..654a063
 +	unsigned char *buf2;
 +	int check_size;
 +	int read_size;
-+	int64_t filesize,offset;	
-+	int64_t start_offset,end_offset;	
++	int64_t filesize,offset;
++	int64_t start_offset,end_offset;
 +	int64_t ret = -1;
-+	
-+	buf1 = av_mallocz(CHECK_FULL_ZERO_SIZE);	
++
++	buf1 = av_mallocz(CHECK_FULL_ZERO_SIZE);
 +	if(!buf1)
 +		return AVERROR(ENOMEM);
-+	buf2 = av_mallocz(CHECK_FULL_ZERO_SIZE);	
++	buf2 = av_mallocz(CHECK_FULL_ZERO_SIZE);
 +	if(!buf2)
 +	{
 +		av_free(buf1);
 +		return AVERROR(ENOMEM);
 +	}
-+	filesize = ic->file_size;	
++	filesize = ic->file_size;
 +	if(filesize < CHECK_FULL_ZERO_SIZE)
 +		check_size = filesize >> 3;
 +	else
 +		check_size = CHECK_FULL_ZERO_SIZE;
-+	
++
 +	offset = filesize - check_size;
 +    if (offset < 0)
 +        offset = 0;
@@ -11571,23 +11571,23 @@ index cd90480..654a063
 +		goto end;
 +	}
 +	else if(memcmp(buf1,buf2,check_size)==0)	//cmp,buf1=buf2=0
-+	{		
++	{
 +		av_log(ic, AV_LOG_ERROR, "[%s]last block is full ZERO\n",__FUNCTION__);
 +		ret = 0;
 +		goto end;
-+	
++
 +	}
 +	else
 +	{
 +		av_log(ic, AV_LOG_ERROR, "[%s]last block is valid data!\n",__FUNCTION__);
-+		ret = filesize;		
-+	}	
++		ret = filesize;
++	}
 +end:
 +	av_free(buf1);
 +	av_free(buf2);
 +	av_log(ic, AV_LOG_INFO, "[%s]last valid block is [0x%llx] file_size=0x%llx\n",__FUNCTION__,ret, filesize);
 +	return ret;
-+	
++
 +}
 +
 +static int64_t find_last_chapter_end(AVFormatContext *ic, int64_t old_offset, int64_t start_time)
@@ -11598,7 +11598,7 @@ index cd90480..654a063
 +	int read_size, i, ret, retry = 0;
 +
 +	offset = old_offset;
-+	
++
 +	do{
 +	    offset -= DURATION_MAX_READ_SIZE;
 +	    if (offset < 0){
@@ -11633,9 +11633,9 @@ index cd90480..654a063
 +				}
 +			}
 +	        av_free_packet(pkt);
-+	    }		
-+    }while(pts == AV_NOPTS_VALUE && old_offset > (DURATION_MAX_READ_SIZE<<retry));          
-+		
++	    }
++    }while(pts == AV_NOPTS_VALUE && old_offset > (DURATION_MAX_READ_SIZE<<retry));
++
 +	avio_seek(ic->pb, old_offset, SEEK_SET);
 +	//av_log(NULL, AV_LOG_INFO, "[%s]return pts=0x%llx\n",__FUNCTION__, pts);
 +	return pts;
@@ -11649,8 +11649,8 @@ index cd90480..654a063
 +    int read_size, i, ret;
 +    int64_t end_time, start_time[MAX_STREAMS];
 +    int64_t valid_offset, offset, last_offset, duration;
-+	int64_t last_pts[MAX_STREAMS], pts_discontinue[MAX_STREAMS];	
-+    int retry=0;   
++	int64_t last_pts[MAX_STREAMS], pts_discontinue[MAX_STREAMS];
++    int retry=0;
 +#define DISCONTINUE_PTS_VALUE  (0xffffffff)
 +
 +    ic->cur_st = NULL;
@@ -11702,24 +11702,24 @@ index cd90480..654a063
 +			//av_log(NULL, AV_LOG_INFO, "[%s:%d] read a packet, pkt->pts=0x%llx\n",__FUNCTION__, __LINE__,pkt->pts);
 +	        read_size += pkt->size;
 +	        st = ic->streams[pkt->stream_index];
-+	        if (pkt->pts != AV_NOPTS_VALUE){ 				
-+				if(last_pts[pkt->stream_index] != AV_NOPTS_VALUE && 
++	        if (pkt->pts != AV_NOPTS_VALUE){
++				if(last_pts[pkt->stream_index] != AV_NOPTS_VALUE &&
 +					last_pts[pkt->stream_index] < DISCONTINUE_PTS_VALUE &&
 +					pkt->pts < last_pts[pkt->stream_index]){
-+					pts_discontinue[pkt->stream_index] = last_pts[pkt->stream_index];	
++					pts_discontinue[pkt->stream_index] = last_pts[pkt->stream_index];
 +					av_log(NULL, AV_LOG_INFO, "pts=0x%llx discontinue_pts=0x%llx\n",pkt->pts, last_pts[pkt->stream_index]);
-+				}				
-+					
++				}
++
 +				if(pkt->pts != last_pts[pkt->stream_index]){
 +					last_pts[pkt->stream_index] = pkt->pts;
 +				}
-+				
-+	            if(start_time[pkt->stream_index] != AV_NOPTS_VALUE) {  
-+					if(pkt->pts < start_time[pkt->stream_index] && 
++
++	            if(start_time[pkt->stream_index] != AV_NOPTS_VALUE) {
++					if(pkt->pts < start_time[pkt->stream_index] &&
 +						pkt->pts < DISCONTINUE_PTS_VALUE &&
 +						pts_discontinue[pkt->stream_index] == AV_NOPTS_VALUE){
 +						last_offset = url_ftell(ic->pb);
-+						pts_discontinue[pkt->stream_index] = find_last_chapter_end(ic, last_offset, start_time[pkt->stream_index]);						
++						pts_discontinue[pkt->stream_index] = find_last_chapter_end(ic, last_offset, start_time[pkt->stream_index]);
 +					}
 +		            end_time = pkt->pts;
 +		            duration = end_time - start_time[pkt->stream_index];
@@ -11759,18 +11759,18 @@ index cd90480..654a063
 +        st= ic->streams[i];
 +        st->cur_dts= st->first_dts;
 +        st->last_IP_pts = AV_NOPTS_VALUE;
-+    }	
++    }
 +}
- 
+
  /* only usable for MPEG-PS streams */
  static void av_estimate_timings_from_pts(AVFormatContext *ic, int64_t old_offset)
 @@ -2675,6 +3039,7 @@ void av_close_input_file(AVFormatContext *s)
      av_close_input_stream(s);
      if (pb)
          avio_close(pb);
-+	
++
  }
- 
+
  AVStream *av_new_stream(AVFormatContext *s, int id)
 diff --git a/amffmpeg/libavutil/Android.mk b/amffmpeg/libavutil/Android.mk
 new file mode 100755
@@ -11800,7 +11800,7 @@ index 0000000..9e3ecc9
 +	external/zlib
 +LOCAL_CFLAGS += $(FFCFLAGS)
 +LOCAL_MODULE := $(FFNAME)
-+LOCAL_SHARED_LIBRARIES += libutils libmedia libz libbinder libdl libcutils libc 
++LOCAL_SHARED_LIBRARIES += libutils libmedia libz libbinder libdl libcutils libc
 +LOCAL_PRELINK_MODULE := false
 +LOCAL_MODULE_TAGS := optional
 +include $(BUILD_SHARED_LIBRARY)
@@ -11814,16 +11814,16 @@ index 0d8f01d..2284b22 100644
 @@ -1,4 +1,4 @@
 -include $(SUBDIR)../config.mak
 +###include $(SUBDIR)../config.mak
- 
+
  NAME = avutil
- 
+
 @@ -84,6 +84,6 @@ DIRS = arm bfin sh4 x86
- 
+
  ARCH_HEADERS = bswap.h intmath.h intreadwrite.h timer.h
- 
+
 -include $(SUBDIR)../subdir.mak
 +####include $(SUBDIR)../subdir.mak
- 
+
  $(SUBDIR)lzo-test$(EXESUF): ELIBS = -llzo2
 diff --git a/amffmpeg/libavutil/avconfig.h b/amffmpeg/libavutil/avconfig.h
 new file mode 100644
@@ -11844,7 +11844,7 @@ index 4d6ef66..abafffd 100644
 @@ -92,6 +92,15 @@ enum AVMediaType {
      AVMEDIA_TYPE_NB
  };
- 
+
 +#define CODEC_TYPE_UNKNOWN  AVMEDIA_TYPE_UNKNOWN
 +#define CODEC_TYPE_VIDEO  AVMEDIA_TYPE_VIDEO
 +#define CODEC_TYPE_AUDIO  AVMEDIA_TYPE_AUDIO
@@ -11869,7 +11869,7 @@ index 1cd2de2..0563284 100644
 +    if ((a+0x80000000u) & ~(0xFFFFFFFF)) return (a>>63) ^ 0x7FFFFFFF;
      else                                         return a;
  }
- 
+
 diff --git a/amffmpeg/libavutil/libavutil-uninstalled.pc b/amffmpeg/libavutil/libavutil-uninstalled.pc
 new file mode 100644
 index 0000000..7c019c9
@@ -11884,7 +11884,7 @@ index 0000000..7c019c9
 +Name: libavutil
 +Description: FFmpeg utility library
 +Version: 51.9.1
-+Requires: 
++Requires:
 +Conflicts:
 +Libs: ${libdir}/libavutil.a -lm
 +Cflags: -I${includedir}
@@ -11902,11 +11902,11 @@ index 0000000..d7a0f13
 +Name: libavutil
 +Description: FFmpeg utility library
 +Version: 51.9.1
-+Requires: 
-+Requires.private: 
++Requires:
++Requires.private:
 +Conflicts:
 +Libs: -L${libdir} -lavutil -lm
-+Libs.private: 
++Libs.private:
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/libavutil/log.c b/amffmpeg/libavutil/log.c
 old mode 100644
@@ -11926,7 +11926,7 @@ index fd5e2cb..e7907c4
 +#define  LOG_TAG    "amffmpeg"
 +#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 +#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
-+#define set_color(x) 
++#define set_color(x)
 +#define reset_color()
  #else
  static const uint8_t color[]={0x41,0x41,0x11,0x03,9,9,9};
@@ -11937,7 +11937,7 @@ index fd5e2cb..e7907c4
      }
 +#ifdef ANDROID
 +	LOGI("%s", str);
-+#else	
++#else
      fputs(str, stderr);
 +#endif
      if(use_color){
@@ -11976,10 +11976,10 @@ index 0000000..daf3c59
 +Description: FFmpeg image rescaling library
 +Version: 2.0.0
 +Requires: libavutil = 51.9.1
-+Requires.private: 
++Requires.private:
 +Conflicts:
 +Libs: -L${libdir} -lswscale -lm
-+Libs.private: 
++Libs.private:
 +Cflags: -I${includedir}
 diff --git a/amffmpeg/version.h b/amffmpeg/version.h
 new file mode 100644

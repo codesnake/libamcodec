@@ -1,5 +1,5 @@
 /*
- * File list 
+ * File list
  * Copyright (C) 2009 Justin Ruggles
  *
  * This file is part of FFmpeg.
@@ -33,9 +33,9 @@
 #define lp_unlock(x)   	pthread_mutex_unlock(x)
 
 typedef enum _AdaptationProfile{
-    CONSTANT_ADAPTIVE = 0, //just  does not switch variant. 
+    CONSTANT_ADAPTIVE = 0, //just  does not switch variant.
     AGREESSIVE_ADAPTIVE, //only the last throughput measurement
-    MEAN_ADAPTIVE,//the last throughput measurement and buffer fullness    
+    MEAN_ADAPTIVE,//the last throughput measurement and buffer fullness
     CONSERVATIVE_ADAPTIVE,//the last throughput measurement with by a sensitivity parameter(eg.0.8)
     MANUAL_ADAPTIVE,
 }AdaptationProfile;
@@ -66,12 +66,12 @@ struct encrypt_key_priv_t{
     char key_from[MAX_URL_SIZE];
     uint8_t key[16];
     uint8_t iv[16];
-    int is_have_key_file; //just get file from server 
+    int is_have_key_file; //just get file from server
 };
 
 
 
-struct AES128KeyContext{	
+struct AES128KeyContext{
 	uint8_t key[16];
 	uint8_t iv[16];
 };
@@ -90,23 +90,23 @@ typedef struct list_item
     enum KeyType ktype;
     struct AES128KeyContext* key_ctx; //just store key info.
     struct list_item * prev;
-    struct list_item * next;	
+    struct list_item * next;
 }list_item_t;
 
 struct variant{
     char url[MAX_URL_SIZE];
     int bandwidth;
-    int priority; 
+    int priority;
 };
 
 typedef struct list_mgt
 {
     char *filename;
-    char *location;	
+    char *location;
     int flags;
     int listclose;
     lock_t mutex;
-    struct list_item *item_list;	
+    struct list_item *item_list;
     pthread_mutex_t list_lock;
     int item_num;
     int next_index;
@@ -119,36 +119,36 @@ typedef struct list_mgt
     int64_t file_size;
     int64_t full_time;
     int 	have_list_end;
-    int  start_seq;  
+    int  start_seq;
     int  next_seq;
     int target_duration;
     int64_t last_load_time;
-    //added for Playlist file with encrypted media segments	
+    //added for Playlist file with encrypted media segments
     int n_variants;
-    struct variant ** variants;	
-    int is_variant;    
+    struct variant ** variants;
+    int is_variant;
     int has_iv;
     int bandwidth;
-    char* prefix; //	
+    char* prefix; //
     struct variant* playing_variant;
     struct encrypt_key_priv_t* key_tmp; //just for parsing using,if ended parsing,just free this pointer.
     //end.
     ByteIOContext	*cur_uio;
     struct list_demux *demux;
     void *cache_http_handle;
-    char *ipad_ex_headers; 
+    char *ipad_ex_headers;
     char *ipad_req_media_headers;
     int codec_buf_level;//10000*data/size;-1,not inited.
     int switch_up_num;
     int switch_down_num;
     int debug_level;
     int codec_vbuf_size;
-    int codec_abuf_size;	
+    int codec_abuf_size;
     int codec_vdat_size;
-    int codec_adat_size;	 	
+    int codec_adat_size;
     int parser_finish_flag;
     int measure_bw;
-    int read_eof_flag;	
+    int read_eof_flag;
 }list_mgt_t;
 
 typedef struct list_demux

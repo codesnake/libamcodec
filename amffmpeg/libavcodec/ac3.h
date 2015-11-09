@@ -161,7 +161,7 @@ typedef struct AC3EncOptions {
     int allow_per_frame_metadata;
     int stereo_rematrixing;
     int channel_coupling;
-    int cpl_start;    
+    int cpl_start;
 } AC3EncOptions;
 
 void ff_ac3_common_init(void);

@@ -18,7 +18,7 @@ ammodule_t AMPLAYER_MODULE_INFO_SYM = {
         dso : NULL,
         reserved : {0},
 };
-	
+
 int testinit(const struct ammodule_t* module, int flags)
 {
       LOGI("--testinit--------");

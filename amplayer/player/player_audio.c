@@ -15,7 +15,7 @@ static int stream_audio_init(play_para_t *p_para)
     int ret = CODEC_ERROR_NONE;
     a_stream_info_t *ainfo = &p_para->astream_info;
     codec_para_t *codec ;
-    AVCodecContext  *pCodecCtx;	
+    AVCodecContext  *pCodecCtx;
     codec = codec_alloc();
     if (!codec) {
         return PLAYER_EMPTY_P;
@@ -52,11 +52,11 @@ static int stream_audio_init(play_para_t *p_para)
         log_print("[%s:%d]block_align=%d,,sample_rate=%d,,channels=%d,,bitrate=%d,,codec_id=%d,extra size %d,SessionID=%d\n", __FUNCTION__, __LINE__, codec->audio_info.block_align,
                   codec->audio_info.sample_rate, codec->audio_info.channels , codec->audio_info.extradata_size, codec->audio_info.codec_id, codec->audio_info.extradata_size, codec->SessionID);
     }
-	codec->SessionID = p_para->start_param->SessionID;	
+	codec->SessionID = p_para->start_param->SessionID;
 	if(IS_AUDIO_NOT_SUPPORTED_BY_AUDIODSP(codec->audio_type,pCodecCtx)){
 			codec->dspdec_not_supported = 1;
 			log_print("main profile aac not supported by dsp decoder,so set dspdec_not_supported flag\n");
-	}	
+	}
     ret = codec_init(codec);
     if (ret != CODEC_ERROR_NONE) {
         if (ret != CODEC_OPEN_HANDLE_FAILED) {

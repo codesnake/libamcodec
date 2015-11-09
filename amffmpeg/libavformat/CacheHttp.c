@@ -32,20 +32,20 @@
 #include "CacheHttp.h"
 #include "hls_livesession.h"
 
-#include "bandwidth_measure.h" 
+#include "bandwidth_measure.h"
 
 #define BUFFER_SIZE (1024*4)
 #define CIRCULAR_BUFFER_SIZE (20*188*4096)
 #define WAIT_TIME (100*1000)
-#define TMP_BUFFER_SIZE (188*100)   
+#define TMP_BUFFER_SIZE (188*100)
 #define HTTP_RETRY_TIMES 20
 #define HTTP_SKIP_TIMES 5
 
 #define ADD_TSHEAD_RECALC_DISPTS_TAG 	("amlogictsdiscontinue")
-static const uint8_t ts_segment_lead[188] = {0x47,0x00,0x1F,0xFF,0,}; 
+static const uint8_t ts_segment_lead[188] = {0x47,0x00,0x1F,0xFF,0,};
 typedef struct {
     URLContext * hd;
-    unsigned char headers[BUFFER_SIZE];    
+    unsigned char headers[BUFFER_SIZE];
     int EXIT;
     int EXITED;
     int RESET;
@@ -53,25 +53,25 @@ typedef struct {
     int finish_flag;
     int seek_flag;
     int have_list_end;
-    int circular_buffer_error; 
+    int circular_buffer_error;
     double item_duration;
     double item_starttime;
     int64_t item_pos;
     int64_t item_size;
-    int64_t seek_pos;	
+    int64_t seek_pos;
     enum KeyType ktype;
     char key[33];
     char iv[33];
-    AVFifoBuffer * fifo;    
+    AVFifoBuffer * fifo;
     void * bandwidth_measure;
     pthread_t circular_buffer_thread;
-    pthread_mutex_t  read_mutex;    
+    pthread_mutex_t  read_mutex;
     int is_first_read;
     int is_ts_file;
     int livets_addhead;
     int ignore_http_range_req;
-    int http_error_code;	
-    int64_t estimate_bitrate;	
+    int http_error_code;
+    int64_t estimate_bitrate;
     struct list_mgt *m3u_mgt;
 } CacheHttpContext;
 
@@ -93,7 +93,7 @@ static int CacheHttp_advanced_ffurl_open_h(URLContext ** h,const char * filename
             flags|=URL_SEGMENT_MEDIA;
         }
         if ((ret = ffurl_alloc(&input, filename, flags|AVIO_FLAG_READ|AVIO_FLAG_NONBLOCK)) < 0){
-            return ret;    
+            return ret;
         }
 
         av_set_string3(input->priv_data, "key", ctx->key, 0, NULL);
@@ -129,7 +129,7 @@ static int CacheHttp_dump_open(void ** handle, const char * url, int flag)
 {
     if(!url)
         return -1;
-    
+
     av_log(NULL,AV_LOG_INFO,"---------------> cachehttp_dump url=%s", url);
     FILE * fp = NULL;
     if(flag == 1 && !(*handle)) {
@@ -149,7 +149,7 @@ static int CacheHttp_dump_open(void ** handle, const char * url, int flag)
 }
 
 static int CacheHttp_dump_write(void * handle, const char *buf, int size)
-{   
+{
     if(!handle || !buf)
         return -1;
 
@@ -179,9 +179,9 @@ int CacheHttp_Open(void ** handle,const char* headers,void* arg)
     }
     s->m3u_mgt = (struct list_mgt*)arg;
     if(!s->m3u_mgt){
-	 av_free(s);	
+	 av_free(s);
 	 s = NULL;
-	 return AVERROR(EIO); 
+	 return AVERROR(EIO);
     }
     *handle = (void *)s;
     s->hd  = NULL;
@@ -203,9 +203,9 @@ int CacheHttp_Open(void ** handle,const char* headers,void* arg)
     int config_ret;
     config_ret=am_getconfig_float("libplayer.ffmpeg.hlshttpbufmax",&value);
     if(config_ret<0 || value < 1024*32)
-    	s->fifo = av_fifo_alloc(CIRCULAR_BUFFER_SIZE);
+	s->fifo = av_fifo_alloc(CIRCULAR_BUFFER_SIZE);
     else{
-    	s->fifo = av_fifo_alloc(value);
+	s->fifo = av_fifo_alloc(value);
     }
     pthread_mutex_init(&s->read_mutex,NULL);
 
@@ -222,12 +222,12 @@ int CacheHttp_Open(void ** handle,const char* headers,void* arg)
     if(headers){
         av_strlcpy(s->headers,headers,BUFFER_SIZE);
     }
-    int ret =-1;    
+    int ret =-1;
 
-    s->bandwidth_measure=bandwidth_measure_alloc(100,0); 
-    
+    s->bandwidth_measure=bandwidth_measure_alloc(100,0);
+
     ret = ffmpeg_pthread_create(&s->circular_buffer_thread, NULL, circular_buffer_task, s);
-    //pthread_setname_np(s->circular_buffer_thread,"AmffmpegHTTP");	
+    //pthread_setname_np(s->circular_buffer_thread,"AmffmpegHTTP");
     av_log(NULL, AV_LOG_INFO, "----------- pthread_create ret=%d\n",ret);
 
     return ret;
@@ -237,20 +237,20 @@ int CacheHttp_Read(void * handle, uint8_t * cache, int size)
 {
     if(!handle)
         return AVERROR(EIO);
-    
+
     CacheHttpContext * s = (CacheHttpContext *)handle;
     pthread_mutex_lock(&s->read_mutex);
     if (s->fifo) {
-    	int avail;
+	int avail;
        avail = av_fifo_size(s->fifo);
-    	//av_log(NULL, AV_LOG_INFO, "----------- http_read   avail=%d, size=%d ",avail,size);
+	//av_log(NULL, AV_LOG_INFO, "----------- http_read   avail=%d, size=%d ",avail,size);
         if(s->is_first_read>0){
             float value = 0.0;
-            int ret = -1;        
+            int ret = -1;
             ret = am_getconfig_float("libplayer.hls.initial_buffered", &value);
             if(ret>=0){
                 if(avail/1024<value){
-                    //av_log(NULL, AV_LOG_INFO, "buffer data avail=%d, initial buffer buffered data size=%f  ",avail,value*1024);                   
+                    //av_log(NULL, AV_LOG_INFO, "buffer data avail=%d, initial buffer buffered data size=%f  ",avail,value*1024);
                     pthread_mutex_unlock(&s->read_mutex);
                     return AVERROR(EAGAIN);
                 }
@@ -260,7 +260,7 @@ int CacheHttp_Read(void * handle, uint8_t * cache, int size)
 	if(avail <=0&&s->http_error_code!=0){
 		pthread_mutex_unlock(&s->read_mutex);
 		return -1;
-	}		
+	}
 	if(url_interrupt_cb()) {
 	    pthread_mutex_unlock(&s->read_mutex);
 	    return 0;
@@ -268,19 +268,19 @@ int CacheHttp_Read(void * handle, uint8_t * cache, int size)
            // Maximum amount available
            size = FFMIN( avail, size);
            av_fifo_generic_read(s->fifo, cache, size, NULL);
-    	    pthread_mutex_unlock(&s->read_mutex);
-           return size;        
+	    pthread_mutex_unlock(&s->read_mutex);
+           return size;
        } else if(s->EXITED) {
-           pthread_mutex_unlock(&s->read_mutex); 
+           pthread_mutex_unlock(&s->read_mutex);
            return 0;
        } else if(!s->finish_flag) {
-           pthread_mutex_unlock(&s->read_mutex);          
+           pthread_mutex_unlock(&s->read_mutex);
            //read just need retry
            return AVERROR(EAGAIN);
        }
     }
     pthread_mutex_unlock(&s->read_mutex);
-    
+
     return 0;
 }
 
@@ -334,30 +334,30 @@ int CacheHttp_Close(void * handle)
 {
     if(!handle)
         return AVERROR(EIO);
-    
+
     CacheHttpContext * s = (CacheHttpContext *)handle;
     s->EXIT = 1;
-   
+
     ffmpeg_pthread_join(s->circular_buffer_thread, NULL);
-   
+
     av_log(NULL,AV_LOG_DEBUG,"-----------%s:%d\n",__FUNCTION__,__LINE__);
     if(s->fifo) {
-    	av_fifo_free(s->fifo);
+	av_fifo_free(s->fifo);
     }
-    pthread_mutex_destroy(&s->read_mutex);    
+    pthread_mutex_destroy(&s->read_mutex);
     bandwidth_measure_free(s->bandwidth_measure);
     av_free(s);
-    s = NULL;	
+    s = NULL;
     return 0;
 }
 
 int CacheHttp_GetSpeed(void * _handle, int * arg1, int * arg2, int * arg3)
-{ 
+{
     if(!_handle)
         return AVERROR(EIO);
-  
-    CacheHttpContext * s = (CacheHttpContext *)_handle; 
-    int ret = bandwidth_measure_get_bandwidth(s->bandwidth_measure,arg1,arg2,arg3);	
+
+    CacheHttpContext * s = (CacheHttpContext *)_handle;
+    int ret = bandwidth_measure_get_bandwidth(s->bandwidth_measure,arg1,arg2,arg3);
     //av_log(NULL, AV_LOG_ERROR, "download bandwidth latest=%d.%d kbps,latest avg=%d.%d k bps,avg=%d.%d kbps\n",*arg1/1000,*arg1%1000,*arg2/1000,*arg2%1000,*arg3/1000,*arg3%1000);
     return ret;
 }
@@ -367,8 +367,8 @@ int CacheHttp_GetBuffedTime(void * handle)
     if(!handle)
         return AVERROR(EIO);
 
-    CacheHttpContext * s = (CacheHttpContext *)handle; 
-    int64_t buffed_time=0;  
+    CacheHttpContext * s = (CacheHttpContext *)handle;
+    int64_t buffed_time=0;
 
     //av_log(NULL, AV_LOG_ERROR, "---------- 000 CacheHttp_GetBufferedTime  s->item_size=%lld", s->item_size);
     if(s->item_duration>= 0 && s->item_size > 0) {
@@ -380,7 +380,7 @@ int CacheHttp_GetBuffedTime(void * handle)
             int64_t full_time = getTotalDuration((void*)s->m3u_mgt);
             buffed_time = full_time;
         }
-    }   
+    }
 
     return buffed_time;
 }
@@ -389,7 +389,7 @@ int CacheHttp_GetBuffedTime(void * handle)
 static int ts_simple_analyze(int packetnum,const uint8_t *buf, int size){
 	int i;
 	int isTs = 0;
- 
+
 	for(i=0; i<size-3; i++){
 		if(buf[i] == 0x47 && !(buf[i+1] & 0x80) && (buf[i+3] != 0x47)){
 		   isTs++;
@@ -409,14 +409,14 @@ static int tsstream_add_fakehead(CacheHttpContext * s)
 	int taglen = strlen(ADD_TSHEAD_RECALC_DISPTS_TAG);
 	int left = 0;
 
-	if (s->have_list_end==0 && (s->is_ts_file >0 )){//live ,  //copy fake header to segment head for soft demux segment 
-		int duration_add = (int)(s->item_duration*1000);   
-		do{ 
-			pthread_mutex_lock(&s->read_mutex); 
+	if (s->have_list_end==0 && (s->is_ts_file >0 )){//live ,  //copy fake header to segment head for soft demux segment
+		int duration_add = (int)(s->item_duration*1000);
+		do{
+			pthread_mutex_lock(&s->read_mutex);
 			left = av_fifo_space(s->fifo);
-			left = FFMIN(left, s->fifo->end - s->fifo->wptr);	  
+			left = FFMIN(left, s->fifo->end - s->fifo->wptr);
 			if(left<=188){
-				pthread_mutex_unlock(&s->read_mutex);	
+				pthread_mutex_unlock(&s->read_mutex);
 				usleep(100*1000);
 				continue;
 			}
@@ -424,7 +424,7 @@ static int tsstream_add_fakehead(CacheHttpContext * s)
 			memcpy((s->fifo->wptr+4),&duration_add,4);
 			memcpy((s->fifo->wptr+8),ADD_TSHEAD_RECALC_DISPTS_TAG,taglen);
 			s->fifo->wptr += 188;
-			pthread_mutex_unlock(&s->read_mutex);	
+			pthread_mutex_unlock(&s->read_mutex);
 			break;
 		}while(1);
 	}
@@ -434,16 +434,16 @@ static int tsstream_add_fakehead(CacheHttpContext * s)
 static int get_error_skip_cnt(){
 	float error_cnt = -1;
 	int  ret= -1;
-	ret= am_getconfig_float("libplayer.hls.live_skip_cnt",&error_cnt);	
+	ret= am_getconfig_float("libplayer.hls.live_skip_cnt",&error_cnt);
 	if(ret>0&&error_cnt>=0){
-		return error_cnt;	
+		return error_cnt;
 	}
 
 	return HTTP_SKIP_TIMES;
 }
 static void *circular_buffer_task( void *_handle)
 {
-    CacheHttpContext * s = (CacheHttpContext *)_handle; 
+    CacheHttpContext * s = (CacheHttpContext *)_handle;
     URLContext *h = NULL;
     float config_value = 0.0;
     void * fp = NULL;
@@ -451,7 +451,7 @@ static void *circular_buffer_task( void *_handle)
     int ts_parser_finised =-1;
 	int checkpacketnum=0;
     int skip_count = 0;
-    int skip_count_max = get_error_skip_cnt();	
+    int skip_count_max = get_error_skip_cnt();
     while(!s->EXIT) {
 
        av_log(h, AV_LOG_ERROR, "----------circular_buffer_task  item ");
@@ -468,14 +468,14 @@ static void *circular_buffer_task( void *_handle)
             if(config_ret >= 0 && (int)config_value == 2)
                 CacheHttp_dump_close(fp);
             h = NULL;
-        }        
-       
+        }
+
         list_item_t * item = getCurrentSegment((void*)s->m3u_mgt);
         if(!item||(!item->file&&!item->flags&ENDLIST_FLAG)) {
             usleep(WAIT_TIME);
             continue;
         }
-        
+
         s->reset_flag = 0;
         s->item_starttime = item->start_time;
         s->item_duration = item->duration;
@@ -490,15 +490,15 @@ static void *circular_buffer_task( void *_handle)
             s->finish_flag =1;
         }else{
             s->finish_flag =0;
-        }        
-       
-        if(s->finish_flag){      
+        }
+
+        if(s->finish_flag){
             av_log(NULL, AV_LOG_INFO, "ENDLIST_FLAG, return 0\n");
             //break;
             usleep(500*1000);
             continue;
         }
-        
+
         int err, http_code;
         char* filename = NULL;
         if(s->ktype == KEY_NONE){
@@ -512,10 +512,10 @@ static void *circular_buffer_task( void *_handle)
                 snprintf(url, sizeof(url), "crypto:%s", item->file);
 
             filename = av_strdup(url);
-            
+
         }
         int retry_num = 0;
-	 bandwidth_measure_start_read(s->bandwidth_measure);    	
+	 bandwidth_measure_start_read(s->bandwidth_measure);
 	 int rsize = 0;
 OPEN_RETRY:
         if(s->RESET)
@@ -533,15 +533,15 @@ OPEN_RETRY:
                 av_log(h, AV_LOG_ERROR, "----------CacheHttpContext : ffurl_open_h 404\n");
                 if(retry_num++ < HTTP_RETRY_TIMES) {
                     usleep(WAIT_TIME);
-			 av_log(h,AV_LOG_WARNING,"Retry current segment,url:%s\n",filename);					
+			 av_log(h,AV_LOG_WARNING,"Retry current segment,url:%s\n",filename);
                     goto OPEN_RETRY;
                 } else if(skip_count++ < skip_count_max){
                     av_log(h,AV_LOG_WARNING,"Skip current segment,url:%s\n",filename);
-                	 usleep(WAIT_TIME);
+	 usleep(WAIT_TIME);
                     goto SKIP;
                 }else{
                       s->http_error_code = http_code;
-                	   av_log(h, AV_LOG_ERROR, "------vod----CacheHttpContext : ffurl_open_h failed ,%d\n",err);
+	   av_log(h, AV_LOG_ERROR, "------vod----CacheHttpContext : ffurl_open_h failed ,%d\n",err);
 	                if(filename) {
 	                    av_free(filename);
 	                    filename = NULL;
@@ -551,27 +551,27 @@ OPEN_RETRY:
              } else if(!s->have_list_end&&(-404== http_code ||-503 == http_code|| -500 == http_code)){
                 if(skip_count++ < skip_count_max) {//if live streaming,just keep on 2s.
                     usleep(WAIT_TIME);
-			 av_log(h,AV_LOG_WARNING,"Skip current segment,url:%s\n",filename);		
+			 av_log(h,AV_LOG_WARNING,"Skip current segment,url:%s\n",filename);
                     goto SKIP;
                 } else {
-                	   av_log(h, AV_LOG_ERROR, "------ live----CacheHttpContext : ffurl_open_h failed ,%d\n",err);
-			   s->http_error_code = http_code;		   
+	   av_log(h, AV_LOG_ERROR, "------ live----CacheHttpContext : ffurl_open_h failed ,%d\n",err);
+			   s->http_error_code = http_code;
 	                if(filename) {
 	                    av_free(filename);
 	                    filename = NULL;
 	                }
 	                break;
-                }             
-             	   	
+                }
+
              }else{
                 av_log(h, AV_LOG_ERROR, "----------CacheHttpContext : ffurl_open_h failed ,%d\n",err);
-		   s->http_error_code = err;			
+		   s->http_error_code = err;
                 if(filename) {
                     av_free(filename);
                     filename = NULL;
                 }
                  break;
-             }          
+             }
         }
         skip_count = 0;
         if(h && s->seek_flag&&!s->ignore_http_range_req) {
@@ -580,7 +580,7 @@ OPEN_RETRY:
             av_log(NULL,AV_LOG_INFO,"--------------> cachehttp_seek   seek_pos=%lld, pos_ret=%lld", s->seek_pos, pos_ret);
             s->seek_flag = 0;
         }
-        
+
         s->hd = h;
         s->item_pos = 0;
         s->item_size = CacheHttp_ffurl_seek(s->hd, 0, AVSEEK_SIZE);
@@ -598,12 +598,12 @@ OPEN_RETRY:
 		if (s->livets_addhead){
 			tsstream_add_fakehead(s);
 		}
-		
+
         while(!s->EXIT) {
 
            if(s->RESET)
                 break;
-            
+
 	    if (url_interrupt_cb()) {
 		 s->circular_buffer_error = EINTR;
                break;
@@ -613,18 +613,18 @@ OPEN_RETRY:
                 break;
 
            if(s->hd && tmpdatasize <= 0) {
-                             
+
                 tmpdatasize = CacheHttp_ffurl_read(s->hd, tmpbuf, TMP_BUFFER_SIZE);
-		   #if 0		
+		   #if 0
 		   if(s->hd->prot!=NULL&&s->hd->prot->url_getinfo!=NULL){
 			 int64_t speed = -1;
 			 int rv=s->hd->prot->url_getinfo(s->hd,AVCMD_GET_NETSTREAMINFO,1,&speed);
 			 //s->m3u_mgt->measure_bw = speed;
 			 av_log(h,AV_LOG_INFO,"http download real-time data:%0.3f kbps\n",(float)speed/1000.000);
-		   }	
+		   }
 		   #endif
                 rsize +=tmpdatasize;
-			  	if(ts_parser_finised<0&&tmpdatasize>4){
+				if(ts_parser_finised<0&&tmpdatasize>4){
 					if (tmpdatasize>= (188*4)){
 						checkpacketnum = 4;
 					}else{
@@ -633,20 +633,20 @@ OPEN_RETRY:
 					s->is_ts_file = ts_simple_analyze(checkpacketnum, tmpbuf, FFMIN(tmpdatasize,188*checkpacketnum));
 					av_log(h,AV_LOG_INFO,"ts_simple_analyze Is a ts file?,%s  url:%s\n",s->is_ts_file>0?"YES":"NO",filename);
 					ts_parser_finised = 1;
-		   		}
-					
+				}
+
            }
 
             //if(tmpdatasize > 0) {
-        	    pthread_mutex_lock(&s->read_mutex);
-        	    left = av_fifo_space(s->fifo);
+	    pthread_mutex_lock(&s->read_mutex);
+	    left = av_fifo_space(s->fifo);
                   left = FFMIN(left, s->fifo->end - s->fifo->wptr);
-                  
+
 
                    if( !left) {
-        		pthread_mutex_unlock(&s->read_mutex);
-        		usleep(WAIT_TIME);
-                    	continue;
+		pthread_mutex_unlock(&s->read_mutex);
+		usleep(WAIT_TIME);
+	continue;
                    }
                      left = FFMIN(left, tmpdatasize);
                    if(left >0) {
@@ -656,12 +656,12 @@ OPEN_RETRY:
                    if(tmpdatasize>0){
                       memmove(tmpbuf, tmpbuf+left , tmpdatasize);
                     }
-                   
+
                    if (left > 0) {
                        config_ret = am_getconfig_float("libplayer.hls.dump",&config_value);
                        if(config_ret >= 0 && config_value > 0)
                             CacheHttp_dump_write(fp, s->fifo->wptr, left);
-                	  s->fifo->wptr += left;
+	  s->fifo->wptr += left;
                         if (s->fifo->wptr >= s->fifo->end)
                             s->fifo->wptr = s->fifo->buffer;
                         s->fifo->wndx += left;
@@ -679,7 +679,7 @@ OPEN_RETRY:
 
 	    //usleep(WAIT_TIME);
 
-        } 
+        }
 
 SKIP:
         if(filename){
@@ -688,17 +688,17 @@ SKIP:
         }
 
 	if(s->item_size>0)	{
-		bandwidth_measure_finish_read(s->bandwidth_measure,FFMIN(s->item_size,rsize));	
+		bandwidth_measure_finish_read(s->bandwidth_measure,FFMIN(s->item_size,rsize));
 	}else{
-		bandwidth_measure_finish_read(s->bandwidth_measure,rsize);	
-	}		
+		bandwidth_measure_finish_read(s->bandwidth_measure,rsize);
+	}
 	 if(!s->RESET){
-	 	
-        	switchNextSegment((void*)s->m3u_mgt);
+
+	switchNextSegment((void*)s->m3u_mgt);
 
 	 }
     }
-    
+
 FAIL:
 
     if(h)
@@ -719,9 +719,9 @@ int CacheHttp_GetBufferPercentage(void *_handle,int* per){
     if(!_handle){
         return AVERROR(EIO);
     }
-    CacheHttpContext * s = (CacheHttpContext *)_handle; 
+    CacheHttpContext * s = (CacheHttpContext *)_handle;
     pthread_mutex_lock(&s->read_mutex);
-   
+
     total = av_fifo_size(s->fifo);
     *per  = (int)total*100/CIRCULAR_BUFFER_SIZE;
     *per = ret;
@@ -730,21 +730,21 @@ int CacheHttp_GetBufferPercentage(void *_handle,int* per){
 }
 int CacheHttp_GetEstimateBitrate(void *_handle,int64_t* per){
 	if(!_handle){
-		*per = 0;	
+		*per = 0;
 		return 0;
 	}
-	CacheHttpContext * s = (CacheHttpContext *)_handle; 
+	CacheHttpContext * s = (CacheHttpContext *)_handle;
 	*per = s->estimate_bitrate;
-	return 0;	
+	return 0;
 }
 
  int CacheHttp_GetErrorCode(void *_handle,int64_t* val){
-	if(!_handle){		
+	if(!_handle){
 		return -1;
 	}
-	CacheHttpContext * s = (CacheHttpContext *)_handle; 
-	if(s->http_error_code < 0){		
-		*val =  s->http_error_code; 	
+	CacheHttpContext * s = (CacheHttpContext *)_handle;
+	if(s->http_error_code < 0){
+		*val =  s->http_error_code;
 	}else{
         *val = -501; //unkown error
     }

@@ -23,7 +23,7 @@ BUILDTREE=$(SRC)/out
 
 ifeq ($(QUITE_CMD),yes)
 Q=@
-endif	
+endif
 export Q
 
 TARGET =libamplayer.so
@@ -36,8 +36,8 @@ TARGET_IS_LIB=$(TARGET:%so=yes)
 LDFLAGS+= -L$(PREFIX)/lib -lavutil -lavformat -lswscale -lavcodec -lavutil -lm  -lpthread -lamcodec -lamavutils
 
 INSTALL_DIR?=$(PREFIX)/lib
-LDFLAGS+=-shared 
-CFLAGS=$(DIRS:%/=-I$(SRC)/%/include) 
+LDFLAGS+=-shared
+CFLAGS=$(DIRS:%/=-I$(SRC)/%/include)
 
 
 DIRS  = player/
@@ -51,7 +51,7 @@ target_all=  $(TARGET)
 
 INCLUDE=${SRCTREE}/include/
 
-CFLAGS+=-Wall 
+CFLAGS+=-Wall
 #CFLAGS+=-Werror
 
 #CFLAGS+=-O0  -gdwarf-2  -g
@@ -68,12 +68,12 @@ dirs=$(DIRS)
 DIROBJ=$(dirs:%/=%-dir)
 
 
-$(target_all):$(DIROBJ) 
+$(target_all):$(DIROBJ)
 	$(call ld_mk,$(OUT_DIR)$@,$^)
 
 
 
-	
+
 
 include $(SRCTREE)/rules.mk
 export CC CPP AS AR LD TOPDIR SRCTREE  CFLAGS LDFLAGS Q

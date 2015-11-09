@@ -130,7 +130,7 @@ typedef struct {
     unsigned char number_of_raw_data_blocks_in_frame: 2;
 } ff_adts_header_t;
 
-#define EXTRADATA_ADTS_SIZE 7 
+#define EXTRADATA_ADTS_SIZE 7
 static int addr_adts_info(uint8_t * extradata,uint8_t *buf){
 	ff_adts_header_t hdr;
 	char *p= extradata;
@@ -149,7 +149,7 @@ static int addr_adts_info(uint8_t * extradata,uint8_t *buf){
 	hdr.aac_frame_length = 0;
 	hdr.adts_buffer_fullness = 0x7ff;
 	hdr.number_of_raw_data_blocks_in_frame = 0;
-	
+
 	buf[0] = (char)(hdr.syncword >> 4);
 	buf[1] = (char)((hdr.syncword & 0xf << 4) |
 			   (hdr.id << 3) |
@@ -256,13 +256,13 @@ static int aac_parse_packet(AVFormatContext *ctx,
     /* XXX: Fixme we only handle the case where rtp_parse_mp4_au define
                     one au_header */
     if(data->nb_au_headers==1){
-    	av_new_packet(pkt, data->au_headers[0].size);
-    	memcpy(pkt->data, buf, data->au_headers[0].size);
+	av_new_packet(pkt, data->au_headers[0].size);
+	memcpy(pkt->data, buf, data->au_headers[0].size);
 	}else{
 		int i=0,size=0;
 		int buf_poff,data_p_off;
 		char *abuf=st->codec->extradata1;
-		
+
 		for(i=0;i<data->nb_au_headers;i++) size+=data->au_headers[i].size;
 		if(abuf!=NULL)
 			size=size+data->nb_au_headers*EXTRADATA_ADTS_SIZE;
@@ -271,7 +271,7 @@ static int aac_parse_packet(AVFormatContext *ctx,
 		data_p_off=0;
 		for(i=0;i<data->nb_au_headers;i++){
 			size=data->au_headers[i].size+EXTRADATA_ADTS_SIZE;
-			
+
 			if(abuf){
 				abuf[3] = (abuf[3] & 0xfc) | (size >> 11);
 				abuf[4] = (size >> 3) & 0xff;

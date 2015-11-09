@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-	  
+
 
 #ifndef FBIOPUT_OSD_SRCCOLORKEY
 #define  FBIOPUT_OSD_SRCCOLORKEY    0x46fb
@@ -144,7 +144,7 @@ bool CTsPlayer::Resume()
 bool CTsPlayer::Fast()
 {
 	int ret;
-	
+
 	Stop();
 	ret = StartPlay();
 	if (!ret)
@@ -159,7 +159,7 @@ bool CTsPlayer::Fast()
 bool CTsPlayer::StopFast()
 {
 	int ret;
-	
+
 	Stop();
 	ret = StartPlay();
 	if (!ret)
@@ -177,7 +177,7 @@ bool CTsPlayer::Stop()
 	return true;
 }
 bool CTsPlayer::Seek()
-{	
+{
 	Stop();
 	return StartPlay();
 }

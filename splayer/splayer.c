@@ -43,8 +43,8 @@ int load_extern_lib(global_ctrl_para_t *p,const char *libs)
 {
 	void* fd;
 	static int lib_index=0;
-	char *ps,*pp,*op,*buf; 
-	
+	char *ps,*pp,*op,*buf;
+
 	buf=MALLOC(strlen(optarg)+20);
 	pp=optarg;
 	op=optarg;
@@ -53,9 +53,9 @@ int load_extern_lib(global_ctrl_para_t *p,const char *libs)
 		printf("extern lib memory problem %s\n",libs);
 		return -1;
 		}
-	
+
 	while(op!=NULL)
-		{	
+		{
 			int len;
 			pp=strstr(op,",");
 			ps=buf+10;
@@ -78,7 +78,7 @@ int load_extern_lib(global_ctrl_para_t *p,const char *libs)
 				goto error;
 			}
 			if(strstr(ps,".so")==NULL)
-			{	
+			{
 				ps-=3;
 				ps[0]='l';
 				ps[1]='i';
@@ -96,11 +96,11 @@ int load_extern_lib(global_ctrl_para_t *p,const char *libs)
 				goto error;
 			}
 			printf("opened extern lib:%s\n",ps);
-			p->externlibfd[lib_index++]=fd;	
-		
+			p->externlibfd[lib_index++]=fd;
+
 		}
 	return 0;
-error:	
+error:
 	FREE(buf);
 	return -1;
 }
@@ -112,7 +112,7 @@ void release_extern_lib(global_ctrl_para_t *p)
 	while(i<10)
 		{
 		fd=p->externlibfd[i++];
-		if(fd!=NULL)	
+		if(fd!=NULL)
 			dlclose(fd);
 		else
 			break;
@@ -148,8 +148,8 @@ int parser_option(int argc, char *argv[],global_ctrl_para_t *p)
 {
 	int c;
 	int i;
-	
-	
+
+
 const char cshort_options[] = "v:a:m:e:Lblncokhu?";
 
 const struct option clong_options[] = {
@@ -157,13 +157,13 @@ const struct option clong_options[] = {
 	{"audioindex", 1, 0, 'a'},
 	{"mode", 1, 0, 'm'},
 	{"extern", 1, 0, 'e'},
-	{"playlist", 0, 0, 'L'},	
+	{"playlist", 0, 0, 'L'},
 	{"background", 0, 0, 'b'},
-	{"loop", 0, 0, 'l'},	
-	{"nosound", 0, 0, 'n'},	
-	{"novideo", 0, 0, 'c'},	
+	{"loop", 0, 0, 'l'},
+	{"nosound", 0, 0, 'n'},
+	{"novideo", 0, 0, 'c'},
 	{"clearosd", 0, 0, 'o'},
-	{"clearblack",0, 0,'k'},	
+	{"clearblack",0, 0,'k'},
 	{"help", 0, 0, 'h'},
     {"subtitle", 0, 0, 'u'},
 	{0, 0, 0, 0}
@@ -173,15 +173,15 @@ const struct option clong_options[] = {
     {
      printf("not set input file name\n");
         return -1;
-    } 
+    }
 	p->g_play_ctrl_para.video_index = -1;
 	p->g_play_ctrl_para.audio_index = -1;
     p->g_play_ctrl_para.sub_index   = -1;
-	
+
 	p->control_mode[0]='\0';
-    while ((c = getopt_long(argc, argv, cshort_options, clong_options, NULL)) != -1 ) 
+    while ((c = getopt_long(argc, argv, cshort_options, clong_options, NULL)) != -1 )
 	{
-	 	switch(c) 
+		switch(c)
         {
 			case 'v':
 				sscanf(optarg,"%d",&i);
@@ -218,7 +218,7 @@ const struct option clong_options[] = {
 				break;
 			case 'l':
 				p->g_play_ctrl_para.loop_mode = 1;
-				break;	
+				break;
 			case 'n':
 				p->g_play_ctrl_para.nosound = 1;
 				break;
@@ -234,10 +234,10 @@ const struct option clong_options[] = {
 				break;
             case 'k':
                 osd_blank("/sys/class/video/blackout_policy", 0);
-                break;             
-			case 'h':	
-				return -1;	
-			case ':':	
+                break;
+			case 'h':
+				return -1;
+			case ':':
 				  printf("unsupported option\n");
 				return -1;
 			case '?':
@@ -248,26 +248,26 @@ const struct option clong_options[] = {
 			default:
 				printf("unsupported option =%s\n",optarg);
 				break;
-	 	}
-     	}
+		}
+	}
 	 if(optind>=0 && optind<argc)
-	 	{
+		{
 			char * file=argv[optind];
-		 	p->g_play_ctrl_para.file_name=MALLOC(strlen(file)+1);
-		 	if(p->g_play_ctrl_para.file_name==NULL)
-	 			{
+			p->g_play_ctrl_para.file_name=MALLOC(strlen(file)+1);
+			if(p->g_play_ctrl_para.file_name==NULL)
+				{
 				printf("alloc memory for file failed ,file=%s!\n",file);
 				return -1;
-	 			}
+				}
 			strcpy(p->g_play_ctrl_para.file_name,file);
-	 	}
-	 
+		}
+
 	 return 0;
 }
 static void signal_handler(int signum)
-{   
+{
 	printf("Get signum=%x\n",signum);
-	player_progress_exit();	
+	player_progress_exit();
 	signal(signum, SIG_DFL);
 	raise (signum);
 }
@@ -317,7 +317,7 @@ int main(int argc,char *argv[])
 		print_usage(argv[0]);
 		return 0;
 	}
-	player_init();	
+	player_init();
 	//amadec_thread_init();
 
 	if(start_controler(&player_para)!=0)
@@ -339,7 +339,7 @@ int main(int argc,char *argv[])
 	else
 	{
 		  signal(SIGINT, signal_handler);
-	}	
+	}
 	controler_run(&player_para);
 	release_extern_lib(&player_para);
 	/*reopen osd for mouse lost*/

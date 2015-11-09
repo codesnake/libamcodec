@@ -56,7 +56,7 @@ static int adts_aac_probe(AVProbeData *p)
                 break;
             buf2 += fsize;
         }
-	 totalframes+=frames;	
+	 totalframes+=frames;
         max_frames = FFMAX(max_frames, frames);
         if(buf == buf0)
             first_frames= frames;
@@ -64,7 +64,7 @@ static int adts_aac_probe(AVProbeData *p)
     if   (first_frames>=3) return AVPROBE_SCORE_MAX/2+1;
     else if(max_frames>500)return AVPROBE_SCORE_MAX/2;
     else if(max_frames>=3) return AVPROBE_SCORE_MAX/4;
-    else if(totalframes>=150) return AVPROBE_SCORE_MAX/4+1;	
+    else if(totalframes>=150) return AVPROBE_SCORE_MAX/4+1;
     else if(max_frames>1) return 1;
     else                   return 0;
 }
@@ -99,11 +99,11 @@ static int adts_aac_read_header(AVFormatContext *s,
 			st->need_parsing = AVSTREAM_PARSE_NONE;
 			st->codec->codec_id = CODEC_ID_AAC;
 		}
-    }  
+    }
     //end of add
     return 0;
 }
-    
+
  int adts_bitrate_parse(AVFormatContext *s, int *bitrate, int64_t old_offset)
 {
     int frames, frame_length;
@@ -112,12 +112,12 @@ static int adts_aac_read_header(AVFormatContext *s,
     float frames_per_sec, bytes_per_frame;
     uint8_t buffer[AAC_ADTS_HEADER_SIZE];
     int ret;
-		
+
     if(!s->pb)
-	return 0;	
-	
-    avio_seek(s->pb, 0, SEEK_SET);	
-	
+	return 0;
+
+    avio_seek(s->pb, 0, SEEK_SET);
+
     /* Read all frames to ensure correct time and bitrate */
     for (frames = 0; /* */; frames++)
     {
@@ -131,7 +131,7 @@ static int adts_aac_read_header(AVFormatContext *s,
             if (!((buffer[5] &0x1F== 0x1F)&&((buffer[6] & 0xFC) == 0xFC)))/* adts_buffer_fullness vbr=0x7fff */{
 	        av_log(NULL, AV_LOG_WARNING," adts_bitrate_parse return adts_buffer_fullness\n");
                 break;}
-			
+
             if (frames == 0)
                 samplerate = adts_sample_rates[(buffer[2]&0x3c)>>2];
 
@@ -140,7 +140,7 @@ static int adts_aac_read_header(AVFormatContext *s,
 
             t_framelength += frame_length;
 	  if (frame_length < AAC_ADTS_HEADER_SIZE)
-                break;	
+                break;
            avio_skip(s->pb, frame_length-AAC_ADTS_HEADER_SIZE);
         } else {
             break;
@@ -154,7 +154,7 @@ static int adts_aac_read_header(AVFormatContext *s,
         bytes_per_frame = 0;
      *bitrate = (int)(8.0 * bytes_per_frame * frames_per_sec + 0.5);
      avio_seek(s->pb, old_offset, SEEK_SET);
-	 
+
      if(frames>0)
            return 1;
      else

@@ -78,9 +78,9 @@ static int parse_vc1_param(char *str, sys_vc1_profile_t *para, int size)
 static int parse_h264_param(char *str, sys_h264_profile_t *para, int size)
 {
     para->exist = 1;
-	
+
     log_info("h264 decoder exist.");
-	
+
     return 0;
 }
 
@@ -116,9 +116,9 @@ static int parse_h264_4k2k_param(char *str, sys_h264_4k2k_profile_t *para, int s
 static int parse_hmvc_param(char *str, sys_hmvc_profile_t *para, int size)
 {
     para->exist = 1;
-	
+
     log_info("hmvc decoder exist.");
-	
+
     return 0;
 }
 

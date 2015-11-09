@@ -8,7 +8,7 @@
 #define CC_VERSION __VERSION__
 #define restrict restrict
 #define EXTERN_PREFIX ""
-#define EXTERN_ASM 
+#define EXTERN_ASM
 #define SLIBSUF ".so"
 
 
@@ -111,7 +111,7 @@
 #define HAVE_LZO1X_999_COMPRESS 0
 #define HAVE_MACHINE_IOCTL_BT848_H 0
 #define HAVE_MACHINE_IOCTL_METEOR_H 0
-#undef  HAVE_MALLOC_H 
+#undef  HAVE_MALLOC_H
 #define HAVE_MALLOC_H 1
 #define HAVE_MAPVIEWOFFILE 0
 #define HAVE_MEMALIGN 1

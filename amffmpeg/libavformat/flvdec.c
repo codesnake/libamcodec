@@ -300,16 +300,16 @@ static int amf_parse_object(AVFormatContext *s, AVStream *astream, AVStream *vst
                 vcodec->bit_rate = num_val * 1024.0;
             else if(!strcmp(key, "audiodatarate") && acodec && 0 <= (int)(num_val * 1024.0))
                 acodec->bit_rate = num_val * 1024.0;
-            else if(!strcmp(key, "audiosamplerate")) 
+            else if(!strcmp(key, "audiosamplerate"))
                 acodec->sample_rate= (float)num_val;
-	     else if(!strcmp(key, "stereo")) 
-                acodec->channels= (num_val>0)?2:1;		
-	     else if(!strcmp(key, "framerate")) 
-                vstream->special_fps = (float)num_val;		
-	     else if(!strcmp(key, "width")) 
-                vcodec->width= (float)num_val;	
-	     else if(!strcmp(key, "height")) 
-                vcodec->height= (float)num_val;		 
+	     else if(!strcmp(key, "stereo"))
+                acodec->channels= (num_val>0)?2:1;
+	     else if(!strcmp(key, "framerate"))
+                vstream->special_fps = (float)num_val;
+	     else if(!strcmp(key, "width"))
+                vcodec->width= (float)num_val;
+	     else if(!strcmp(key, "height"))
+                vcodec->height= (float)num_val;
         } else if (amf_type == AMF_DATA_TYPE_STRING)
             av_dict_set(&s->metadata, key, str_val, 0);
     }
@@ -360,37 +360,37 @@ static int flv_read_avcodec_info(AVFormatContext *s)
 {
 	AVStream *ast = NULL, *vst = NULL, *st;
 	int64_t old_offset, next;
-	int type, size, info;	
+	int type, size, info;
 	int i = 0;
 
 	if((!s->seekable) || (!s->support_seek))
 		return ;
-	
-	/* find av stream */		
+
+	/* find av stream */
     do{
-        st = s->streams[i];		         
-		if(st->id == 0 && vst == NULL){	
-			vst = st;	
-    	}
-		if(st->id == 1 && ast == NULL){	
-			ast = st;	 
-    	}
+        st = s->streams[i];
+		if(st->id == 0 && vst == NULL){
+			vst = st;
+	}
+		if(st->id == 1 && ast == NULL){
+			ast = st;
+	}
         i ++;
-    }while(i<s->nb_streams && (ast == NULL || vst == NULL));	
-	
+    }while(i<s->nb_streams && (ast == NULL || vst == NULL));
+
 	old_offset = avio_tell(s->pb);
-	
-	do{	
+
+	do{
 	    type = avio_r8(s->pb);
-		size = avio_rb24(s->pb);		
+		size = avio_rb24(s->pb);
 		avio_skip(s->pb, 7); /* dts:4bytes streamid:3bytes */
-		
+
 		if (url_feof(s->pb))
-        	return AVERROR_EOF;
-		
+	return AVERROR_EOF;
+
 		if(size == 0)
-        	continue;
-		
+	continue;
+
 		next= size + avio_tell(s->pb);
 		if (type == FLV_TAG_TYPE_VIDEO) {
             if(!vst)
@@ -399,14 +399,14 @@ static int flv_read_avcodec_info(AVFormatContext *s)
                     return AVERROR(ENOMEM);
                 vst = s->streams[0];
             }
-		  	if(vst && vst->codec->codec_id == 0) {			
+			if(vst && vst->codec->codec_id == 0) {
 				info = avio_r8(s->pb);	//get video info
 				if ((info & 0xf0) == 0x50){ /* video info / command frame */
 					goto skip;
-				}	 
-				flv_set_video_codec(s, vst, info & FLV_VIDEO_CODECID_MASK);	
+				}
+				flv_set_video_codec(s, vst, info & FLV_VIDEO_CODECID_MASK);
 				av_log(s, AV_LOG_INFO, "[%s]vst->codec->codec_id =%x\n", __FUNCTION__, vst->codec->codec_id);
-		  	}
+			}
 		}
 		else if(type == FLV_TAG_TYPE_AUDIO) {
             if(!ast)
@@ -416,17 +416,17 @@ static int flv_read_avcodec_info(AVFormatContext *s)
                 ast = s->streams[1];
             }
 			if(ast && ast->codec->codec_id == 0){
-				 info = avio_r8(s->pb);	//get audio info		
-				 flv_set_audio_codec(s, ast, info & FLV_AUDIO_CODECID_MASK);	
+				 info = avio_r8(s->pb);	//get audio info
+				 flv_set_audio_codec(s, ast, info & FLV_AUDIO_CODECID_MASK);
 				 av_log(s, AV_LOG_INFO, "[%s]ast->codec->codec_id =%x\n", __FUNCTION__, ast->codec->codec_id);
-	  		}
+			}
 		}
 		if((vst && vst->codec->codec_id != 0) && (ast && ast->codec->codec_id != 0))
 			break;
 		skip:
 			avio_seek(s->pb, next, SEEK_SET);
-			avio_skip(s->pb, 4);    
-       		continue;		
+			avio_skip(s->pb, 4);
+		continue;
 	}while(1);
 	avio_seek(s->pb, old_offset, SEEK_SET);
 	return 0;
@@ -463,9 +463,9 @@ static int flv_read_header(AVFormatContext *s,
     avio_seek(s->pb, offset, SEEK_SET);
     avio_skip(s->pb, 4);
 
-    s->start_time = 0;	
-	
-	flv_read_avcodec_info(s);	
+    s->start_time = 0;
+
+	flv_read_avcodec_info(s);
     return 0;
 }
 

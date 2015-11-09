@@ -112,7 +112,7 @@ static void build_udp_url(char *buf, int buf_size,
     if (connect)
         url_add_option(buf, buf_size, "connect=1");
     if(setbufsize > 0)
-    	 url_add_option(buf, buf_size, "buffer_size=655360");
+	 url_add_option(buf, buf_size, "buffer_size=655360");
 }
 
 /**
@@ -272,31 +272,31 @@ static int rtp_read(URLContext *h, uint8_t *buf, int size)
                 // if payload type is mpegts,  cut off the rtp header to output
                 if(len <= 12)
 			goto BREAK_POS ;
-           
+
                 if((buf[1] & 0x7f) == 33 && h->priv_flags == 1)	// payload_type
                 {
-                	int offset = 12 ;
-		  	uint8_t * lpoffset = buf + 12;
+	int offset = 12 ;
+			uint8_t * lpoffset = buf + 12;
 
-                	int ext = buf[0] & 0x10;
-                	if(ext > 0)
-                	{
-                		if(len < offset + 4)
- 					goto BREAK_POS ;
-                		
-                		ext = (AV_RB16(lpoffset + 2) + 1) << 2;
-                    		if(len < ext + offset)
-					goto BREAK_POS ; 
-                    		
-                    		offset+=ext ;
-                    		lpoffset+=ext ;
-                	}
+	int ext = buf[0] & 0x10;
+	if(ext > 0)
+	{
+		if(len < offset + 4)
+					goto BREAK_POS ;
+
+		ext = (AV_RB16(lpoffset + 2) + 1) << 2;
+		if(len < ext + offset)
+					goto BREAK_POS ;
+
+		offset+=ext ;
+		lpoffset+=ext ;
+	}
 
 			memmove(buf, lpoffset, len - offset) ;
 			len -= offset ;
                 }
-                
-BREAK_POS:                
+
+BREAK_POS:
                 break;
             }
         } else if (n < 0) {

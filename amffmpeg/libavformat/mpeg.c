@@ -87,10 +87,10 @@ static int mpegps_probe(AVProbeData *p)
         return pspack > 2 ? AVPROBE_SCORE_MAX/2+2 : AVPROBE_SCORE_MAX/4; // +1 for .mpg
     if((!!vid ^ !!audio) && (audio > 4 || vid > 1) && !sys && !pspack && p->buf_size>2048 && vid + audio > invalid) /* PES stream */
         return (audio > 12 || vid > 3) ? AVPROBE_SCORE_MAX/2+2 : AVPROBE_SCORE_MAX/4;
-    if(sys+priv1+vid+audio+pspack>2)  return 1; 
-        //z_k_a_3.mpg has sys:1 priv1:1 pspack:0 vid:0 audio:1   	
-        	
-        	
+    if(sys+priv1+vid+audio+pspack>2)  return 1;
+        //z_k_a_3.mpg has sys:1 priv1:1 pspack:0 vid:0 audio:1
+
+
 
     //02-Penguin.flac has sys:0 priv1:0 pspack:0 vid:0 audio:1
     //mp3_misidentified_2.mp3 has sys:0 priv1:0 pspack:0 vid:0 audio:6
@@ -491,30 +491,30 @@ static int mpegps_read_packet(AVFormatContext *s,
         type = AVMEDIA_TYPE_AUDIO;
         codec_id = m->sofdec > 0 ? CODEC_ID_ADPCM_ADX : CODEC_ID_MP2;
 		if(codec_id == CODEC_ID_MP2)
-		{	
+		{
 			unsigned char buf[32];
 			int i;
-			unsigned long newhead;	
-			
+			unsigned long newhead;
+
 			avio_read(s->pb, buf, 32);
-        	avio_seek(s->pb, -32, SEEK_CUR);
-			
+	avio_seek(s->pb, -32, SEEK_CUR);
+
 			for(i = 0; i < 32; i ++)
 			{
 				newhead = buf[0]<<24|buf[1]<<16|buf[2]<<8|buf[3];
 				// head_check:
 			    if((newhead & 0xffe00000) == 0xffe00000)
-		    	{
-		    		int layer;
-		    		layer = 4-((newhead>>17)&3);
-    				if(layer==4)
+			{
+				int layer;
+				layer = 4-((newhead>>17)&3);
+				if(layer==4)
 					{
 						codec_id = CODEC_ID_AAC;
 						break;
 					}
 			    }
-			}			
-		}        
+			}
+		}
     } else if (startcode >= 0x80 && startcode <= 0x87) {
         type = AVMEDIA_TYPE_AUDIO;
         codec_id = CODEC_ID_AC3;
@@ -643,7 +643,7 @@ static int64_t mpegps_read_dts(AVFormatContext *s, int stream_index,
     for(;;) {
 		if(url_interrupt_cb())
 			return AV_NOPTS_VALUE;
-		
+
         len = mpegps_read_pes_header(s, &pos, &startcode, &pts, &dts);
         if (len < 0) {
             av_dlog(s, "none (ret=%d)\n", len);

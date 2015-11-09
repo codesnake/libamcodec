@@ -12,8 +12,8 @@
 #define AMPLAYER_MAKE_API_VERSION(maj,min) \
             ((((maj) & 0xff) << 8) | ((min) & 0xff))
 
-#define AMPLAYER_API_MAIOR	(1)
-#define AMPLAYER_API_MINOR	(0) /*diff,can load,but some functions may lost.*/
+#define AMPLAYER_API_MAIOR  (1)
+#define AMPLAYER_API_MINOR  (0) /*diff,can load,but some functions may lost.*/
 #define AMPLAYER_HAL_API_VERSION AMPLAYER_MAKE_API_VERSION(AMPLAYER_API_MAIOR, AMPLAYER_API_MINOR)
 
 #define AMPLAYER_MODULE_API_VERSION(maj,min) AMPLAYER_MAKE_API_VERSION(maj,min)
@@ -34,7 +34,7 @@ typedef struct ammodule_t {
     const char *descript;/*functions..*/
     struct ammodule_methods_t* methods;
     void* dso;
-    uint32_t reserved[32-7];
+    uint32_t reserved[32 - 7];
 
 } ammodule_t;
 
@@ -51,10 +51,10 @@ typedef struct ammodule_methods_t {
 extern "C" {
 #endif
 
-int ammodule_load_module(const char *modulename,const struct ammodule_t **module);
-int ammodule_open_module(struct ammodule_t *module);
-int  ammodule_simple_load_module(char* name);
-int ammodule_match_check(const char* allmodstr,const char* modname);
+    int ammodule_load_module(const char *modulename, const struct ammodule_t **module);
+    int ammodule_open_module(struct ammodule_t *module);
+    int  ammodule_simple_load_module(char* name);
+    int ammodule_match_check(const char* allmodstr, const char* modname);
 
 #ifdef __cplusplus
 }

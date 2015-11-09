@@ -10,16 +10,21 @@
 #include "include/Amsysfsutils.h"
 #include <Amsyswrite.h>
 
+
+
 #ifndef LOGD
-    #define LOGV ALOGV
-    #define LOGD ALOGD
-    #define LOGI ALOGI
-    #define LOGW ALOGW
-    #define LOGE ALOGE
+#define LOGV ALOGV
+#define LOGD ALOGD
+#define LOGI ALOGI
+#define LOGW ALOGW
+#define LOGE ALOGE
+#endif
+
+#ifndef NO_USE_SYSWRITE  //added by lifengcao for startup video
+#define USE_SYSWRITE
 #endif
 
 
-//#define USE_SYSWRITE
 #ifndef USE_SYSWRITE
 int amsysfs_set_sysfs_str(const char *path, const char *val)
 {
@@ -40,7 +45,7 @@ int  amsysfs_get_sysfs_str(const char *path, char *valstr, int size)
     int fd;
     fd = open(path, O_RDONLY);
     if (fd >= 0) {
-		memset(valstr,0,size);
+        memset(valstr, 0, size);
         read(fd, valstr, size - 1);
         valstr[strlen(valstr)] = '\0';
         close(fd);
@@ -80,7 +85,7 @@ int amsysfs_get_sysfs_int(const char *path)
         read(fd, bcmd, sizeof(bcmd));
         val = strtol(bcmd, NULL, 10);
         close(fd);
-    }else {
+    } else {
         LOGE("unable to open file %s,err: %s", path, strerror(errno));
     }
     return val;
@@ -122,17 +127,17 @@ int amsysfs_get_sysfs_int16(const char *path)
 
 unsigned long amsysfs_get_sysfs_ulong(const char *path)
 {
-	int fd;
-	char bcmd[24]="";
-	unsigned long num=0;
-	if ((fd = open(path, O_RDONLY)) >=0) {
-	read(fd, bcmd, sizeof(bcmd));
-	num = strtoul(bcmd, NULL, 0);
-	close(fd);
-	} else {
+    int fd;
+    char bcmd[24] = "";
+    unsigned long num = 0;
+    if ((fd = open(path, O_RDONLY)) >= 0) {
+        read(fd, bcmd, sizeof(bcmd));
+        num = strtoul(bcmd, NULL, 0);
+        close(fd);
+    } else {
         LOGE("unable to open file %s,err: %s", path, strerror(errno));
     }
-	return num;
+    return num;
 }
 #else
 int amsysfs_set_sysfs_str(const char *path, const char *val)
@@ -141,7 +146,7 @@ int amsysfs_set_sysfs_str(const char *path, const char *val)
 }
 int  amsysfs_get_sysfs_str(const char *path, char *valstr, int size)
 {
-    if(amSystemWriteReadNumSysfs(path, valstr, size) != -1) {
+    if (amSystemWriteReadNumSysfs(path, valstr, size) != -1) {
         return 0;
     }
     sprintf(valstr, "%s", "fail");
@@ -151,15 +156,15 @@ int  amsysfs_get_sysfs_str(const char *path, char *valstr, int size)
 int amsysfs_set_sysfs_int(const char *path, int val)
 {
     char  bcmd[16] = "";
-    sprintf(bcmd,"%d",val);
+    sprintf(bcmd, "%d", val);
     return amSystemWriteWriteSysfs(path, bcmd);
 }
 
 int amsysfs_get_sysfs_int(const char *path)
 {
-    char  bcmd[16]= "";
+    char  bcmd[16] = "";
     int val = 0;
-    if(amSystemWriteReadSysfs(path, bcmd) == 0) {
+    if (amSystemWriteReadSysfs(path, bcmd) == 0) {
         val = strtol(bcmd, NULL, 10);
     }
     return val;
@@ -167,16 +172,16 @@ int amsysfs_get_sysfs_int(const char *path)
 
 int amsysfs_set_sysfs_int16(const char *path, int val)
 {
-    char  bcmd[16]= "";
+    char  bcmd[16] = "";
     sprintf(bcmd, "0x%x", val);
     return amSystemWriteWriteSysfs(path, bcmd);
 }
 
 int amsysfs_get_sysfs_int16(const char *path)
 {
-    char  bcmd[16]= "";
+    char  bcmd[16] = "";
     int val = 0;
-    if(amSystemWriteReadSysfs(path, bcmd) == 0) {
+    if (amSystemWriteReadSysfs(path, bcmd) == 0) {
         val = strtol(bcmd, NULL, 16);
     }
     return val;
@@ -184,9 +189,9 @@ int amsysfs_get_sysfs_int16(const char *path)
 
 unsigned long amsysfs_get_sysfs_ulong(const char *path)
 {
-    char  bcmd[24]= "";
+    char  bcmd[24] = "";
     int val = 0;
-    if(amSystemWriteReadSysfs(path, bcmd) == 0) {
+    if (amSystemWriteReadSysfs(path, bcmd) == 0) {
         val = strtoul(bcmd, NULL, 0);
     }
     return val;

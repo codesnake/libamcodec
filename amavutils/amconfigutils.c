@@ -17,7 +17,7 @@ static int    amconfig_inited = 0;
 #include <cutils/properties.h>
 
 #include <sys/system_properties.h>
- #endif
+#endif
 //#define CONFIG_DEBUG
 #ifdef CONFIG_DEBUG
 #define DBGPRINT printf
@@ -45,8 +45,9 @@ static int get_matched_index(const char * path)
     }
     for (i = 0; i < MAX_CONFIG; i++) {
         ppath = amconfigs[i];
-        if (ppath)
-            ;//DBGPRINT("check match [%d]=%s ?= %s \n",i,path,amconfigs[i]);
+        if (ppath) {
+            ;    //DBGPRINT("check match [%d]=%s ?= %s \n",i,path,amconfigs[i]);
+        }
         if (ppath != NULL && strncmp(path, ppath, len) == 0) {
             return i;
         }
@@ -75,11 +76,11 @@ int am_config_init(void)
 }
 int am_getconfig(const char * path, char *val, const char * def)
 {
-    int i,ret;
+    int i, ret;
     if (!amconfig_inited) {
         am_config_init();
     }
-    val[0]='\0';
+    val[0] = "\0";
     lp_lock(&config_lock);
     i = get_matched_index(path);
     if (i >= 0) {
@@ -89,19 +90,13 @@ int am_getconfig(const char * path, char *val, const char * def)
     }
     lp_unlock(&config_lock);
 #ifdef ANDROID
-	if(i<0){
-		/*get failed,get from android prop settings*/
-		ret=property_get(path, val, def);
-		if(ret>0)
-			i=1;
-	}
-#else
-	//if(i<0){
-		/*get failed,get from android prop settings*/
-	// 	val=getenv(path);
-	//	if(val!=NULL)
-		//	i=1;
-	//}
+    if (i < 0) {
+        /*get failed,get from android prop settings*/
+        ret = property_get(path, val, def);
+        if (ret > 0) {
+            i = 1;
+        }
+    }
 #endif
     return strlen(val) ;
 }
@@ -122,8 +117,9 @@ int am_setconfig(const char * path, const char *val)
     }
     if (val != NULL) {
         setval = strdup(val);
-        if(strlen(setval) >= CONFIG_VALUE_MAX)
-            setval[CONFIG_VALUE_MAX] = '\0'; /*maybe val is too long,cut it*/
+        if (strlen(setval) >= CONFIG_VALUE_MAX) {
+            setval[CONFIG_VALUE_MAX] = '\0';    /*maybe val is too long,cut it*/
+        }
     }
     lp_lock(&config_lock);
     i = get_matched_index(path);
@@ -158,8 +154,9 @@ int am_setconfig(const char * path, const char *val)
     strcpy(pconfig + CONFIG_VALUE_OFF, setval);
     ret = 0;
 end_out:
-    if(setval!=NULL)
-	free(setval);
+    if (setval != NULL) {
+        free(setval);
+    }
     lp_unlock(&config_lock);
     return ret;
 }
@@ -192,24 +189,42 @@ int am_getconfig_float(const char * path, float *value)
     int ret = -1;
 
     *value = -1.0;
-    ret = am_getconfig(path, buf,NULL);
+    ret = am_getconfig(path, buf, NULL);
     if (ret > 0) {
         ret = sscanf(buf, "%f", value);
     }
     return ret > 0 ? 0 : -2;
 }
 
-float am_getconfig_float_def(const char * path,float defvalue)
+int am_getconfig_int_def(const char * path, int def)
 {
     char buf[CONFIG_VALUE_MAX];
     int ret = -1;
-    float value;
-    ret = am_getconfig(path, buf,NULL);
+    int value = 0;
+
+    ret = am_getconfig(path, buf, NULL);
+    if (ret > 0) {
+        ret = sscanf(buf, "%d", &value);
+    }
+
+    if (ret <= 0) {
+        value = def;
+    }
+    return value;
+}
+
+float am_getconfig_float_def(const char * path, float defvalue)
+{
+    char buf[CONFIG_VALUE_MAX];
+    int ret = -1;
+    float value = defvalue;
+    ret = am_getconfig(path, buf, NULL);
     if (ret > 0) {
         ret = sscanf(buf, "%f", &value);
     }
-    if(ret<=0)
-        value=defvalue;
+    if (ret <= 0) {
+        value = defvalue;
+    }
     return value;
 }
 
@@ -218,35 +233,28 @@ int am_getconfig_bool(const char * path)
     char buf[CONFIG_VALUE_MAX];
     int ret = -1;
 
-    ret = am_getconfig(path, buf,NULL);
+    ret = am_getconfig(path, buf, NULL);
     if (ret > 0) {
-        if(strcasecmp(buf,"true")==0 || strcmp(buf,"1")==0)
+        if (strcasecmp(buf, "true") == 0 || strcmp(buf, "1") == 0) {
             return 1;
+        }
     }
     return 0;
 }
 
-int am_getconfig_bool_def(const char * path,int def)
+int am_getconfig_bool_def(const char * path, int def)
 {
     char buf[CONFIG_VALUE_MAX];
     int ret = -1;
 
-    ret = am_getconfig(path, buf,NULL);
+    ret = am_getconfig(path, buf, NULL);
     if (ret > 0) {
-        if(strcasecmp(buf,"true")==0 || strcmp(buf,"1")==0)
+        if (strcasecmp(buf, "true") == 0 || strcmp(buf, "1") == 0) {
             return 1;
-        else
+        } else {
             return 0;
+        }
     }
     return def;
 }
-
-
-#ifndef ADROID
-int property_get(const char *key, char *value, const char *default_value)
-{
-    printf("player system property_get [%s] %s\n", __FILE__, __FUNCTION__);
-    return am_getconfig(key, value, default_value);
-}
-#endif
 

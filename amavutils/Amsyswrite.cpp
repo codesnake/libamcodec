@@ -1,6 +1,6 @@
+#ifndef NO_USE_SYSWRITE
 #define LOG_TAG "amSystemWrite"
 
-#include <systemwrite/ISystemWriteService.h>
 
 #include <binder/Binder.h>
 #include <binder/IServiceManager.h>
@@ -12,7 +12,11 @@
 #include <utils/threads.h>
 #include <Amsyswrite.h>
 #include <unistd.h>
-
+#if ANDROID_PLATFORM_SDK_VERSION >= 21 //5.0
+#include <systemcontrol/ISystemControlService.h>
+#else
+#include <systemwrite/ISystemWriteService.h>
+#endif
 
 using namespace android;
 
@@ -27,16 +31,27 @@ class DeathNotifier: public IBinder::DeathRecipient
         }
 };
 
-static sp<ISystemWriteService> amSystemWriteService;
+
+#if ANDROID_PLATFORM_SDK_VERSION >= 21 //5.0
+//used ISystemControlService
+#define SYST_SERVICES_NAME "system_control"
+#else
+//used amSystemWriteService
+#define ISystemControlService ISystemWriteService
+#define SYST_SERVICES_NAME "system_write"
+#endif
+
+static sp<ISystemControlService> amSystemWriteService;
 static sp<DeathNotifier> amDeathNotifier;
 static  Mutex            amLock;
 static  Mutex            amgLock;
 
-const sp<ISystemWriteService>& getSystemWriteService()
+const sp<ISystemControlService>& getSystemWriteService()
 {
     Mutex::Autolock _l(amgLock);
     if (amSystemWriteService.get() == 0) {
         sp<IServiceManager> sm = defaultServiceManager();
+#if 0
         sp<IBinder> binder;
         do {
             binder = sm->getService(String16("system_write"));
@@ -50,14 +65,20 @@ const sp<ISystemWriteService>& getSystemWriteService()
         }
         binder->linkToDeath(amDeathNotifier);
         amSystemWriteService = interface_cast<ISystemWriteService>(binder);
+#endif
+
+
+        amSystemWriteService = interface_cast<ISystemControlService>(sm->getService(String16(SYST_SERVICES_NAME)));
+
     }
-    ALOGE_IF(amSystemWriteService==0, "no CameraService!?");
+    ALOGE_IF(amSystemWriteService==0, "no SystemWrite Service!?");
+
     return amSystemWriteService;
 }
 
 int amSystemWriteGetProperty(const char* key, char* value)
 {
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0){
         String16 v;
         if(sws->getProperty(String16(key), v)) {
@@ -71,11 +92,11 @@ int amSystemWriteGetProperty(const char* key, char* value)
 
 int amSystemWriteGetPropertyStr(const char* key, char* def, char* value)
 {
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0){
         String16 v;
         String16 d(def);
-        sws->getPropertyString(String16(key), d, v);
+        sws->getPropertyString(String16(key), v, d);
         strcpy(value, String8(v).string());
     }
     strcpy(value, def);
@@ -84,7 +105,7 @@ int amSystemWriteGetPropertyStr(const char* key, char* def, char* value)
 
 int amSystemWriteGetPropertyInt(const char* key, int def)
 {
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0) {
         return sws->getPropertyInt(String16(key), def);
     }
@@ -94,7 +115,7 @@ int amSystemWriteGetPropertyInt(const char* key, int def)
 
 long amSystemWriteGetPropertyLong(const char* key, long def)
 {
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0) {
         return	sws->getPropertyLong(String16(key), def);
     }
@@ -104,7 +125,7 @@ long amSystemWriteGetPropertyLong(const char* key, long def)
 
 int amSystemWriteGetPropertyBool(const char* key, int def)
 {
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0) {
         if(sws->getPropertyBoolean(String16(key), def)) {
             return 1;
@@ -118,7 +139,7 @@ int amSystemWriteGetPropertyBool(const char* key, int def)
 
 void amSystemWriteSetProperty(const char* key, const char* value)
 {
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0){
         sws->setProperty(String16(key), String16(value));
     }
@@ -127,7 +148,7 @@ void amSystemWriteSetProperty(const char* key, const char* value)
 int amSystemWriteReadSysfs(const char* path, char* value)
 {
     //ALOGD("amSystemWriteReadNumSysfs:%s",path);
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0){
         String16 v;
         if(sws->readSysfs(String16(path), v)) {
@@ -142,7 +163,7 @@ int amSystemWriteReadNumSysfs(const char* path, char* value, int size)
 {
     //ALOGD("amSystemWriteReadNumSysfs:%s",path);
 
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0 && value != NULL && access(path, 0) != -1){
         String16 v;
         if(sws->readSysfs(String16(path), v)) {
@@ -169,7 +190,7 @@ int amSystemWriteReadNumSysfs(const char* path, char* value, int size)
 int amSystemWriteWriteSysfs(const char* path, char* value)
 {
     //ALOGD("amSystemWriteWriteSysfs:%s",path);
-    const sp<ISystemWriteService>& sws = getSystemWriteService();
+    const sp<ISystemControlService>& sws = getSystemWriteService();
     if(sws != 0){
         String16 v(value);
         if(sws->writeSysfs(String16(path), v)){
@@ -180,3 +201,4 @@ int amSystemWriteWriteSysfs(const char* path, char* value)
     //ALOGD("[false]amSystemWriteWriteSysfs%s,",path);
     return -1;
 }
+#endif

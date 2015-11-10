@@ -50,6 +50,16 @@ void audio_stop(void **priv)
 
 /* --------------------------------------------------------------------------*/
 /**
+* @brief  audio_stop_async  Stop audio decoder async without wait.
+*/
+/* --------------------------------------------------------------------------*/
+void audio_stop_async(void **priv)
+{
+    audio_decode_stop(*priv);
+}
+
+/* --------------------------------------------------------------------------*/
+/**
 * @brief  audio_pause  Pause audio decoder
 */
 /* --------------------------------------------------------------------------*/
@@ -84,52 +94,6 @@ int codec_get_mutesta(codec_para_t *p)
     return ret;
 }
 
-/* --------------------------------------------------------------------------*/
-/**
-* @brief  linux codec_set_mute  Set audio mute
-* @param[in]  mute  mute command, 1 for mute, 0 for unmute
-*
-* @return     audio command result
-*/
-/* --------------------------------------------------------------------------*/
-int dummy_codec_set_mute(int mute)
-{
-    int ret;
-    CODEC_PRINT("dumyy codec set mute =%d\n",mute);
-    /* 1: mut output. 0: unmute output */
-    ret = dummy_decode_set_mute(mute);
-
-    return ret;
-}
-
-/* --------------------------------------------------------------------------*/
-/**
-* @brief  codec_set_volume  Set audio volume
-
-* @param[in]  val  Volume to be set
-*
-* @return     command result
-*/
-/* --------------------------------------------------------------------------*/
-int dummy_codec_set_volume(int val)
-{
-    int ret;
-    ret = dummy_decode_set_volume(val);
-    return ret;
-}
-
-/* --------------------------------------------------------------------------*/
-/**
-* @brief  codec_get_volume  Get audio volume*
-* @return     command result
-*/
-/* --------------------------------------------------------------------------*/
-int dummy_codec_get_volume(int *val)
-{
-    int ret;
-    ret = dummy_decode_get_volume(val);
-    return ret;
-}
 /* --------------------------------------------------------------------------*/
 /**
 * @brief  codec_set_mute  Set audio mute
@@ -211,11 +175,11 @@ int codec_get_volume(codec_para_t *p, float *val)
 * @return     command result
 */
 /* --------------------------------------------------------------------------*/
-int codec_set_lrvolume(codec_para_t *p, float lvol,float rvol)
+int codec_set_lrvolume(codec_para_t *p, float lvol, float rvol)
 {
     int ret;
 
-    ret = audio_decode_set_lrvolume(p->adec_priv, lvol,rvol);
+    ret = audio_decode_set_lrvolume(p->adec_priv, lvol, rvol);
     return ret;
 }
 
@@ -228,10 +192,10 @@ int codec_set_lrvolume(codec_para_t *p, float lvol,float rvol)
 * @return     command result
 */
 /* --------------------------------------------------------------------------*/
-int codec_get_lrvolume(codec_para_t *p, float *lvol,float* rvol)
+int codec_get_lrvolume(codec_para_t *p, float *lvol, float* rvol)
 {
     int ret;
-    ret = audio_decode_get_lrvolume(p->adec_priv, lvol,rvol);
+    ret = audio_decode_get_lrvolume(p->adec_priv, lvol, rvol);
     return ret;
 }
 
@@ -314,6 +278,26 @@ int codec_stereo(codec_para_t *p)
     return ret;
 }
 
+/* @brief  codec_lr_mix
+* @param[in]  p  Pointer of codec parameter structure
+*
+* @return     Command result
+*/
+/* --------------------------------------------------------------------------*/
+int codec_lr_mix_set(codec_para_t *p, int enable)
+{
+    int ret;
+    ret = audio_channel_lrmix_flag_set(p->adec_priv, enable);
+    return ret;
+}
+
+int codec_pcmpara_Applied_get(codec_para_t *p, int *pfs, int *pch)
+{
+    int ret;
+    ret = audio_decpara_get(p->adec_priv, pfs, pch);
+    return ret;
+}
+
 /* --------------------------------------------------------------------------*/
 /**
 * @brief  codec_audio_automute  Set decoder to automute mode
@@ -358,7 +342,7 @@ int codec_audio_spectrum_switch(codec_para_t *p, int isStart, int interval)
 
     return ret;
 }
-int codec_get_soundtrack(codec_para_t *p,int* strack)
+int codec_get_soundtrack(codec_para_t *p, int* strack)
 {
     return audio_get_soundtrack(p->adec_priv, strack);
 
@@ -367,4 +351,8 @@ int codec_get_soundtrack(codec_para_t *p,int* strack)
 int audio_set_avsync_threshold(void *priv, int threshold)
 {
     return audio_set_av_sync_threshold(priv, threshold);
+}
+int codec_get_decoder_enable(codec_para_t *p)
+{
+    return audio_decoder_get_enable_status(p->adec_priv);
 }

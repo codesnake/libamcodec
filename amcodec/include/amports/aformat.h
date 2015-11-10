@@ -59,35 +59,43 @@ typedef enum {
     AFORMAT_APE   = 20,
     AFORMAT_EAC3   = 21,
     AFORMAT_PCM_WIFIDISPLAY = 22,
+    AFORMAT_DRA    = 23,
+    AFORMAT_SIPR   = 24,
+    AFORMAT_TRUEHD = 25,
+    AFORMAT_MPEG1  = 26, //AFORMAT_MPEG-->mp3,AFORMAT_MPEG1-->mp1,AFROMAT_MPEG2-->mp2
+    AFORMAT_MPEG2  = 27,
+    AFORMAT_WMAVOI = 28,
     AFORMAT_UNSUPPORT ,
     AFORMAT_MAX
 
 } aformat_t;
 
 #define AUDIO_EXTRA_DATA_SIZE   (4096)
-#define IS_AFMT_VALID(afmt)	((afmt > AFORMAT_UNKNOWN) && (afmt < AFORMAT_MAX))
+#define IS_AFMT_VALID(afmt) ((afmt > AFORMAT_UNKNOWN) && (afmt < AFORMAT_MAX))
 
 #define IS_AUIDO_NEED_EXT_INFO(afmt) ((afmt == AFORMAT_ADPCM) \
-								 ||(afmt == AFORMAT_WMA) \
-								 ||(afmt == AFORMAT_WMAPRO) \
-								 ||(afmt == AFORMAT_PCM_S16BE) \
-								 ||(afmt == AFORMAT_PCM_S16LE) \
-								 ||(afmt == AFORMAT_PCM_U8) \
-								 ||(afmt == AFORMAT_PCM_BLURAY) \
-								 ||(afmt == AFORMAT_AMR)\
-								 ||(afmt == AFORMAT_ALAC)\
-								 ||(afmt == AFORMAT_AC3) \
-								 ||(afmt == AFORMAT_EAC3) \
-								 ||(afmt == AFORMAT_APE) \
-								 ||(afmt == AFORMAT_FLAC)\
-								 ||(afmt == AFORMAT_PCM_WIFIDISPLAY) \
-								 ||(afmt == AFORMAT_COOK) \
-								 ||(afmt == AFORMAT_RAAC))
+                                 ||(afmt == AFORMAT_WMA) \
+                                 ||(afmt == AFORMAT_WMAPRO) \
+                                 ||(afmt == AFORMAT_PCM_S16BE) \
+                                 ||(afmt == AFORMAT_PCM_S16LE) \
+                                 ||(afmt == AFORMAT_PCM_U8) \
+                                 ||(afmt == AFORMAT_PCM_BLURAY) \
+                                 ||(afmt == AFORMAT_AMR)\
+                                 ||(afmt == AFORMAT_ALAC)\
+                                 ||(afmt == AFORMAT_AC3) \
+                                 ||(afmt == AFORMAT_EAC3) \
+                                 ||(afmt == AFORMAT_APE) \
+                                 ||(afmt == AFORMAT_FLAC)\
+                                 ||(afmt == AFORMAT_PCM_WIFIDISPLAY) \
+                                 ||(afmt == AFORMAT_COOK) \
+                                 ||(afmt == AFORMAT_RAAC)) \
+                                 ||(afmt == AFORMAT_TRUEHD) \
+                                 ||(afmt == AFORMAT_WMAVOI)
 
 
 #define IS_AUDIO_NOT_SUPPORT_EXCEED_2CH(afmt) ((afmt == AFORMAT_RAAC) \
-										||(afmt == AFORMAT_COOK) \
-										/*||(afmt == AFORMAT_FLAC)*/)
+                                        ||(afmt == AFORMAT_COOK) \
+                                        /*||(afmt == AFORMAT_FLAC)*/)
 
 #define IS_AUDIO_NOT_SUPPORT_EXCEED_6CH(afmt) ((afmt == AFORMAT_WMAPRO))
 #define IS_AUDIO_NOT_SUPPORT_EXCEED_FS48k(afmt) ((afmt == AFORMAT_WMAPRO))
@@ -95,7 +103,10 @@ typedef enum {
 
 #define IS_AUIDO_NEED_PREFEED_HEADER(afmt) ((afmt == AFORMAT_VORBIS) )
 #define IS_AUDIO_NOT_SUPPORTED_BY_AUDIODSP(afmt,codec)  \
-							((afmt == AFORMAT_AAC_LATM || afmt == AFORMAT_AAC) \
-							 &&codec->profile == 0/* FF_PROFILE_AAC_MAIN*/)
+                            ((afmt == AFORMAT_AAC_LATM || afmt == AFORMAT_AAC) \
+                             &&codec->profile == 0/* FF_PROFILE_AAC_MAIN*/)
+
+#define IS_SUB_NEED_PREFEED_HEADER(sfmt) ((sfmt == CODEC_ID_DVD_SUBTITLE) )
+
 #endif /* AFORMAT_H */
 

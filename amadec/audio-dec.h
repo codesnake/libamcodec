@@ -11,7 +11,8 @@
 #ifndef AUDIO_DEC_H
 #define AUDIO_DEC_H
 
-#include<pthread.h>
+#include <stdint.h>
+#include <pthread.h>
 
 #include <audio-out.h>
 #include <audiodsp.h>
@@ -36,7 +37,7 @@ ADEC_BEGIN_DECLS
 //for ffmpeg audio decode
 #define AMSTREAM_IOC_MAGIC  'S'
 #define AMSTREAM_IOC_APTS_LOOKUP    _IOR(AMSTREAM_IOC_MAGIC, 0x81,unsigned long)
-#define GET_FIRST_APTS_FLAG			_IOR(AMSTREAM_IOC_MAGIC, 0x82, long)
+#define GET_FIRST_APTS_FLAG         _IOR(AMSTREAM_IOC_MAGIC, 0x82, long)
 
 //-----------------------------------------------
 //copy from file: "../amcodec/include/amports/amstream.h"
@@ -67,7 +68,7 @@ typedef enum {
     HW_RIGHT_CHANNEL_MONO,
     HW_CHANNELS_SWAP,
 } hw_command_t;
-struct package{
+struct package {
     char *data;//buf ptr
     int size;               //package size
     struct package * next;//next ptr
@@ -78,21 +79,27 @@ typedef struct {
     int pack_num;
     struct package *current;
     lock_t tslock;
-}Package_List;
+} Package_List;
+
+typedef struct adec_thread_mgt {
+    pthread_mutex_t  pthread_mutex;
+    pthread_cond_t   pthread_cond;
+    pthread_t        pthread_id;
+} adec_thread_mgt_t;
 
 typedef struct {
     char buff[10];
     int size;
     int status;//0 init 1 finding sync word 2 finding framesize 3 frame size found
-}StartCode;
-typedef void (*fp_arm_omx_codec_init)(aml_audio_dec_t*,int,void*,int*);
-typedef void (*fp_arm_omx_codec_read)(aml_audio_dec_t*,unsigned char *,unsigned *,int *);
+} StartCode;
+typedef void (*fp_arm_omx_codec_init)(aml_audio_dec_t*, int, void*, int*);
+typedef void (*fp_arm_omx_codec_read)(aml_audio_dec_t*, unsigned char *, unsigned *, int *);
 typedef void (*fp_arm_omx_codec_close)(aml_audio_dec_t*);
 typedef void (*fp_arm_omx_codec_start)(aml_audio_dec_t*);
 typedef void (*fp_arm_omx_codec_pause)(aml_audio_dec_t*);
-typedef int  (*fp_arm_omx_codec_get_declen)(aml_audio_dec_t*);
-typedef int  (*fp_arm_omx_codec_get_FS)(aml_audio_dec_t*);
-typedef int  (*fp_arm_omx_codec_get_Nch)(aml_audio_dec_t*);
+typedef int (*fp_arm_omx_codec_get_declen)(aml_audio_dec_t*);
+typedef int (*fp_arm_omx_codec_get_FS)(aml_audio_dec_t*);
+typedef int (*fp_arm_omx_codec_get_Nch)(aml_audio_dec_t*);
 
 struct aml_audio_dec {
     adec_state_t  state;
@@ -119,19 +126,21 @@ struct aml_audio_dec {
     audio_decoder_operations_t *adec_ops;//non audiodsp decoder operations
     int extradata_size;      ///< extra data size
     char extradata[AUDIO_EXTRA_DATA_SIZE];
-	int SessionID;
-	int format_changed_flag;
-	unsigned dspdec_not_supported;//check some profile that audiodsp decoder can not support,we switch to arm decoder
-	int droppcm_flag;				// drop pcm flag, if switch audio (1)
-	int no_first_apts;				// if can't get the first apts (1), default (0)
-	int StageFrightCodecEnableType;
-	int64_t pcm_bytes_readed;
-	int64_t raw_bytes_readed;
-	int codec_type;
-	int raw_frame_size;
-	int pcm_frame_size;
-	int i2s_iec958_sync_flag;
-	int max_bytes_readded_diff;
+    int SessionID;
+    int format_changed_flag;
+    unsigned dspdec_not_supported;//check some profile that audiodsp decoder can not support,we switch to arm decoder
+    int droppcm_flag;               // drop pcm flag, if switch audio (1)
+    int no_first_apts;              // if can't get the first apts (1), default (0)
+    int apts_start_flag;
+    uint32_t first_apts;
+    int StageFrightCodecEnableType;
+    int64_t pcm_bytes_readed;
+    int64_t raw_bytes_readed;
+    float codec_type;
+    int raw_frame_size;
+    int pcm_frame_size;
+    int i2s_iec958_sync_flag;
+    int max_bytes_readded_diff;
     int i2s_iec958_sync_gate;
 
     buffer_stream_t *g_bst;
@@ -159,6 +168,35 @@ struct aml_audio_dec {
     fp_arm_omx_codec_get_FS     parm_omx_codec_get_FS;
     fp_arm_omx_codec_get_Nch    parm_omx_codec_get_Nch;
     int OmxFirstFrameDecoded;
+    int tsync_mode;
+    adec_thread_mgt_t thread_mgt;
+    int dtshdll_flag;
+    int first_apts_lookup_over;
+    int  audio_decoder_enabled; // if the audio decoder is enabled. if not enabled, muted pcm are output
+
+    //dvb pcr master
+    int fill_trackzero_thrsh;
+    int adis_flag;
+    int tsync_pcr_dispoint;
+    int pcrtsync_enable;
+    int pcrmaster_droppcm_thsh;
+    int64_t pcrscr64;
+    int64_t apts64;
+    int64_t last_apts64;
+    int64_t last_pcrscr64;
+    int mix_lr_channel_enable;
+
+    //code to handle small pts discontinue (1s < diff < 3s )
+    int last_discontinue_apts;//the apts when audio has little discontinue
+    int apts_reset_scr_delay_ms;
+    int64_t last_discontinue_time;  //the time when littile discontinue happens
+
+    int VersionNum;
+    int DTSHDIEC958_FS;
+    int DTSHDIEC958_PktFrmSize;
+    int DTSHDIEC958_PktType;
+    int DTSHDPCM_SamsInFrmAtMaxSR;
+    unsigned int has_video;
 };
 
 //from amcodec
@@ -172,12 +210,14 @@ typedef struct {
     int handle;        ///< codec device handler
     int extradata_size;      ///< extra data size
     char extradata[AUDIO_EXTRA_DATA_SIZE];
-	int SessionID;
-	int dspdec_not_supported;//check some profile that audiodsp decoder can not support,we switch to arm decoder
-	int droppcm_flag;				// drop pcm flag, if switch audio (1)
+    int SessionID;
+    int dspdec_not_supported;//check some profile that audiodsp decoder can not support,we switch to arm decoder
+    int droppcm_flag;               // drop pcm flag, if switch audio (1)
+    int automute;
+    unsigned int has_video;
 } arm_audio_info;
 
- typedef struct {
+typedef struct {
     int valid;               ///< audio extradata valid(1) or invalid(0), set by dsp
     int sample_rate;         ///< audio stream sample rate
     int channels;            ///< audio stream channels
@@ -201,6 +241,7 @@ struct adec_status {
 #define AUDIO_ARC_DECODER 0
 #define AUDIO_ARM_DECODER 1
 #define AUDIO_FFMPEG_DECODER 2
+#define AUDIO_ARMWFD_DECODER  3
 
 //reference from " /amcodec/include/amports/aformat.h"
 #define    ACODEC_FMT_NULL   -1
@@ -227,6 +268,13 @@ struct adec_status {
 #define    ACODEC_FMT_APE    20
 #define    ACODEC_FMT_EAC3    21
 #define    ACODEC_FMT_WIFIDISPLAY 22
+#define    ACODEC_FMT_TRUEHD 25
+#define    ACODEC_FMT_MPEG1  26  //AFORMAT_MPEG-->mp3,AFORMAT_MPEG1-->mp1,AFROMAT_MPEG2-->mp2
+#define    ACODEC_FMT_MPEG2  27
+#define    ACODEC_FMT_WMAVOI 28
+
+
+
 
 
 /***********************************************************************************************/
@@ -240,5 +288,9 @@ adec_cmd_t *adec_get_message(aml_audio_dec_t *);
 int feeder_init(aml_audio_dec_t *);
 int feeder_release(aml_audio_dec_t *);
 void *adec_armdec_loop(void *args);
+void *adec_wfddec_msg_loop(void *args);
+int  adec_thread_wait(aml_audio_dec_t *audec, int microseconds);
+int adec_thread_wakeup(aml_audio_dec_t *audec);
+
 ADEC_END_DECLS
 #endif

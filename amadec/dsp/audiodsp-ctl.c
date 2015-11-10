@@ -22,6 +22,7 @@
 #include <audiodsp.h>
 #include <log-print.h>
 #include <cutils/properties.h>
+#include <amthreadpool.h>
 
 firmware_s_t firmware_list[] = {
     {0, MCODEC_FMT_MPEG123, "audiodsp_codec_mad.bin"},
@@ -84,8 +85,8 @@ static int switch_audiodsp(adec_audio_format_t fmt)
 
     case  ADEC_AUDIO_FORMAT_AC3:
         return MCODEC_FMT_AC3;
-	case  ADEC_AUDIO_FORMAT_EAC3:
-		return MCODEC_FMT_EAC3;
+    case  ADEC_AUDIO_FORMAT_EAC3:
+        return MCODEC_FMT_EAC3;
 
     case  ADEC_AUDIO_FORMAT_DTS:
         return MCODEC_FMT_DTS;
@@ -183,8 +184,9 @@ int audiodsp_init(dsp_operations_t *dsp_ops)
             adec_print("register firmware error=%d,fmt:%d,name:%s\n", ret, f->fmt, f->name);
         }
     }
-    if(i>0)
-		ret=0;//ignore the some fmt register error,for compatible some old kernel.can't support muti filename,
+    if (i > 0) {
+        ret = 0;    //ignore the some fmt register error,for compatible some old kernel.can't support muti filename,
+    }
     if (ret != 0) {
         close(fd);
 
@@ -200,7 +202,7 @@ int audiodsp_init(dsp_operations_t *dsp_ops)
  * \param dsp_ops pointer to dsp operation struct
  * \return 0 on success otherwise negative code error
  */
- static err_count = 0;
+static err_count = 0;
 
 #define PARSER_WAIT_MAX 100
 int audiodsp_start(aml_audio_dec_t *audec)
@@ -215,9 +217,9 @@ int audiodsp_start(aml_audio_dec_t *audec)
     }
 
     if (am_getconfig_bool("media.libplayer.wfd")) {
-        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_SET_PCM_BUF_SIZE, 8*1024);
+        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_SET_PCM_BUF_SIZE, 8 * 1024);
     } else {
-        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_SET_PCM_BUF_SIZE, 32*1024);
+        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_SET_PCM_BUF_SIZE, 32 * 1024);
     }
 
     m_fmt = switch_audiodsp(audec->format);
@@ -234,30 +236,30 @@ int audiodsp_start(aml_audio_dec_t *audec)
         return -3;
     }
 
-    if(audec->need_stop){ //in case  stop command comes now
+    if (audec->need_stop) { //in case  stop command comes now
         ioctl(dsp_ops->dsp_file_fd, AUDIODSP_STOP, 0);
         return -5;
     }
 
     ret = ioctl(dsp_ops->dsp_file_fd, AUDIODSP_DECODE_START, 0);
     err_count = 0;
-    if(ret==0){
-        do{
+    if (ret == 0) {
+        do {
             ret = ioctl(dsp_ops->dsp_file_fd, AUDIODSP_WAIT_FORMAT, 0);
-	    if(ret!=0 && !audec->need_stop){
+            if (ret != 0 && !audec->need_stop) {
                 err_count++;
-                usleep(1000*20);
-                if (err_count > PARSER_WAIT_MAX){
-	             ioctl(dsp_ops->dsp_file_fd, AUDIODSP_STOP, 0);//audiodsp_start failed,should stop audiodsp
-	             adec_print("[%s:%d] audio dsp not ready for decode PCM in 2s\n", __FUNCTION__, __LINE__);
+                amthreadpool_thread_usleep(1000 * 20);
+                if (err_count > PARSER_WAIT_MAX) {
+                    ioctl(dsp_ops->dsp_file_fd, AUDIODSP_STOP, 0);//audiodsp_start failed,should stop audiodsp
+                    adec_print("[%s:%d] audio dsp not ready for decode PCM in 2s\n", __FUNCTION__, __LINE__);
                     return -4;
-                    }
-	    }
-        }while(!audec->need_stop && (ret!=0));
+                }
+            }
+        } while (!audec->need_stop && (ret != 0));
     }
 
     if (ret != 0) {
-	 ioctl(dsp_ops->dsp_file_fd, AUDIODSP_STOP, 0);//audiodsp_start failed,should stop audiodsp
+        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_STOP, 0);//audiodsp_start failed,should stop audiodsp
         return -4;
     }
 
@@ -374,7 +376,7 @@ unsigned long  audiodsp_get_pcrscr(dsp_operations_t *dsp_ops)
  * \param dsp_ops pointer to dsp operation struct
  * \return 0 on success otherwise -1 if an error occurred
  */
-int   audiodsp_set_apts(dsp_operations_t *dsp_ops,unsigned long apts)
+int   audiodsp_set_apts(dsp_operations_t *dsp_ops, unsigned long apts)
 {
 
     if (dsp_ops->dsp_file_fd < 0) {
@@ -442,24 +444,26 @@ int audiodsp_automute_off(dsp_operations_t *dsp_ops)
 
     return ret;
 }
+
+
 int audiodsp_get_pcm_level(dsp_operations_t* dsp_ops)
 {
-  int val = 0;
-  if(dsp_ops->dsp_file_fd < 0){
-    adec_print("read error !! audiodsp have not opened\n");
-    return -1;
-  }
+    int val = 0;
+    if (dsp_ops->dsp_file_fd < 0) {
+        adec_print("read error !! audiodsp have not opened\n");
+        return -1;
+    }
 
-  ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_PCM_LEVEL, &val);
-  return val;
+    ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_PCM_LEVEL, &val);
+    return val;
 }
 
 int audiodsp_set_skip_bytes(dsp_operations_t* dsp_ops, unsigned int bytes)
 {
-  if(dsp_ops->dsp_file_fd < 0){
-    adec_print("read error !! audiodsp have not opened\n");
-    return -1;
-  }
+    if (dsp_ops->dsp_file_fd < 0) {
+        adec_print("read error !! audiodsp have not opened\n");
+        return -1;
+    }
 
-  return ioctl(dsp_ops->dsp_file_fd, AUDIODSP_SKIP_BYTES, bytes);
+    return ioctl(dsp_ops->dsp_file_fd, AUDIODSP_SKIP_BYTES, bytes);
 }

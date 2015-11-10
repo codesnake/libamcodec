@@ -26,10 +26,11 @@ ADEC_BEGIN_DECLS
 #define AUDIODSP_DECODE_STOP                    _IOW('a',5,long)
 #define AUDIODSP_REGISTER_FIRMWARE          _IOW('a',6,long)
 #define AUDIODSP_UNREGISTER_ALLFIRMWARE     _IOW('a',7,long)
-#define AUDIODSP_SYNC_SET_APTS            		   _IOW('a', 10, unsigned long)
+#define AUDIODSP_SYNC_SET_APTS                     _IOW('a', 10, unsigned long)
 #define AUDIODSP_WAIT_FORMAT                 _IOW('a',11,long)
 
 #define AUDIODSP_SKIP_BYTES                     _IOW('a', 13, unsigned long)
+
 #define AUDIODSP_GET_CHANNELS_NUM           _IOR('r',1,long)
 #define AUDIODSP_GET_SAMPLERATE             _IOR('r',2,long)
 #define AUDIODSP_GET_BITS_PER_SAMPLE            _IOR('r',3,long)
@@ -40,7 +41,7 @@ ADEC_BEGIN_DECLS
 #define AUDIODSP_SYNC_GET_PCRSCR                _IOR('r',8,unsigned long)
 #define AUDIODSP_AUTOMUTE_ON                    _IOW('r',9,unsigned long)
 #define AUDIODSP_AUTOMUTE_OFF                   _IOW('r',10,unsigned long)
-#define AUDIODSP_GET_PCM_LEVEL					_IOR('r',12,unsigned long)
+#define AUDIODSP_GET_PCM_LEVEL                  _IOR('r',12,unsigned long)
 #define AUDIODSP_SET_PCM_BUF_SIZE                 _IOW('r',13,long)
 #define AMAUDIO_IOC_SET_RESAMPLE_ENA              _IOW('A', 0x19, unsigned long)
 #define AMAUDIO_IOC_GET_RESAMPLE_ENA              _IOR('A', 0x1a, unsigned long)
@@ -53,10 +54,10 @@ ADEC_BEGIN_DECLS
 #define AUDIODSP_DECODE_STOP                    _IOW('a',5,sizeof(long))
 #define AUDIODSP_REGISTER_FIRMWARE          _IOW('a',6,sizeof(long))
 #define AUDIODSP_UNREGISTER_ALLFIRMWARE     _IOW('a',7,sizeof(long))
-#define AUDIODSP_SYNC_SET_APTS            		   _IOW('a', 10, unsigned long)
+#define AUDIODSP_SYNC_SET_APTS              _IOW('a', 10, sizeof(unsigned long))
 #define AUDIODSP_WAIT_FORMAT                 _IOW('a',11,long)
 
-#define AUDIODSP_SKIP_BYTES                     _IOW('a', 13, unsigned long)
+#define AUDIODSP_SKIP_BYTES                     _IOW('a', 13, sizeof(unsigned long))
 
 #define AUDIODSP_GET_CHANNELS_NUM           _IOR('r',1,sizeof(long))
 #define AUDIODSP_GET_SAMPLERATE             _IOR('r',2,sizeof(long))
@@ -64,14 +65,13 @@ ADEC_BEGIN_DECLS
 #define AUDIODSP_GET_PTS                        _IOR('r',4,sizeof(long))
 #define AUDIODSP_GET_DECODED_NB_FRAMES          _IOR('r',5,sizeof(long))
 #define AUDIODSP_GET_FIRST_PTS_FLAG             _IOR('r',6,sizeof(long))
-#define AUDIODSP_SYNC_GET_APTS                  _IOR('r',7,unsigned long)
-#define AUDIODSP_SYNC_GET_PCRSCR                _IOR('r',8,unsigned long)
-#define AUDIODSP_AUTOMUTE_ON                    _IOW('r',9,unsigned long)
-#define AUDIODSP_AUTOMUTE_OFF                   _IOW('r',10,unsigned long)
-#define AUDIODSP_GET_PCM_LEVEL					_IOR('r',12,unsigned long)
-#define AUDIODSP_SET_PCM_BUF_SIZE                 _IOW('r',13,long)
-#define AMAUDIO_IOC_SET_RESAMPLE_ENA              _IOW('A', 0x19, unsigned long)
-#define AMAUDIO_IOC_GET_RESAMPLE_ENA              _IOR('A', 0x1a, unsigned long)
+#define AUDIODSP_SYNC_GET_PCRSCR                _IOR('r',8,sizeof(unsigned long))
+#define AUDIODSP_AUTOMUTE_ON                    _IOW('r',9,sizeof(unsigned long))
+#define AUDIODSP_AUTOMUTE_OFF                   _IOW('r',10,sizeof(unsigned long))
+#define AUDIODSP_GET_PCM_LEVEL                  _IOR('r',12,sizeof(unsigned long))
+#define AUDIODSP_SET_PCM_BUF_SIZE               _IOW('r',13,sizeof(long))
+#define AMAUDIO_IOC_SET_RESAMPLE_ENA            _IOW('A', 0x19, sizeof(unsigned long))
+#define AMAUDIO_IOC_GET_RESAMPLE_ENA            _IOR('A', 0x1a, sizeof(unsigned long))
 #endif
 
 
@@ -106,8 +106,10 @@ struct dsp_operations {
     int (*dsp_read_raw)(dsp_operations_t *dsp_ops, char *buffer, int len); /* read raw stream from dsp */
     unsigned long(*get_cur_pts)(dsp_operations_t *);
     unsigned long(*get_cur_pcrscr)(dsp_operations_t *);
-    int (*set_cur_apts)(dsp_operations_t *dsp_ops,unsigned long apts);
-	int amstream_fd;
+    int (*set_cur_apts)(dsp_operations_t *dsp_ops, unsigned long apts);
+    int (*set_skip_bytes)(dsp_operations_t *dsp_ops, unsigned int skip_bytes);
+
+    int amstream_fd;
     void *audec;
 };
 
@@ -130,7 +132,7 @@ typedef struct {
 int audiodsp_stream_read(dsp_operations_t *dsp_ops, char *buffer, int size);
 unsigned long  audiodsp_get_pts(dsp_operations_t *dsp_ops);
 unsigned long  audiodsp_get_pcrscr(dsp_operations_t *dsp_ops);
-int audiodsp_set_apts(dsp_operations_t *dsp_ops,unsigned long apts);
+int audiodsp_set_apts(dsp_operations_t *dsp_ops, unsigned long apts);
 int audiodsp_get_decoded_nb_frames(dsp_operations_t *dsp_ops);
 int audiodsp_get_first_pts_flag(dsp_operations_t *dsp_ops);
 int audiodsp_automute_on(dsp_operations_t *dsp_ops);

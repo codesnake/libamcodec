@@ -18,28 +18,29 @@ typedef struct _audio_info {
     int samplerate;
     int channels;
     int file_profile;
-}AudioInfo;
+} AudioInfo;
 
 /* audio decoder operation*/
 typedef struct audio_decoder_operations audio_decoder_operations_t;
-struct audio_decoder_operations
-{
-	    const char * name;
-	    int nAudioDecoderType;
-	    int nInBufSize;
-	    int nOutBufSize;
-	    int (*init)(audio_decoder_operations_t *);
-	    int (*decode)(audio_decoder_operations_t *, char *outbuf, int *outlen, char *inbuf, int inlen);
-	    int (*release)(audio_decoder_operations_t *);
-	    int (*getinfo)(audio_decoder_operations_t *,AudioInfo *pAudioInfo);
-	    void * priv_data;//point to audec
-	    void * priv_dec_data;//decoder private data
-	    int channels;
-            unsigned long pts;
-           int samplerate;
-           int bps;
-	    int extradata_size;      ///< extra data size
-           char extradata[AUDIO_EXTRA_DATA_SIZE];
+struct audio_decoder_operations {
+    const char * name;
+    int nAudioDecoderType;
+    int nInBufSize;
+    int nOutBufSize;
+    int (*init)(audio_decoder_operations_t *);
+    int (*decode)(audio_decoder_operations_t *, char *outbuf, int *outlen, char *inbuf, int inlen);
+    int (*release)(audio_decoder_operations_t *);
+    int (*getinfo)(audio_decoder_operations_t *, AudioInfo *pAudioInfo);
+    void * priv_data;//point to audec
+    void * priv_dec_data;//decoder private data
+    void *pdecoder; // decoder instance
+    int channels;
+    unsigned long pts;
+    int samplerate;
+    int bps;
+    int extradata_size;      ///< extra data size
+    char extradata[AUDIO_EXTRA_DATA_SIZE];
+    int NchOriginal;
 };
 
 enum AVSampleFormat {

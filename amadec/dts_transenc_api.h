@@ -5,11 +5,11 @@
 /*typedef struct pcm51_encoded_info_s
 {
   unsigned int InfoValidFlag;
-	unsigned int SampFs;
-	unsigned int NumCh;
-	unsigned int AcMode;
-	unsigned int LFEFlag;
-	unsigned int BitsPerSamp;
+    unsigned int SampFs;
+    unsigned int NumCh;
+    unsigned int AcMode;
+    unsigned int LFEFlag;
+    unsigned int BitsPerSamp;
 }pcm51_encoded_info_t;*/
 
 int dts_transenc_init();

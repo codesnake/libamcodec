@@ -1,17 +1,17 @@
 //-----------------------------------------------------------------------------
 // add for AIFIFO channel (old $cdrom/rtl/cdr_top/getbit)
 //-----------------------------------------------------------------------------
-// Bit 3 	CRC pop aififo enable
-// Bit 2		writing to this bit to 1 causes CRC module reset
-// Bit 1		enable aififo
-// Bit 0		writing to this bit to 1 causes aififo soft reset
+// Bit 3    CRC pop aififo enable
+// Bit 2        writing to this bit to 1 causes CRC module reset
+// Bit 1        enable aififo
+// Bit 0        writing to this bit to 1 causes aififo soft reset
 #define AIU_AIFIFO_CTRL                            0x1580
 //'h0000
 // AIFIFO status register
-// Bit 13		//aififo request to dcu status
-// Bit 12		//dcu select status
-// Bit 11:5		//aififo word counter number
-// Bit 4:0		//how many bits left in the first pop register
+// Bit 13       //aififo request to dcu status
+// Bit 12       //dcu select status
+// Bit 11:5     //aififo word counter number
+// Bit 4:0      //how many bits left in the first pop register
 #define AIU_AIFIFO_STATUS                          0x1581
 // Same fucntion as the AIGBIT of AIFIFO in CDROM module
 // write to this register how many bits wanna pop,

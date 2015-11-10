@@ -20,7 +20,10 @@
 #include <cutils/properties.h>
 #include <dts_enc.h>
 #include <Amsysfsutils.h>
+#include <amthreadpool.h>
 
+#define MULTICH_SUPPORT_PROPERTY "media.multich.support.info"
+#define PCM_88_96_SUPPORT        "media.libplayer.88_96K"
 static int set_tsync_enable(int enable)
 {
 
@@ -29,10 +32,10 @@ static int set_tsync_enable(int enable)
 }
 
 typedef struct {
-//	int no;
-	int audio_id;
-	char type[16];
-}audio_type_t;
+    //  int no;
+    int audio_id;
+    char type[16];
+} audio_type_t;
 
 audio_type_t audio_type[] = {
     {ACODEC_FMT_AAC, "aac"},
@@ -48,18 +51,21 @@ audio_type_t audio_type[] = {
     {ACODEC_FMT_VORBIS, "vorbis"},
     {ACODEC_FMT_AAC_LATM, "aac_latm"},
     {ACODEC_FMT_APE, "ape"},
-    {ACODEC_FMT_MPEG, "mp3"},
-    {ACODEC_FMT_EAC3,"eac3"},
+    {ACODEC_FMT_MPEG, "mp3"},//mp3
+    {ACODEC_FMT_MPEG2, "mp3"},//mp2
+    {ACODEC_FMT_MPEG1, "mp3"},//mp1
+    {ACODEC_FMT_EAC3, "eac3"},
+    {ACODEC_FMT_TRUEHD, "thd"},
+    {ACODEC_FMT_PCM_S16BE, "pcm"},
+    {ACODEC_FMT_PCM_S16LE, "pcm"},
+    {ACODEC_FMT_PCM_U8, "pcm"},
+    {ACODEC_FMT_PCM_BLURAY, "pcm"},
+    {ACODEC_FMT_WIFIDISPLAY, "pcm"},
+    {ACODEC_FMT_ALAW, "pcm"},
+    {ACODEC_FMT_MULAW, "pcm"},
 
-    {ACODEC_FMT_PCM_S16BE,"pcm"},
-    {ACODEC_FMT_PCM_S16LE,"pcm"},
-    {ACODEC_FMT_PCM_U8,"pcm"},
-    {ACODEC_FMT_PCM_BLURAY,"pcm"},
-    {ACODEC_FMT_WIFIDISPLAY,"pcm"},
-    {ACODEC_FMT_ALAW,"pcm"},
-    {ACODEC_FMT_MULAW,"pcm"},
-
-    {ACODEC_FMT_ADPCM,"adpcm"},
+    {ACODEC_FMT_ADPCM, "adpcm"},
+    {ACODEC_FMT_WMAVOI, "wmavoi"},
     {ACODEC_FMT_NULL, "null"},
 
 };
@@ -113,39 +119,45 @@ static void start_adec(aml_audio_dec_t *audec)
     int ret;
     audio_out_operations_t *aout_ops = &audec->aout_ops;
     dsp_operations_t *dsp_ops = &audec->adsp_ops;
-    unsigned long  vpts,apts;
-    int times=0;
+    unsigned long  vpts, apts;
+    int times = 0;
     char buf[32];
     apts = vpts = 0;
 
+    char value[PROPERTY_VALUE_MAX] = {0};
+    int wait_count = 100;
+    if (property_get("media.amadec.wait_count", value, NULL) > 0) {
+        wait_count = atoi(value);
+    }
+    adec_print("wait first apts count :%d \n", wait_count);
+
     audec->no_first_apts = 0;
     if (audec->state == INITTED) {
-        audec->state = ACTIVE;
 
         while ((!audiodsp_get_first_pts_flag(dsp_ops)) && (!audec->need_stop) && (!audec->no_first_apts)) {
-            adec_print("wait first pts checkin complete times=%d,!\n",times);
-			times++;
+            adec_print("wait first pts checkin complete times=%d,!\n", times);
+            times++;
 
-			if (times>=5) {
-				// read vpts
-				amsysfs_get_sysfs_str(TSYNC_VPTS, buf, sizeof(buf));
-				if (sscanf(buf, "0x%lx", &vpts) < 1) {
-					adec_print("unable to get vpts from: %s", buf);
-					return -1;
-				}
+            if (times >= wait_count) {
+                // read vpts
+                amsysfs_get_sysfs_str(TSYNC_VPTS, buf, sizeof(buf));
+                if (sscanf(buf, "0x%lx", &vpts) < 1) {
+                    adec_print("unable to get vpts from: %s", buf);
+                    return -1;
+                }
 
-				// save vpts to apts
-				adec_print("## can't get first apts, save vpts to apts,vpts=%lx, \n",vpts);
+                // save vpts to apts
+                adec_print("## can't get first apts, save vpts to apts,vpts=%lx, \n", vpts);
 
-                         sprintf(buf, "0x%lx", vpts);
+                sprintf(buf, "0x%lx", vpts);
 
-				amsysfs_set_sysfs_str(TSYNC_APTS, buf);
+                amsysfs_set_sysfs_str(TSYNC_APTS, buf);
 
-				audec->no_first_apts = 1;
-			}
-            usleep(100000);
+                audec->no_first_apts = 1;
+            }
+            amthreadpool_thread_usleep(100000);
         }
-         /*Since audio_track->start consumed too much time
+        /*Since audio_track->start consumed too much time
         *for the first time after platform restart,
         *so execute start cmd before adec_pts_start
         */
@@ -162,7 +174,7 @@ static void start_adec(aml_audio_dec_t *audec)
             adec_pts_pause();
 
             while ((!audec->need_stop) && track_switch_pts(audec)) {
-                usleep(1000);
+                amthreadpool_thread_usleep(1000);
             }
 
             audiodsp_automute_off(dsp_ops);
@@ -173,6 +185,7 @@ static void start_adec(aml_audio_dec_t *audec)
         }
 
         aout_ops->resume(audec);
+        audec->state = ACTIVE;
 
     }
 }
@@ -217,7 +230,7 @@ static void stop_adec(aml_audio_dec_t *audec)
 
     if (audec->state > INITING) {
         audec->state = STOPPED;
-	aout_ops->mute(audec, 1); //mute output, some repeat sound in audioflinger after stop
+        aout_ops->mute(audec, 1); //mute output, some repeat sound in audioflinger after stop
         aout_ops->stop(audec);
         feeder_release(audec);
     }
@@ -269,25 +282,25 @@ static void adec_set_volume(aml_audio_dec_t *audec, float vol)
  * \param lvol left channel volume value
  * \param rvol right channel volume value
  */
-static void adec_set_lrvolume(aml_audio_dec_t *audec, float lvol,float rvol)
+static void adec_set_lrvolume(aml_audio_dec_t *audec, float lvol, float rvol)
 {
     audio_out_operations_t *aout_ops = &audec->aout_ops;
 
     if (aout_ops->set_lrvolume) {
-        adec_print("set audio volume! left vol = %f,right vol:%f\n", lvol,rvol);
-        aout_ops->set_lrvolume(audec, lvol,rvol);
+        adec_print("set audio volume! left vol = %f,right vol:%f\n", lvol, rvol);
+        aout_ops->set_lrvolume(audec, lvol, rvol);
     }
 }
 static void adec_flag_check(aml_audio_dec_t *audec)
 {
     audio_out_operations_t *aout_ops = &audec->aout_ops;
 
-    if (audec->auto_mute && (audec->state > INITTED) &&(audec->state != PAUSED)) {
+    if (audec->auto_mute && (audec->state > INITTED) && (audec->state != PAUSED)) {
         aout_ops->pause(audec);
         adec_print("automute, pause audio out!\n");
-	 usleep(10000);
+        amthreadpool_thread_usleep(10000);
         while ((!audec->need_stop) && track_switch_pts(audec)) {
-            usleep(1000);
+            amthreadpool_thread_usleep(1000);
         }
         aout_ops->resume(audec);
         adec_print("resume audio out, automute invalid\n");
@@ -295,8 +308,9 @@ static void adec_flag_check(aml_audio_dec_t *audec)
     }
 }
 
-static int write_buffer(char *outbuf, int outlen){
-	return 0;
+static int write_buffer(char *outbuf, int outlen)
+{
+    return 0;
 }
 
 
@@ -323,22 +337,23 @@ static void *adec_message_loop(void *args)
             audec->state = INITTED;
             adec_print("Audio out device init ok!");
             start_adec(audec);
-            if(dtsenc_init()!=-1)
+            if (dtsenc_init() != -1) {
                 dtsenc_start();
+            }
 
             break;
         }
 
-	if(!audec->need_stop){
-            usleep(100000);
-	    }
+        if (!audec->need_stop) {
+            amthreadpool_thread_usleep(100000);
+        }
     }
 
     do {
         //if(message_pool_empty(audec))
         //{
         //adec_print("there is no message !\n");
-        //  usleep(100000);
+        //  amthreadpool_thread_usleep(100000);
         //  continue;
         //}
         adec_reset_track(audec);
@@ -346,7 +361,7 @@ static void *adec_message_loop(void *args)
 
         msg = adec_get_message(audec);
         if (!msg) {
-            usleep(100000);
+            amthreadpool_thread_usleep(100000);
             continue;
         }
 
@@ -375,7 +390,7 @@ static void *adec_message_loop(void *args)
         case CMD_STOP:
 
             adec_print("Receive STOP Command!");
-            adec_print("audec->state=%d (INITING/3) when Rec_STOP_CMD\n",audec->state);
+            adec_print("audec->state=%d (INITING/3) when Rec_STOP_CMD\n", audec->state);
             stop_adec(audec);
             dtsenc_stop();
             break;
@@ -395,11 +410,11 @@ static void *adec_message_loop(void *args)
                 adec_set_volume(audec, msg->value.volume);
             }
             break;
-	 case CMD_SET_LRVOL:
+        case CMD_SET_LRVOL:
 
             adec_print("Receive Set LRVol Command!");
             if (msg->has_arg) {
-                adec_set_lrvolume(audec, msg->value.volume,msg->value_ext.volume);
+                adec_set_lrvolume(audec, msg->value.volume, msg->value_ext.volume);
             }
             break;
 
@@ -456,111 +471,110 @@ static void *adec_message_loop(void *args)
  * \param audec pointer to audec
  * \return 0 on success otherwise -1 if an error occurred
  */
-int match_types(const char *filetypestr,const char *typesetting)
+int match_types(const char *filetypestr, const char *typesetting)
 {
-	const char * psets=typesetting;
-	const char *psetend;
-	int psetlen=0;
-	char typestr[64]="";
-	if(filetypestr==NULL || typesetting==NULL)
-		return 0;
+    const char * psets = typesetting;
+    const char *psetend;
+    int psetlen = 0;
+    char typestr[64] = "";
+    if (filetypestr == NULL || typesetting == NULL) {
+        return 0;
+    }
 
-	while(psets && psets[0]!='\0'){
-		psetlen=0;
-		psetend=strchr(psets,',');
-		if(psetend!=NULL && psetend>psets && psetend-psets<64){
-			psetlen=psetend-psets;
-			memcpy(typestr,psets,psetlen);
-			typestr[psetlen]='\0';
-			psets=&psetend[1];//skip ";"
-		}else{
-			strcpy(typestr,psets);
-			psets=NULL;
-		}
-		if(strlen(typestr)>0&&(strlen(typestr)==strlen(filetypestr))){
-			if(strstr(filetypestr,typestr)!=NULL)
-				return 1;
-		}
-	}
-	return 0;
+    while (psets && psets[0] != '\0') {
+        psetlen = 0;
+        psetend = strchr(psets, ',');
+        if (psetend != NULL && psetend > psets && psetend - psets < 64) {
+            psetlen = psetend - psets;
+            memcpy(typestr, psets, psetlen);
+            typestr[psetlen] = '\0';
+            psets = &psetend[1]; //skip ";"
+        } else {
+            strcpy(typestr, psets);
+            psets = NULL;
+        }
+        if (strlen(typestr) > 0 && (strlen(typestr) == strlen(filetypestr))) {
+            if (strstr(filetypestr, typestr) != NULL) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+/*
+digital_raw:
+0  2ch PCM
+1  spdif passthrough ,for DTS,DD
+2  HDMI passthrough for DD,DTSHD,TrueHD
+3  Multi-channel PCM HDMI passthrough
+*/
+static void set_multichs_prop()
+{
+    char * infobuf;
+    int channel = 0;
+    int dgraw = 0;
+    dgraw = amsysfs_get_sysfs_int("/sys/class/audiodsp/digital_raw");
+    infobuf = (char *)malloc(1024 * sizeof(char));
+    property_set(PCM_88_96_SUPPORT, "0");
+    if (infobuf == NULL) {
+        adec_print("%s: malloc infobuf failed.\n", __FUNCTION__);
+    } else {
+        int fd = open("/sys/class/amhdmitx/amhdmitx0/aud_cap", O_RDONLY);
+        if (fd != -1) {
+            int nread = read(fd, infobuf, 1024);
+            int i;
+            nread = nread - 5;
+            for (i = 0; i < nread; i++) {
+                if ((infobuf[i] == 'P') && (infobuf[i + 1] == 'C') && (infobuf[i + 2] == 'M')) {
+                    if (dgraw == 3) { // if configured mutli-channel output,check if the HDMI sink support multi-channel PCM output
+                        if (infobuf[i + 5] == '8') {
+                            property_set(MULTICH_SUPPORT_PROPERTY, "hdmi8");
+                            channel = channel < 8 ? 8 : channel;
+                        }
+                        if (infobuf[i + 5] == '6') {
+                            property_set(MULTICH_SUPPORT_PROPERTY, "hdmi6");
+                            channel = channel < 6 ? 6 : channel;
+                        }
+                        if (infobuf[i + 5] == '2') {
+                            property_set(MULTICH_SUPPORT_PROPERTY, "hdmi2");
+                            channel = channel < 2 ? 2 : channel;
+                        }
+                    } else {
+                        property_set(MULTICH_SUPPORT_PROPERTY, "hdmi2");
+                        channel = channel < 2 ? 2 : channel;
+                    }
+                } else if (
+                    ((infobuf[i] == '8') && (infobuf[i + 1] == '8') && (infobuf[i + 2] == '.') && (infobuf[i + 3] == '2'))
+                    || ((infobuf[i] == '9') && (infobuf[i + 1] == '6'))) {
+                    property_set(PCM_88_96_SUPPORT, "1");
+                }
+            }
+            if (channel == 0) {
+                property_set(MULTICH_SUPPORT_PROPERTY, "speaker");
+            }
+            adec_print("%s: aud_cap support channel number: %d ch\n", __FUNCTION__, channel);
+            close(fd);
+            free(infobuf);
+            infobuf = NULL;
+        } else {
+            adec_print("%s: open hdmi driver aud_cap node failed \n", __FUNCTION__);
+            free(infobuf);
+            infobuf = NULL;
+        }
+    }
 }
 
 static int set_audio_decoder(aml_audio_dec_t *audec)
-{
-	int audio_id;
-	int i;
-    int num;
-	int ret;
-    audio_type_t *t;
-	char value[PROPERTY_VALUE_MAX];
-
-
-	audio_id = audec->format;
-
-    num = ARRAY_SIZE(audio_type);
-    for (i = 0; i < num; i++) {
-        t = &audio_type[i];
-        if (t->audio_id == audio_id) {
-            break;
-        }
-    }
-
-	ret = property_get("media.arm.audio.decoder",value,NULL);
-	adec_print("media.amplayer.audiocodec = %s, t->type = %s\n", value, t->type);
-	if (ret>0 && match_types(t->type,value))
-	{
-		char type_value[] = "ac3,eac3";
-		if(match_types(t->type,type_value))
-		{
-            #ifdef DOLBY_USE_ARMDEC
-			adec_print("DOLBY_USE_ARMDEC=%d",DOLBY_USE_ARMDEC);
-			audio_decoder = AUDIO_ARM_DECODER;
-            #else
-			audio_decoder = AUDIO_ARC_DECODER;
-            adec_print("<DOLBY_USE_ARMDEC> is not DEFINED,use ARC_Decoder\n!");
-			#endif
-		}else{
-            audio_decoder = AUDIO_ARM_DECODER;
-        }
-		return 0;
-	}
-
-	ret = property_get("media.arc.audio.decoder",value,NULL);
-	adec_print("media.amplayer.audiocodec = %s, t->type = %s\n", value, t->type);
-	if (ret>0 && match_types(t->type,value))
-	{
-		if(audec->dspdec_not_supported == 0)
-			audio_decoder = AUDIO_ARC_DECODER;
-		else{
-			audio_decoder = AUDIO_ARM_DECODER;
-			adec_print("[%s:%d]arc decoder not support this audio yet,switch to ARM decoder \n",__FUNCTION__, __LINE__);
-		}
-		return 0;
-	}
-
-	ret = property_get("media.ffmpeg.audio.decoder",value,NULL);
-	adec_print("media.amplayer.audiocodec = %s, t->type = %s\n", value, t->type);
-	if (ret>0 && match_types(t->type,value))
-	{
-		audio_decoder = AUDIO_FFMPEG_DECODER;
-		return 0;
-	}
-
-	audio_decoder = AUDIO_ARC_DECODER; //set arc decoder as default
-	if(audec->dspdec_not_supported == 1){
-		audio_decoder = AUDIO_ARM_DECODER;
-		adec_print("[%s:%d]arc decoder not support this audio yet,switch to ARM decoder \n",__FUNCTION__, __LINE__);
-	}
-	return 0;
-}
-static int set_linux_audio_decoder(aml_audio_dec_t *audec)
 {
     int audio_id;
     int i;
     int num;
     int ret;
     audio_type_t *t;
-    char *value;
+    char value[PROPERTY_VALUE_MAX];
+
+
     audio_id = audec->format;
 
     num = ARRAY_SIZE(audio_type);
@@ -570,101 +584,158 @@ static int set_linux_audio_decoder(aml_audio_dec_t *audec)
             break;
         }
     }
-    value = getenv("media_arm_audio_decoder");
-    adec_print("media.armdecode.audiocodec = %s, t->type = %s\n", value, t->type);
-    if (value!=NULL && match_types(t->type,value))
-    {
+
+    if (match_types(t->type, "thd") || match_types(t->type, "wmavoi")) {
+        adec_print("audio format is %s, so chose AUDIO_ARM_DECODER", t->type);
+        audio_decoder = AUDIO_ARM_DECODER;
+        goto exit;
+    }
+
+
+    ret = property_get("media.arm.audio.decoder", value, NULL);
+    adec_print("media.amplayer.audiocodec = %s, t->type = %s\n", value, t->type);
+    if (ret > 0 && match_types(t->type, value)) {
         char type_value[] = "ac3,eac3";
-        if(match_types(t->type,type_value))
-        {
-        #ifdef DOLBY_USE_ARMDEC
-            adec_print("DOLBY_USE_ARMDEC=%d",DOLBY_USE_ARMDEC);
-            audio_decoder = AUDIO_ARM_DECODER;
-        #else
+        set_multichs_prop();
+        if (match_types(t->type, type_value)) {
+#ifdef DOLBY_USE_ARMDEC
+            adec_print("DOLBY_USE_ARMDEC=%d", DOLBY_USE_ARMDEC);
+#ifndef USE_ARM_AUDIO_DEC
+            if (access("/system/etc/firmware/audiodsp_codec_ddp_dcv.bin",F_OK)) {
+#endif
+                audio_decoder = AUDIO_ARM_DECODER;
+#ifndef USE_ARM_AUDIO_DEC
+            }else{
+                audio_decoder = AUDIO_ARC_DECODER;
+            }
+#endif
+#else
             audio_decoder = AUDIO_ARC_DECODER;
             adec_print("<DOLBY_USE_ARMDEC> is not DEFINED,use ARC_Decoder\n!");
-        #endif
-        }else{
+#endif
+        }
+#ifndef USE_ARM_AUDIO_DEC
+        else if (match_types(t->type, "dts")) {
+            if (access("/system/etc/firmware/audiodsp_codec_dtshd.bin", F_OK)) {
+                adec_print("using no license dts component");
+                audio_decoder = AUDIO_ARM_DECODER;
+            } else {
+                adec_print("using audiodsp dts decoder");
+                audio_decoder = AUDIO_ARC_DECODER;
+            }
+        }
+#endif
+        else {
             audio_decoder = AUDIO_ARM_DECODER;
         }
-        return 0;
+        goto exit;
     }
 
-   value= getenv("media_arc_audio_decoder");
-    adec_print("media.arcdecode.audiocodec = %s, t->type = %s\n", value, t->type);
-    if (value!=NULL && match_types(t->type,value))
-    {
-        if(audec->dspdec_not_supported == 0)
-            audio_decoder = AUDIO_ARC_DECODER;
-        else{
-            audio_decoder = AUDIO_ARM_DECODER;
-            adec_print("[%s:%d]arc decoder not support this audio yet,switch to ARM decoder \n",__FUNCTION__, __LINE__);
-        }
-        return 0;
-    }
-
-    value = getenv("media.ffmpeg.audio.decoder");
+    ret = property_get("media.arc.audio.decoder", value, NULL);
     adec_print("media.amplayer.audiocodec = %s, t->type = %s\n", value, t->type);
-    if (value!=NULL && match_types(t->type,value))
-    {
+    if (ret > 0 && match_types(t->type, value)) {
+        if (audec->dspdec_not_supported == 0) {
+            audio_decoder = AUDIO_ARC_DECODER;
+        } else {
+            audio_decoder = AUDIO_ARM_DECODER;
+            adec_print("[%s:%d]arc decoder not support this audio yet,switch to ARM decoder \n", __FUNCTION__, __LINE__);
+        }
+        goto exit;
+    }
+
+    ret = property_get("media.ffmpeg.audio.decoder", value, NULL);
+    adec_print("media.amplayer.audiocodec = %s, t->type = %s\n", value, t->type);
+    if (ret > 0 && match_types(t->type, value)) {
         audio_decoder = AUDIO_FFMPEG_DECODER;
-        return 0;
+        goto exit;
     }
 
     audio_decoder = AUDIO_ARC_DECODER; //set arc decoder as default
-    if(audec->dspdec_not_supported == 1){
+    if (audec->dspdec_not_supported == 1) {
         audio_decoder = AUDIO_ARM_DECODER;
+        adec_print("[%s:%d]arc decoder not support this audio yet,switch to ARM decoder \n", __FUNCTION__, __LINE__);
+    }
+exit:
+    if (am_getconfig_bool("media.libplayer.wfd") && (audio_id == ACODEC_FMT_WIFIDISPLAY || audio_id == ACODEC_FMT_AAC)) {
+        adec_print("wfd use arm decoder \n");
+        audio_decoder = AUDIO_ARMWFD_DECODER;
     }
     return 0;
 }
 
 int get_audio_decoder(void)
 {
-	//adec_print("audio_decoder = %d\n", audio_decoder);
-	return audio_decoder;
+    //adec_print("audio_decoder = %d\n", audio_decoder);
+    return audio_decoder;
 }
 
 int vdec_pts_pause(void)
 {
     return amsysfs_set_sysfs_str(TSYNC_EVENT, "VIDEO_PAUSE:0x1");
 }
+
+int  adec_thread_wait(aml_audio_dec_t *audec, int microseconds)
+{
+    struct timespec pthread_ts;
+    struct timeval now;
+    adec_thread_mgt_t *mgt = &audec->thread_mgt;
+    int ret;
+
+    gettimeofday(&now, NULL);
+    pthread_ts.tv_sec = now.tv_sec + (microseconds + now.tv_usec) / 1000000;
+    pthread_ts.tv_nsec = ((microseconds + now.tv_usec) * 1000) % 1000000000;
+    pthread_mutex_lock(&mgt->pthread_mutex);
+    ret = pthread_cond_timedwait(&mgt->pthread_cond, &mgt->pthread_mutex, &pthread_ts);
+    pthread_mutex_unlock(&mgt->pthread_mutex);
+    return ret;
+}
+int adec_thread_wakeup(aml_audio_dec_t *audec)
+{
+    adec_thread_mgt_t *mgt = &audec->thread_mgt;
+    int ret;
+
+    pthread_mutex_lock(&mgt->pthread_mutex);
+    ret = pthread_cond_signal(&mgt->pthread_cond);
+    pthread_mutex_unlock(&mgt->pthread_mutex);
+
+    return ret;
+}
+
 int audiodec_init(aml_audio_dec_t *audec)
 {
     int ret = 0;
-    int res = 0;
     pthread_t    tid;
-	char value[PROPERTY_VALUE_MAX]={0};
+    char value[PROPERTY_VALUE_MAX] = {0};
+    unsigned wfd = 0;
     adec_print("audiodec_init!");
     adec_message_pool_init(audec);
     get_output_func(audec);
-    int nCodecType=audec->format;
-#ifdef ANDROID
+    int nCodecType = audec->format;
     set_audio_decoder(audec);
-#else
-    set_linux_audio_decoder(audec);
-
-#endif
-    audec->format_changed_flag=0;
-
-    if (get_audio_decoder() == AUDIO_ARC_DECODER) {
-		audec->adsp_ops.dsp_file_fd = -1;
-		ret = pthread_create(&tid, NULL, (void *)adec_message_loop, (void *)audec);
-		//pthread_setname_np(tid,"AmadecMsgloop");
+    audec->format_changed_flag = 0;
+    audec->audio_decoder_enabled  = -1;//default set a invalid value
+    audec->mix_lr_channel_enable  = -1;
+    audec->VersionNum = -1;
+    if (am_getconfig_bool("media.libplayer.wfd"))  {
+        wfd = 1;
     }
-    else
-    {
-        int codec_type=get_audio_decoder();
-        res=RegisterDecode(audec,codec_type);
-        if(!res){
-        ret = pthread_create(&tid, NULL, (void *)adec_armdec_loop, (void *)audec);
-        //pthread_setname_np(tid,"AmadecArmdecLP");
-        }else{
-        adec_print("no arm decoding lib find,so change to arc dsp decoding\n");
+    if (get_audio_decoder() == AUDIO_ARC_DECODER) {
         audec->adsp_ops.dsp_file_fd = -1;
-        audec->adec_ops=NULL;
-        ret = pthread_create(&tid, NULL, (void *)adec_message_loop, (void *)audec);
-        //pthread_setname_np(tid,"AmadecMsgloop");
-	}
+        ret = amthreadpool_pthread_create(&tid, NULL, (void *)adec_message_loop, (void *)audec);
+        pthread_setname_np(tid, "AmadecMsgloop");
+    } else if (wfd && (nCodecType == ACODEC_FMT_AAC || nCodecType ==  ACODEC_FMT_WIFIDISPLAY)) {
+        adec_print("using wfd audio decoder \n");
+        ret = amthreadpool_pthread_create(&tid, NULL, (void *)adec_wfddec_msg_loop, (void *)audec);
+        audec->audio_decoder_enabled = 0x1;
+        pthread_setname_np(tid, "AmadecWFDMsgloop");
+    } else {
+        int codec_type = get_audio_decoder();
+        RegisterDecode(audec, codec_type);
+        ret = amthreadpool_pthread_create(&tid, NULL, (void *)adec_armdec_loop, (void *)audec);
+        pthread_mutex_init(&audec->thread_mgt.pthread_mutex, NULL);
+        pthread_cond_init(&audec->thread_mgt.pthread_cond, NULL);
+        audec->thread_mgt.pthread_id = tid;
+        pthread_setname_np(tid, "AmadecArmdecLP");
     }
     if (ret != 0) {
         adec_print("Create adec main thread failed!\n");

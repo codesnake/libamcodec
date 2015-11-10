@@ -1,21 +1,76 @@
 LOCAL_PATH:= $(call my-dir)
+ifeq ($(BUILD_WITH_BOOT_PLAYER),true)
+include $(CLEAR_VARS)
+ 
+LOCAL_CFLAGS := \
+        -fPIC -D_POSIX_SOURCE
+
+
+
+ifneq (0, $(shell expr $(PLATFORM_VERSION) \>= 5.0)) 
+ALSA_LIB_DIR=vendor/amlogic/external/alsa-lib/
+else
+ALSA_LIB_DIR=external/alsa-lib/
+endif
+LOCAL_C_INCLUDES:= \
+    $(LOCAL_PATH)/include \
+    $(LOCAL_PATH)/../amavutils/include \
+    $(TOP)/$(ALSA_LIB_DIR)/include    
+
+
+ifneq (0, $(shell expr $(PLATFORM_VERSION) \> 4.1.0))
+    LOCAL_CFLAGS += -D_VERSION_JB
+else
+    ifneq (0, $(shell expr $(PLATFORM_VERSION) \> 4.0.0))
+        LOCAL_CFLAGS += -D_VERSION_ICS
+    endif
+endif
+ 
+LOCAL_CFLAGS += -DALSA_OUT
+ 
+LOCAL_SHARED_LIBRARIES += libasound
+ 
+LOCAL_SRC_FILES := \
+           adec-external-ctrl.c adec-internal-mgt.c adec-ffmpeg-mgt.c adec-message.c adec-pts-mgt.c feeder.c adec_write.c adec_read.c\
+           dsp/audiodsp-ctl.c audio_out/alsa-out.c audio_out/aml_resample.c audiodsp_update_format.c spdif_api.c pcmenc_api.c \
+           dts_transenc_api.c dts_enc.c adec_omx_brige.c ../amavutils/amconfigutils.c  adec-wfd.c
+ 
+LOCAL_MODULE := libamadec_alsa
+ 
+LOCAL_ARM_MODE := arm
+ 
+include $(BUILD_STATIC_LIBRARY)
+
+endif
 
 include $(CLEAR_VARS)
 
 LOCAL_CFLAGS := \
         -fPIC -D_POSIX_SOURCE
-ifdef DOLBY_UDC
+#ifdef DOLBY_UDC
     LOCAL_CFLAGS+=-DDOLBY_USE_ARMDEC
-endif
+#endif
 
+ifdef DOLBY_DS1_UDC
+  LOCAL_CFLAGS += -DDOLBY_DS1_UDC
+endif
 
 LOCAL_C_INCLUDES:= \
     $(LOCAL_PATH)/include \
     $(LOCAL_PATH)/../amavutils/include \
+   
 
+# PLATFORM_SDK_VERSION:
+# 4.4 = 19
+# 4.3 = 18
+# 4.2 = 17
+LOCAL_CFLAGS += -DANDROID_PLATFORM_SDK_VERSION=$(PLATFORM_SDK_VERSION)
 
 ifneq (0, $(shell expr $(PLATFORM_VERSION) \>= 4.3))
-    LOCAL_CFLAGS += -DANDROID_VERSION_JBMR2_UP=1  -DUSE_ARM_AUDIO_DEC
+    LOCAL_CFLAGS += -DANDROID_VERSION_JBMR2_UP=1	
+    ifneq ($(TARGET_BOARD_PLATFORM),meson6)
+        LOCAL_CFLAGS += -DUSE_ARM_AUDIO_DEC
+    endif
 endif
 
 ifneq (0, $(shell expr $(PLATFORM_VERSION) \> 4.1.0))
@@ -29,7 +84,7 @@ endif
 LOCAL_SRC_FILES := \
            adec-external-ctrl.c adec-internal-mgt.c adec-ffmpeg-mgt.c adec-message.c adec-pts-mgt.c feeder.c adec_write.c adec_read.c\
            dsp/audiodsp-ctl.c audio_out/android-out.cpp audio_out/aml_resample.c audiodsp_update_format.c spdif_api.c pcmenc_api.c \
-           dts_transenc_api.c dts_enc.c adec_omx_brige.c ../amavutils/amconfigutils.c
+           dts_transenc_api.c dts_enc.c adec_omx_brige.c ../amavutils/amconfigutils.c  adec-wfd.c
 
 LOCAL_MODULE := libamadec
 
@@ -43,19 +98,21 @@ include $(CLEAR_VARS)
 
 LOCAL_CFLAGS := \
         -fPIC -D_POSIX_SOURCE
-ifdef DOLBY_UDC
+#ifdef DOLBY_UDC
     LOCAL_CFLAGS+=-DDOLBY_USE_ARMDEC
-endif
+#endif
 
 
 LOCAL_C_INCLUDES:= \
     $(LOCAL_PATH)/include \
     $(LOCAL_PATH)/../amavutils/include \
+   
+
+LOCAL_CFLAGS += -DANDROID_PLATFORM_SDK_VERSION=$(PLATFORM_SDK_VERSION)
 
 ifneq (0, $(shell expr $(PLATFORM_VERSION) \>= 4.3))
     LOCAL_CFLAGS += -DANDROID_VERSION_JBMR2_UP=1
 endif
-
 
 ifneq (0, $(shell expr $(PLATFORM_VERSION) \> 4.1.0))
     LOCAL_CFLAGS += -D_VERSION_JB
@@ -68,7 +125,7 @@ endif
 LOCAL_SRC_FILES := \
            adec-external-ctrl.c adec-internal-mgt.c adec-ffmpeg-mgt.c adec-message.c adec-pts-mgt.c feeder.c adec_write.c adec_read.c\
            dsp/audiodsp-ctl.c audio_out/android-out.cpp audio_out/aml_resample.c audiodsp_update_format.c \
-           spdif_api.c pcmenc_api.c dts_transenc_api.c dts_enc.c adec_omx_brige.c ../amavutils/amconfigutils.c
+           spdif_api.c pcmenc_api.c dts_transenc_api.c dts_enc.c adec_omx_brige.c ../amavutils/amconfigutils.c  adec-wfd.c
 
 LOCAL_MODULE := libamadec
 
@@ -76,7 +133,7 @@ LOCAL_ARM_MODE := arm
 ##################################################
 #$(shell cp $(LOCAL_PATH)/acodec_lib/*.so $(TARGET_OUT)/lib)
 ###################################################
-LOCAL_SHARED_LIBRARIES += libutils libmedia libz libbinder libdl libcutils libc libamadec_omx_api libamavutils
+LOCAL_SHARED_LIBRARIES += libutils libmedia libz libbinder libdl libcutils libc libamadec_omx_api libamavutils 
 
 LOCAL_PRELINK_MODULE := false
 LOCAL_MODULE_TAGS := optional
@@ -93,9 +150,9 @@ LOCAL_C_INCLUDES:= \
     $(LOCAL_PATH)/omx_audio/include \
     $(LOCAL_PATH)/omx_audio/../     \
     $(LOCAL_PATH)/omx_audio/../include \
-    $(LOCAL_PATH)/omx_audio/../../../../../frameworks/native/include/media/openmax \
-    $(LOCAL_PATH)/omx_audio/../../../../../frameworks/av/include/media/stagefright \
-    $(LOCAL_PATH)/omx_audio/../../../../../frameworks/native/include/utils
+    frameworks/native/include/media/openmax \
+    frameworks/av/include/media/stagefright \
+    frameworks/native/include/utils
 
 LOCAL_SRC_FILES := \
            /omx_audio/adec_omx.cpp \
@@ -106,13 +163,50 @@ LOCAL_SRC_FILES := \
 	   /omx_audio/ASF_mediasource.cpp  \
 	   /omx_audio/DTSHD_mediasource.cpp \
 	   /omx_audio/Vorbis_mediasource.cpp \
+	   /omx_audio/THD_mediasource.cpp
 
 LOCAL_MODULE := libamadec_omx_api
 LOCAL_MODULE_TAGS := optional
 LOCAL_ARM_MODE := arm
 
 LOCAL_SHARED_LIBRARIES += libutils libmedia libz libbinder libdl libcutils libc libstagefright \
-                          libstagefright_omx  libstagefright_yuv libmedia_native liblog
+                          libstagefright_omx  libstagefright_yuv liblog 
+LOCAL_PRELINK_MODULE := false
+LOCAL_MODULE_TAGS := optional
+
+include $(BUILD_SHARED_LIBRARY)
+#########################################################
+
+
+###################module make wfd audioout api ######################################
+include $(CLEAR_VARS)
+
+LOCAL_CFLAGS := \
+        -fPIC -D_POSIX_SOURCE  -DDOLBY_DDPDEC51_MULTICHANNEL_ENDPOINT
+
+ifneq (0, $(shell expr $(PLATFORM_VERSION) \>= 4.3))
+    LOCAL_CFLAGS += -DANDROID_VERSION_JBMR2_UP=1	
+endif
+ifneq (0, $(shell expr $(PLATFORM_VERSION) \> 4.1.0))
+    LOCAL_CFLAGS += -D_VERSION_JB
+else
+    ifneq (0, $(shell expr $(PLATFORM_VERSION) \> 4.0.0))
+        LOCAL_CFLAGS += -D_VERSION_ICS
+    endif
+endif		
+		
+LOCAL_C_INCLUDES:= \
+    external/tinyalsa/include
+
+LOCAL_SRC_FILES := \
+	adec-wfd-out.cpp
+
+LOCAL_MODULE := libamadec_wfd_out
+LOCAL_MODULE_TAGS := optional
+LOCAL_ARM_MODE := arm
+
+LOCAL_SHARED_LIBRARIES += libutils libtinyalsa  liblog libmedia
+                          
 LOCAL_PRELINK_MODULE := false
 LOCAL_MODULE_TAGS := optional
 
@@ -166,6 +260,8 @@ _audio_firmware :=
 $(foreach _firmware, $(audio_firmware_files), \
   $(eval $(call _add-audio-firmware-module,$(_firmware))))
 
+#LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := audio_firmware
@@ -179,4 +275,4 @@ include $(BUILD_PHONY_PACKAGE)
 _audio_firmware_modules :=
 _audio_firmware :=
 
-include $(call all-subdir-makefiles)
+

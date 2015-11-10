@@ -23,11 +23,11 @@
 #include <log-print.h>
 #include <cutils/properties.h>
 
-static int reset_track_enable=0;
+static int reset_track_enable = 0;
 void adec_reset_track_enable(int enable_flag)
 {
-    reset_track_enable=enable_flag;
-	adec_print("reset_track_enable=%d\n", reset_track_enable);
+    reset_track_enable = enable_flag;
+    adec_print("reset_track_enable=%d\n", reset_track_enable);
 }
 
 static int get_sysfs_int(const char *path)
@@ -46,7 +46,7 @@ static int audiodsp_get_format_changed_flag()
 
 }
 
- void audiodsp_set_format_changed_flag( int val)
+void audiodsp_set_format_changed_flag(int val)
 {
     set_sysfs_int("/sys/class/audiodsp/format_change_flag", val);
 
@@ -91,17 +91,23 @@ static int audiodsp_set_pcm_resample_enable(unsigned long enable)
 
 void adec_reset_track(aml_audio_dec_t *audec)
 {
-    if(audec->format_changed_flag && audec->state >= INITTED){
-        adec_print("reset audio_track: samplerate=%d channels=%d\n", audec->samplerate,audec->channels);
+    if (audec->format_changed_flag && audec->state >= INITTED && !audec->need_stop) {
+        buffer_stream_t *g_bst = audec->g_bst;
+        adec_print("reset audio_track: samplerate=%d channels=%d\n", (g_bst == NULL) ? audec->samplerate : g_bst->samplerate, (g_bst == NULL) ? audec->channels : g_bst->channels);
         audio_out_operations_t *out_ops = &audec->aout_ops;
         out_ops->mute(audec, 1);
         out_ops->pause(audec);
         out_ops->stop(audec);
-        //audec->SessionID +=1;
+        if (g_bst != NULL) {
+            //4.4 code maybe run on 4.2 hardware platform: g_bst==NULL on 4.2,so add this condition
+            audec->channels  = g_bst->channels;
+            audec->samplerate = g_bst->samplerate;
+        }
         out_ops->init(audec);
-        if(audec->state == ACTIVE)
-	out_ops->start(audec);
-        audec->format_changed_flag=0;
+        if (audec->state == ACTIVE) {
+            out_ops->start(audec);
+        }
+        audec->format_changed_flag = 0;
     }
 }
 
@@ -112,54 +118,54 @@ int audiodsp_format_update(aml_audio_dec_t *audec)
     unsigned long val;
     dsp_operations_t *dsp_ops = &audec->adsp_ops;
 
-    if (dsp_ops->dsp_file_fd < 0 || get_audio_decoder()!=AUDIO_ARC_DECODER) {
+    if (dsp_ops->dsp_file_fd < 0 || get_audio_decoder() != AUDIO_ARC_DECODER) {
         return ret;
     }
 
-    ret=0;
-    if(1/*audiodsp_get_format_changed_flag()*/)
-    {
+    ret = 0;
+    if (1/*audiodsp_get_format_changed_flag()*/) {
         ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_CHANNELS_NUM, &val);
         if (val != (unsigned long) - 1) {
-            if( audec->channels != val){
+            if (audec->channels != val) {
                 //adec_print("dsp_format_update: pre_channels=%d  cur_channels=%d\n", audec->channels,val);
                 audec->channels = val;
-                ret=1;
+                ret = 1;
             }
         }
 
-         ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_SAMPLERATE, &val);
-         if (val != (unsigned long) - 1) {
-            if(audec->samplerate != val){
+        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_SAMPLERATE, &val);
+        if (val != (unsigned long) - 1) {
+            if (audec->samplerate != val) {
                 //adec_print("dsp_format_update: pre_samplerate=%d  cur_samplerate=%d\n", audec->samplerate,val);
                 audec->samplerate = val;
-                ret=2;
-            }
-         }
-         #if 1
-         ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_BITS_PER_SAMPLE, &val);
-         if (val != (unsigned long) - 1) {
-            if(audec->data_width != val){
-                //adec_print("dsp_format_update: pre_data_width=%d  cur_data_width=%d\n", audec->data_width,val);
-                audec->data_width = val;
-                ret=3;
+                ret = 2;
             }
         }
-        #endif
-		//audiodsp_set_format_changed_flag(0);
+#if 1
+        ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_BITS_PER_SAMPLE, &val);
+        if (val != (unsigned long) - 1) {
+            if (audec->data_width != val) {
+                //adec_print("dsp_format_update: pre_data_width=%d  cur_data_width=%d\n", audec->data_width,val);
+                audec->data_width = val;
+                ret = 3;
+            }
+        }
+#endif
+        //audiodsp_set_format_changed_flag(0);
+
         if (am_getconfig_bool("media.libplayer.wfd")) {
-	    ret = ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_PCM_LEVEL, &val);
+            ret = ioctl(dsp_ops->dsp_file_fd, AUDIODSP_GET_PCM_LEVEL, &val);
             if (ret == 0) {
                 //adec_print("pcm level == 0x%x\n", val);
-                if ((val < 0x1000) && (1==audiodsp_get_pcm_resample_enable())) {
-                //    adec_print("disable pcm down resample");
-                //    audiodsp_set_pcm_resample_enable(0);
+                if ((val < 0x1000) && (1 == audiodsp_get_pcm_resample_enable())) {
+                    //    adec_print("disable pcm down resample");
+                    //    audiodsp_set_pcm_resample_enable(0);
                 }
             }
         }
     }
-    if(ret>0){
-        audec->format_changed_flag=ret;
+    if (ret > 0) {
+        audec->format_changed_flag = ret;
         adec_print("dsp_format_update: audec->format_changed_flag = %d \n", audec->format_changed_flag);
     }
     return ret;

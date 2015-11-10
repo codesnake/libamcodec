@@ -13,18 +13,18 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#include <sys/soundcard.h>
+#include <linux/soundcard.h>
 //#include <config.h>
 #include <alsa/asoundlib.h>
-#include <alsa/pcm.h>
+
 #include <audio-dec.h>
 #include <adec-pts-mgt.h>
 #include <log-print.h>
 #include <alsa-out.h>
-#include "alsactl_parser.h"
+#include <amthreadpool.h>
+#include <cutils/properties.h>
 
-#define   PERIOD_SIZE  1024
-#define   PERIOD_NUM    4
+
 #define USE_INTERPOLATION
 
 static snd_pcm_sframes_t (*readi_func)(snd_pcm_t *handle, void *buffer, snd_pcm_uframes_t size);
@@ -32,11 +32,14 @@ static snd_pcm_sframes_t (*writei_func)(snd_pcm_t *handle, const void *buffer, s
 static snd_pcm_sframes_t (*readn_func)(snd_pcm_t *handle, void **bufs, snd_pcm_uframes_t size);
 static snd_pcm_sframes_t (*writen_func)(snd_pcm_t *handle, void **bufs, snd_pcm_uframes_t size);
 
-
-static int fragcount = PERIOD_NUM;
-static snd_pcm_uframes_t chunk_size = PERIOD_SIZE;
+static float  alsa_default_vol = 1.0;
+static int hdmi_out = 0;
+static int fragcount = 16;
+static snd_pcm_uframes_t chunk_size = 1024;
 static char output_buffer[64 * 1024];
 static unsigned char decode_buffer[OUTPUT_BUFFER_SIZE + 64];
+#define   PERIOD_SIZE  1024
+#define   PERIOD_NUM    4
 
 #ifdef USE_INTERPOLATION
 static int pass1_history[8][8];
@@ -181,26 +184,24 @@ static int set_params(alsa_param_t *alsa_params)
     alsa_params->bits_per_sample = snd_pcm_format_physical_width(alsa_params->format);
     //bits_per_frame = bits_per_sample * hwparams.realchanl;
     alsa_params->bits_per_frame = alsa_params->bits_per_sample * alsa_params->channelcount;
-
-    bufsize = 	PERIOD_NUM*PERIOD_SIZE;
-    err = snd_pcm_hw_params_set_buffer_size_near(alsa_params->handle, hwparams,&bufsize);
+    bufsize =   PERIOD_NUM * PERIOD_SIZE;
+    err = snd_pcm_hw_params_set_buffer_size_near(alsa_params->handle, hwparams, &bufsize);
     if (err < 0) {
-        adec_print("Unable to set  buffer  size \n");
+        adec_print("Unable to set	buffer	size \n");
         return err;
     }
-
     err = snd_pcm_hw_params_set_period_size_near(alsa_params->handle, hwparams, &chunk_size, NULL);
     if (err < 0) {
         adec_print("Unable to set period size \n");
         return err;
     }
-#if 0
-    err = snd_pcm_hw_params_set_periods_near(alsa_params->handle, hwparams, &fragcount, NULL);
-    if (err < 0) {
-      adec_print("Unable to set periods \n");
-      return err;
-    }
-#endif
+
+    //err = snd_pcm_hw_params_set_periods_near(handle, hwparams, &fragcount, NULL);
+    //if (err < 0) {
+    //  adec_print("Unable to set periods \n");
+    //  return err;
+    //}
+
     err = snd_pcm_hw_params(alsa_params->handle, hwparams);
     if (err < 0) {
         adec_print("Unable to install hw params:");
@@ -212,7 +213,6 @@ static int set_params(alsa_param_t *alsa_params)
         adec_print("Unable to get buffersize \n");
         return err;
     }
-	printf("alsa buffer frame size %d \n",bufsize);
     alsa_params->buffer_size = bufsize * alsa_params->bits_per_frame / 8;
 
 #if 1
@@ -261,16 +261,153 @@ static int set_params(alsa_param_t *alsa_params)
     return 0;
 }
 
+static int alsa_get_hdmi_state()
+{
+    int fd = -1, err = 0, state = 0;
+    unsigned fileSize = 32;
+    char *read_buf = NULL;
+    static const char *const HDMI_STATE_PATH = "/sys/class/switch/hdmi/state";
+
+    fd = open(HDMI_STATE_PATH, O_RDONLY);
+    if (fd < 0) {
+        adec_print("ERROR: failed to open config file %s error: %d\n", HDMI_STATE_PATH, errno);
+        close(fd);
+        return -EINVAL;
+    }
+
+    read_buf = (char *)malloc(fileSize);
+    if (!read_buf) {
+        adec_print("Failed to malloc read_buf");
+        goto OUT;
+    }
+    memset(read_buf, 0x0, fileSize);
+    err = read(fd, read_buf, fileSize);
+    if (fd < 0) {
+        adec_print("ERROR: failed to read config file %s error: %d\n", HDMI_STATE_PATH, errno);
+        goto OUT;
+    }
+
+    if (*read_buf == '1') {
+        state = 1;
+    }
+
+OUT:
+    free(read_buf);
+    close(fd);
+    return state;
+}
+
+static int alsa_get_aml_card()
+{
+    int card = -1, err = 0;
+    int fd = -1;
+    unsigned fileSize = 512;
+    char *read_buf = NULL, *pd = NULL;
+    static const char *const SOUND_CARDS_PATH = "/proc/asound/cards";
+    fd = open(SOUND_CARDS_PATH, O_RDONLY);
+    if (fd < 0) {
+        adec_print("ERROR: failed to open config file %s error: %d\n", SOUND_CARDS_PATH, errno);
+        close(fd);
+        return -EINVAL;
+    }
+
+    read_buf = (char *)malloc(fileSize);
+    if (!read_buf) {
+        adec_print("Failed to malloc read_buf");
+        close(fd);
+        return -ENOMEM;
+    }
+    memset(read_buf, 0x0, fileSize);
+    err = read(fd, read_buf, fileSize);
+    if (fd < 0) {
+        adec_print("ERROR: failed to read config file %s error: %d\n", SOUND_CARDS_PATH, errno);
+        free(read_buf);
+        close(fd);
+        return -EINVAL;
+    }
+    pd = strstr(read_buf, "AML");
+    card = *(pd - 3) - '0';
+
+OUT:
+    free(read_buf);
+    close(fd);
+    return card;
+}
+
+static int alsa_get_spdif_port()
+{
+/* for pcm output,i2s/958 share the same data from i2s,so always use device 0 as i2s output */
+    return 0;
+    int port = -1, err = 0;
+    int fd = -1;
+    unsigned fileSize = 512;
+    char *read_buf = NULL, *pd = NULL;
+    static const char *const SOUND_PCM_PATH = "/proc/asound/pcm";
+    fd = open(SOUND_PCM_PATH, O_RDONLY);
+    if (fd < 0) {
+        adec_print("ERROR: failed to open config file %s error: %d\n", SOUND_PCM_PATH, errno);
+        close(fd);
+        return -EINVAL;
+    }
+
+    read_buf = (char *)malloc(fileSize);
+    if (!read_buf) {
+        adec_print("Failed to malloc read_buf");
+        close(fd);
+        return -ENOMEM;
+    }
+    memset(read_buf, 0x0, fileSize);
+    err = read(fd, read_buf, fileSize);
+    if (fd < 0) {
+        adec_print("ERROR: failed to read config file %s error: %d\n", SOUND_PCM_PATH, errno);
+        free(read_buf);
+        close(fd);
+        return -EINVAL;
+    }
+    pd = strstr(read_buf, "SPDIF");
+    if (!pd) {
+        goto OUT;
+    }
+    adec_print("%s  \n", pd);
+
+    port = *(pd - 3) - '0';
+    adec_print("%s  \n", (pd - 3));
+
+OUT:
+    free(read_buf);
+    close(fd);
+    return port;
+}
+
 static size_t pcm_write(alsa_param_t * alsa_param, u_char * data, size_t count)
 {
     snd_pcm_sframes_t r;
     size_t result = 0;
+    int i;
+    short *sample = (short*)data;
     /*
         if (count < chunk_size) {
             snd_pcm_format_set_silence(hwparams.format, data + count * bits_per_frame / 8, (chunk_size - count) * hwparams.channels);
             count = chunk_size;
         }
     */
+    /* volume control for bootplayer  */
+    if (alsa_default_vol  != 1.0) {
+        for (i  = 0;i < count*2;i++) {
+            sample[i] = (short)(alsa_default_vol*(float)sample[i]);
+        }
+    }
+    // dump  pcm data here
+#if 0
+        FILE *fp1=fopen("/data/audio_out.pcm","a+");
+        if (fp1) {
+            int flen=fwrite((char *)data,1,count*2*2,fp1);
+            adec_print("flen = %d---outlen=%d ", flen, count*2*2);
+            fclose(fp1);
+        }else{
+            adec_print("could not open file:audio_out.pcm");
+        }
+#endif
     while (count > 0) {
         r = writei_func(alsa_param->handle, data, count);
 
@@ -279,12 +416,12 @@ static size_t pcm_write(alsa_param_t * alsa_param, u_char * data, size_t count)
         }
         if (r == -ESTRPIPE) {
             while ((r = snd_pcm_resume(alsa_param->handle)) == -EAGAIN) {
-                sleep(1);
+                amthreadpool_thread_usleep(1000);
             }
         }
 
         if (r < 0) {
-            //printf("xun in\n");
+            printf("xun in\n");
             if ((r = snd_pcm_prepare(alsa_param->handle)) < 0) {
                 return 0;
             }
@@ -453,6 +590,29 @@ static int alsa_play(alsa_param_t * alsa_param, char * data, unsigned len)
     return r ;
 }
 
+static int alsa_swtich_port(alsa_param_t *alsa_params, int card, int port)
+{
+    char dev[10] = {0};
+    adec_print("card = %d, port = %d\n", card, port);
+    sprintf(dev, "hw:%d,%d", (card >= 0) ? card : 0, (port >= 0) ? port : 0);
+    pthread_mutex_lock(&alsa_params->playback_mutex);
+    snd_pcm_drop(alsa_params->handle);
+    snd_pcm_close(alsa_params->handle);
+    alsa_params->handle = NULL;
+    int err = snd_pcm_open(&alsa_params->handle, dev, SND_PCM_STREAM_PLAYBACK, 0);
+
+    if (err < 0) {
+        adec_print("audio open error: %s", snd_strerror(err));
+        pthread_mutex_unlock(&alsa_params->playback_mutex);
+        return -1;
+    }
+
+    set_params(alsa_params);
+    pthread_mutex_unlock(&alsa_params->playback_mutex);
+
+    return 0;
+}
+
 static void *alsa_playback_loop(void *args)
 {
     int len = 0;
@@ -462,25 +622,49 @@ static void *alsa_playback_loop(void *args)
     alsa_param_t *alsa_params;
     unsigned char *buffer = (unsigned char *)(((unsigned long)decode_buffer + 32) & (~0x1f));
 
+    char value[PROPERTY_VALUE_MAX]={0};
     audec = (aml_audio_dec_t *)args;
     alsa_params = (alsa_param_t *)audec->aout_ops.private_data;
 
- /*   pthread_mutex_init(&alsa_params->playback_mutex, NULL);
-    pthread_cond_init(&alsa_params->playback_cond, NULL);*/
-
-    pthread_mutex_lock(&alsa_params->playback_mutex);
-
-    while( !alsa_params->wait_flag )
-    {
-        adec_print("yvonnepthread_cond_wait\n");
-         pthread_cond_wait(&alsa_params->playback_cond, &alsa_params->playback_mutex);
+    // bootplayer default volume configuration
+    if (property_get("media.amplayer.boot_vol",value,NULL) > 0) {
+        alsa_default_vol = atof(value);
+        if (alsa_default_vol < 0.0 || alsa_default_vol > 1.0 ) {
+            adec_print("wrong alsa default volume %f, set to 1.0 \n",alsa_default_vol);
+            alsa_default_vol  = 1.0;
+        }
     }
-    alsa_params->wait_flag=1;
-    pthread_mutex_unlock(&alsa_params->playback_mutex);
+    adec_print("alsa default volume  %f  \n",alsa_default_vol);
+    /*   pthread_mutex_init(&alsa_params->playback_mutex, NULL);
+       pthread_cond_init(&alsa_params->playback_cond, NULL);*/
+
+    while (!alsa_params->wait_flag && alsa_params->stop_flag == 0) {
+        amthreadpool_thread_usleep(10000);
+    }
 
     adec_print("alsa playback loop start to run !\n");
 
     while (!alsa_params->stop_flag) {
+        if (hdmi_out == 0) {
+            adec_print("===dynmiac get hdmi plugin state===\n");
+            if (alsa_get_hdmi_state() == 1) {
+                if (alsa_swtich_port(alsa_params, alsa_get_aml_card(), alsa_get_spdif_port()) == -1) {
+                    adec_print("switch to hdmi port failed.\n");
+                    goto exit;
+                }
+
+                hdmi_out = 1;
+                adec_print("[%s,%d]get hdmi device, use hdmi device \n", __FUNCTION__, __LINE__);
+            }
+        } else if (alsa_get_hdmi_state() == 0) {
+            if (alsa_swtich_port(alsa_params, alsa_get_aml_card(), 0) == -1) {
+                adec_print("switch to default port failed.\n");
+                goto exit;
+            }
+
+            hdmi_out = 0;
+            adec_print("[%s,%d]get default device, use default device \n", __FUNCTION__, __LINE__);
+        }
         while ((len < (128 * 2)) && (!alsa_params->stop_flag)) {
             if (offset > 0) {
                 memcpy(buffer, buffer + offset, len);
@@ -489,11 +673,13 @@ static void *alsa_playback_loop(void *args)
             len = len + len2;
             offset = 0;
         }
-
+        audec->pcm_bytes_readed += len;
         while (alsa_params->pause_flag) {
-            usleep(10000);
+            amthreadpool_thread_usleep(10000);
         }
-
+        if (alsa_params->stop_flag) {
+            goto exit;
+        }
         adec_refresh_pts(audec);
 
         len2 = alsa_play(alsa_params, (buffer + offset), len);
@@ -505,7 +691,7 @@ static void *alsa_playback_loop(void *args)
             offset = 0;
         }
     }
-
+exit:
     adec_print("Exit alsa playback loop !\n");
     pthread_exit(NULL);
     return NULL;
@@ -519,7 +705,9 @@ static void *alsa_playback_loop(void *args)
 int alsa_init(struct aml_audio_dec* audec)
 {
     adec_print("alsa out init");
-
+    char sound_card_dev[10] = {0};
+    int sound_card_id = 0;
+    int sound_dev_id = 0;
     int err;
     pthread_t tid;
     alsa_param_t *alsa_param;
@@ -598,14 +786,33 @@ int alsa_init(struct aml_audio_dec* audec)
     alsa_param->realchanl = audec->channels;
     //alsa_param->rate = audec->samplerate;
     alsa_param->format = SND_PCM_FORMAT_S16_LE;
-   alsa_param->wait_flag=0;
+    alsa_param->wait_flag = 0;
 
 #ifdef USE_INTERPOLATION
     memset(pass1_history, 0, 64 * sizeof(int));
     memset(pass2_history, 0, 64 * sizeof(int));
 #endif
 
-    err = snd_pcm_open(&alsa_param->handle, PCM_DEVICE_DEFAULT, SND_PCM_STREAM_PLAYBACK, 0);
+    sound_card_id = alsa_get_aml_card();
+    if (sound_card_id  < 0) {
+        sound_card_id = 0;
+        adec_print("get aml card fail, use default \n");
+    }
+
+    if (alsa_get_hdmi_state() == 1) {
+        sound_dev_id = alsa_get_spdif_port();
+        if (sound_dev_id < 0) {
+            sound_dev_id = 0;
+            adec_print("get aml card device fail, use default \n");
+        } else {
+            hdmi_out = 1;
+        }
+        adec_print("get hdmi device, use hdmi device \n");
+    }
+
+    sprintf(sound_card_dev, "hw:%d,%d", sound_card_id, sound_dev_id);
+
+    err = snd_pcm_open(&alsa_param->handle, sound_card_dev, SND_PCM_STREAM_PLAYBACK, 0);
     if (err < 0) {
         adec_print("audio open error: %s", snd_strerror(err));
         return -1;
@@ -624,17 +831,18 @@ int alsa_init(struct aml_audio_dec* audec)
     /*TODO:  create play thread */
     pthread_mutex_init(&alsa_param->playback_mutex, NULL);
     pthread_cond_init(&alsa_param->playback_cond, NULL);
-    err = pthread_create(&tid, NULL, (void *)alsa_playback_loop, (void *)audec);
+    err = amthreadpool_pthread_create(&tid, NULL, (void *)alsa_playback_loop, (void *)audec);
     if (err != 0) {
         adec_print("alsa_playback_loop thread create failed!");
         snd_pcm_close(alsa_param->handle);
         return -1;
     }
+    pthread_setname_np(tid, "ALSAOUTLOOP");
+
     adec_print("Create alsa playback loop thread success ! tid = %d\n", tid);
 
     alsa_param->playback_tid = tid;
 
-   alsactl_parser();
     return 0;
 }
 
@@ -654,9 +862,10 @@ int alsa_start(struct aml_audio_dec* audec)
 
     pthread_mutex_lock(&alsa_param->playback_mutex);
     adec_print("yvonne pthread_cond_signalalsa_param->wait_flag=1\n");
-    alsa_param->wait_flag=1;//yvonneadded
+    alsa_param->wait_flag = 1; //yvonneadded
     pthread_cond_signal(&alsa_param->playback_cond);
     pthread_mutex_unlock(&alsa_param->playback_mutex);
+    adec_print("exit alsa out start!\n");
 
     return 0;
 }
@@ -674,11 +883,14 @@ int alsa_pause(struct aml_audio_dec* audec)
     alsa_param_t *alsa_params;
 
     alsa_params = (alsa_param_t *)audec->aout_ops.private_data;
+    pthread_mutex_lock(&alsa_params->playback_mutex);
 
     alsa_params->pause_flag = 1;
     while ((res = snd_pcm_pause(alsa_params->handle, 1)) == -EAGAIN) {
         sleep(1);
     }
+    pthread_mutex_unlock(&alsa_params->playback_mutex);
+    adec_print("exit alsa out pause\n");
 
     return res;
 }
@@ -696,11 +908,13 @@ int alsa_resume(struct aml_audio_dec* audec)
     alsa_param_t *alsa_params;
 
     alsa_params = (alsa_param_t *)audec->aout_ops.private_data;
+    pthread_mutex_lock(&alsa_params->playback_mutex);
 
     alsa_params->pause_flag = 0;
     while ((res = snd_pcm_pause(alsa_params->handle, 0)) == -EAGAIN) {
         sleep(1);
     }
+    pthread_mutex_unlock(&alsa_params->playback_mutex);
 
     return res;
 }
@@ -717,17 +931,19 @@ int alsa_stop(struct aml_audio_dec* audec)
     alsa_param_t *alsa_params;
 
     alsa_params = (alsa_param_t *)audec->aout_ops.private_data;
-    alsa_params->pause_flag = 0; //we should clear pause flag ,as we can stop from paused state
+    pthread_mutex_lock(&alsa_params->playback_mutex);
+    alsa_params->pause_flag = 0;
     alsa_params->stop_flag = 1;
-    alsa_params->wait_flag = 0;
+    //alsa_params->wait_flag = 0;
     pthread_cond_signal(&alsa_params->playback_cond);
-    pthread_join(alsa_params->playback_tid, NULL);
-    pthread_mutex_destroy(&alsa_params->playback_mutex);
+    amthreadpool_pthread_join(alsa_params->playback_tid, NULL);
     pthread_cond_destroy(&alsa_params->playback_cond);
 
 
     snd_pcm_drop(alsa_params->handle);
     snd_pcm_close(alsa_params->handle);
+    pthread_mutex_unlock(&alsa_params->playback_mutex);
+    pthread_mutex_destroy(&alsa_params->playback_mutex);
 
     free(alsa_params);
     audec->aout_ops.private_data = NULL;
@@ -766,94 +982,12 @@ unsigned long alsa_latency(struct aml_audio_dec* audec)
     alsa_param_t *alsa_param = (alsa_param_t *)audec->aout_ops.private_data;
     buffered_data = alsa_param->buffer_size - alsa_get_space(alsa_param);
     sample_num = buffered_data / (alsa_param->channelcount * (alsa_param->bits_per_sample / 8)); /*16/2*/
-    return (sample_num * (1000 / alsa_param->rate));
+    return ((sample_num * 1000) / alsa_param->rate);
 }
 
-/**
-* alsa dumy codec controls interface
-*/
-int dummy_alsa_control(char * id_string , long vol, int rw, long * value){
-    int err;
-    snd_hctl_t *hctl;
-    snd_ctl_elem_id_t *id;
-    snd_hctl_elem_t *elem;
-    snd_ctl_elem_value_t *control;
-    snd_ctl_elem_info_t *info;
-    snd_ctl_elem_type_t type;
-    unsigned int idx = 0, count;
-    long tmp, min, max;
-
-    if ((err = snd_hctl_open(&hctl, PCM_DEVICE_DEFAULT, 0)) < 0) {
-        printf("Control %s open error: %s\n", PCM_DEVICE_DEFAULT, snd_strerror(err));
-        return err;
-    }
-    if (err = snd_hctl_load(hctl)< 0) {
-        printf("Control %s open error: %s\n", PCM_DEVICE_DEFAULT, snd_strerror(err));
-        return err;
-    }
-    snd_ctl_elem_id_alloca(&id);
-    snd_ctl_elem_id_set_interface(id, SND_CTL_ELEM_IFACE_MIXER);
-    snd_ctl_elem_id_set_name(id, id_string);
-    elem = snd_hctl_find_elem(hctl, id);
-    snd_ctl_elem_value_alloca(&control);
-    snd_ctl_elem_value_set_id(control, id);
-    snd_ctl_elem_info_alloca(&info);
-    if ((err = snd_hctl_elem_info(elem, info)) < 0) {
-        printf("Control %s snd_hctl_elem_info error: %s\n", PCM_DEVICE_DEFAULT, snd_strerror(err));
-		    return err;
-    }
-    count = snd_ctl_elem_info_get_count(info);
-    type = snd_ctl_elem_info_get_type(info);
-
-    for (idx = 0; idx < count; idx++) {
-        switch (type) {
-            case SND_CTL_ELEM_TYPE_BOOLEAN:
-                if(rw){
-                    tmp = 0;
-                    if (vol >= 1) {
-                        tmp = 1;
-                    }
-                    snd_ctl_elem_value_set_boolean(control, idx, tmp);
-                    err = snd_hctl_elem_write(elem, control);
-                }else
-		    *value = snd_ctl_elem_value_get_boolean(control, idx);
-		    break;
-            case SND_CTL_ELEM_TYPE_INTEGER:
-                if(rw){
-		    min = snd_ctl_elem_info_get_min(info);
-		    max = snd_ctl_elem_info_get_max(info);
-                    if ((vol >= min) && (vol <= max))
-                        tmp = vol;
-		    else if (vol < min)
-                        tmp = min;
-                    else if (vol > max)
-                        tmp = max;
-                    snd_ctl_elem_value_set_integer(control, idx, tmp);
-                    err = snd_hctl_elem_write(elem, control);
-                }else
-	            *value = snd_ctl_elem_value_get_integer(control, idx);
-		    break;
-            default:
-                printf("?");
-	        break;
-        }
-        if (err < 0){
-            printf ("control%s access error=%s,close control device\n", PCM_DEVICE_DEFAULT, snd_strerror(err));
-            snd_hctl_close(hctl);
-            return err;
-        }
-    }
-
+static int alsa_mute(struct aml_audio_dec* audec, adec_bool_t en)
+{
     return 0;
-}
-/**
- * \brief mute output
- * \param audec pointer to audec
- * \param en  1 = mute, 0 = unmute
- * \return 0 on success otherwise negative error code
- */
-static int alsa_mute(struct aml_audio_dec* audec, adec_bool_t en){
-	return 0;
 }
 /**
  * \brief get output handle
@@ -867,7 +1001,7 @@ void get_output_func(struct aml_audio_dec* audec)
     out_ops->start = alsa_start;
     out_ops->pause = alsa_pause;
     out_ops->resume = alsa_resume;
+    out_ops->mute = alsa_mute;
     out_ops->stop = alsa_stop;
     out_ops->latency = alsa_latency;
-    out_ops->mute = alsa_mute;
 }

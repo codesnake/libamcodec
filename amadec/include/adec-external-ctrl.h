@@ -34,15 +34,14 @@ extern "C"
     int audio_dec_ready(void *handle);
     int audio_get_decoded_nb_frames(void *handle);
 
-    int audio_decode_set_lrvolume(void *, float lvol,float rvol);
-    int audio_decode_get_lrvolume(void *, float* lvol,float* rvol);
+    int audio_decode_set_lrvolume(void *, float lvol, float rvol);
+    int audio_decode_get_lrvolume(void *, float* lvol, float* rvol);
     int audio_set_av_sync_threshold(void *, int);
-    int audio_get_soundtrack(void *, int* );
-	int get_audio_decoder(void);
-	int get_decoder_status(void *p,struct adec_status *adec);
-    int dummy_decode_set_mute(int en);
-    int dummy_decode_set_volume(int vol);
-    int dummy_decode_get_volume(int *vol);
+    int audio_get_soundtrack(void *, int*);
+    int get_audio_decoder(void);
+    int get_decoder_status(void *p, struct adec_status *adec);
+    int audio_channel_lrmix_flag_set(void *, int enable);
+    int audio_decpara_get(void *handle, int *pfs, int *pch);
 
 #ifdef  __cplusplus
 }
